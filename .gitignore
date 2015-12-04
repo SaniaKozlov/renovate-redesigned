@@ -1,0 +1,9 @@
+/.idea
+/app/cache
+/app/logs
+/vendor
+/bin
+/web/bundles/renovate/documents
+/web/bundles/renovate/images
+/web/bundles/framework
+/web/bundles/sensiodistribution

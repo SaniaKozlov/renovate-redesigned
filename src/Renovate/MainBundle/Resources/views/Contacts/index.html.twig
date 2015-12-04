@@ -1,0 +1,151 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}Контакти{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    <link href="{{ asset('bundles/renovate/css/contacts.css') }}" rel="stylesheet">
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+{% endblock %}
+
+{% block content %}
+
+
+    <section class="news-desc">
+
+        <aside style="width: 50%; margin-right: 0% !important;">
+            <h1 class="textshadowblue" style="margin-top: 3px"> Контакти</h1>
+
+            <div style="margin-left: 40px;">
+                <div style="width: 30%; margin-top: 20px;float: left;">
+                    <img src="{{ asset('bundles/renovate/images/logo_renovate.png') }}" width="150px;" alt=""/>
+                    <h3 style="margin-top: 22px; font-weight: bold; font-size: 16px;">Прийом <br/>замовлень:</h3>
+                    <h3 style="margin-top: 22px; font-weight: bold; font-size: 16px;">Ми <br/>працюємо:</h3>
+                </div>
+                <div class="contact-tel" style="width: 40%; margin-top: 20px; float: left;">
+                    <p>ТОВ "RENOVATE"</p>
+                    <p>вул. Швабська, буд. 26</p>
+                    <p>Ужгород, 88000</p>
+
+                    <p style="margin-top: 10px;">+38 (095) 3 444 900</p>
+                    <p>+38 (0312)  444 900</p>
+
+                    <p style="margin-top: 15px;">Понеділок - П’ятниця:</p>
+                    <p>9:00 - 18:00</p>
+                    <p>Субота - Неділя: Вихідний.</p>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="social-link1" style="margin-top: 20px;">
+                <a href="http://vk.com/renovate"><img src="{{ asset('bundles/renovate/images/vk.png') }}" alt=""/></a>
+                <a href="https://www.facebook.com/renovate.in.ua"><img src="{{ asset('bundles/renovate/images/fb.png') }}" alt=""/></a>
+                <a href="#"><img src="{{ asset('bundles/renovate/images/plus.png') }}" alt=""/></a>
+            </div>
+        </aside>
+
+        <div {#ng-controller="ContactsController"#} class="extras" style="width: 47%; margin-top: 90px; margin-bottom:30px; ">
+            <h3 style="font-weight: bold; font-size: 16px;">Зв’яжіться з нами</h3>
+            <form ng-submit="contactUs()">
+
+                <div class="form-group">
+                    <input type="text" class="form-control" ng-model="message.pip" placeholder="П.І.П." required>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" class="form-control" ng-model="message.email" placeholder="Ваш e-mail..." required>
+                </div>
+
+                <div class="form-group">
+                    <select class="form-control" ng-model="message.topic">
+                        <option value="Заявка на реєстрацію">Заявка на реєстрацію</option>
+                        <option value="Подяка">Подяка</option>
+                        <option value="Пропозиція">Пропозиція</option>
+                        <option value="Скарга">Скарга</option>
+                        <option value="Інше">Інше</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <textarea class="form-control" rows="3" ng-model="message.text" placeholder="Текст повідомлення..."></textarea>
+                </div>
+
+                <button style="margin-bottom:10px;" type="submit" class="btn btn-info" ng-class="{disabled: sendButtonDisabled}">Написати</button>
+
+                <alert ng-repeat="alert in alerts" type="[[alert.type]]" close="closeAlert($index)">[[alert.msg]]</alert>
+            </form>
+        </div>
+
+    </section>
+
+    <div class="clearfix"></div>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2637.619178280769!2d22.295514100000005!3d48.6171324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x473919ae4f760e05%3A0xc7dd2b259424396f!2z0LLRg9C7LiDQqNCy0LDQsdGB0YzQutCwLCAyNiwg0KPQttCz0L7RgNC-0LQsINCX0LDQutCw0YDQv9Cw0YLRgdGM0LrQsCDQvtCx0LvQsNGB0YLRjCwgODgwMDA!5e0!3m2!1sru!2sua!4v1433752585792" width="1280" height="450" frameborder="0" style="border:0"></iframe>
+
+
+
+
+
+
+    {#<div class="row">#}
+        {##}
+        {#<div class="col-md-6">#}
+            {#<div class="cantacts-block">#}
+                {#{% if page %}#}
+                    {#{{ page.content | raw }}#}
+                {#{% endif %}#}
+            {#</div>#}
+
+            {#<ul class="social-link">#}
+                {#<li class="twitter"><a href="http://vk.com/renovate"><i class="fa fa-vk"></i></a></li>#}
+                {#<li class="facebook"><a href="https://www.facebook.com/renovate.in.ua"><i class="fa fa-facebook"></i></a></li>#}
+                {#<li class="gplus"><a href="#"><i class="fa fa-google-plus"></i></a></li>#}
+            {#</ul>#}
+        {#</div>#}
+
+        {#<div class="col-md-6" ng-controller="ContactsController">#}
+            {#<form ng-submit="contactUs()">#}
+                {#<h3>Зв’яжіться з нами</h3>#}
+                {#<div class="form-group">#}
+                    {#<input type="text" class="form-control" ng-model="message.pip" placeholder="П.І.П." required>#}
+                {#</div>#}
+                {#<div class="form-group">#}
+                    {#<input type="email" class="form-control" ng-model="message.email" placeholder="Ваш e-mail..." required>#}
+                {#</div>#}
+                {#<div class="form-group">#}
+                    {#<select class="form-control" ng-model="message.topic">#}
+                        {#<option value="Заявка на реєстрацію">Заявка на реєстрацію</option>#}
+                        {#<option value="Подяка">Подяка</option>#}
+                        {#<option value="Пропозиція">Пропозиція</option>#}
+                        {#<option value="Скарга">Скарга</option>#}
+                        {#<option value="Інше">Інше</option>#}
+                    {#</select>#}
+                {#</div>#}
+                {#<div class="form-group">#}
+                    {#<textarea class="form-control" rows="3" ng-model="message.text" placeholder="Текст повідомлення..."></textarea>#}
+                {#</div>#}
+                {#<button style="margin-bottom:10px;" type="submit" class="btn btn-info" ng-class="{disabled: sendButtonDisabled}">Написати</button>#}
+                {#<alert ng-repeat="alert in alerts" type="[[alert.type]]" close="closeAlert($index)">[[alert.msg]]</alert>#}
+            {#</form>#}
+        {#</div>#}
+    {#</div>#}
+
+    {#<div id="map-canvas"></div>#}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/googleMapInitialization.js') }}"></script>
+    {#<script src="{{ asset('bundles/renovate/js/angularContactsController.js') }}"></script>#}
+{% endblock %}

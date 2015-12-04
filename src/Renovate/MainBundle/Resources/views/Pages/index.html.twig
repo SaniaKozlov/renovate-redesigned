@@ -1,0 +1,185 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Сторінки{% endblock %}
+
+{% block head %}
+    <script src="{{ asset('bundles/renovate/plugins/ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+    <section class="news-desc" style="margin: 60px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div ng-controller="PagesController">
+                <div class="row">
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>
+                                <div class="col-sm-3">
+                                    <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                        <option>100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <button ng-click="addPage()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-hover table-mobile">
+                            <thead>
+                            <tr>
+                                <th style="background-color: #fff;">#</th>
+                                <th style="background-color: #fff;">Посилання</th>
+                                <th style="background-color: #fff;">Заголовок</th>
+                                <th style="background-color: #fff;">Ключові слова</th>
+                                <th style="background-color: #fff;">Опис</th>
+                                <th style="background-color: #fff;">Контент</th>
+                                <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="splash" ng-cloak>
+                                <td colspan="6">
+                                    <div class="image center-block"></div>
+                                </td>
+                            </tr>
+                            <tr ng-repeat="page in pages" ng-cloak>
+                                <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                <td>[[page.url | ellipsis:70]]</td>
+                                <td>[[page.title | ellipsis:70]]</td>
+                                <td>[[page.keywords | ellipsis:70]]</td>
+                                <td>[[page.description | ellipsis:70]]</td>
+                                <td style="max-width: 50px; word-wrap: break-word;">[[page.content | ellipsis:70]]</td>
+                                <td><button ng-click="removePage(page)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editPage(page)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <script type="text/ng-template" id="addPage.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Додати сторінку...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="pageForm">
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageUrl.$invalid && !pageForm.pageUrl.$pristine }">
+                                <label for="pageUrl" class="col-sm-2 control-label">Посилання</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="page.url" type="text" class="form-control has-error" id="pageUrl" name="pageUrl" required>
+                                    <p ng-show="pageForm.pageUrl.$invalid && !pageForm.pageUrl.$pristine" class="help-block">Введіть посилання.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageTitle.$invalid && !pageForm.pageTitle.$pristine }">
+                                <label for="pageTitle" class="col-sm-2 control-label">Заголовок</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.title" class="form-control" id="pageTitle" name="pageTitle"></textarea>
+                                    <p ng-show="pageForm.pageTitle.$invalid && !pageForm.pageTitle.$pristine" class="help-block">Введіть заголовок.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageKeywords.$invalid && !pageForm.pageKeywords.$pristine }">
+                                <label for="pageKeywords" class="col-sm-2 control-label">Ключові слова</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.keywords" class="form-control" id="pageKeywords" name="pageKeywords"></textarea>
+                                    <p ng-show="pageForm.pageKeywords.$invalid && !pageForm.pageKeywords.$pristine" class="help-block">Введіть ключові слова.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageDescription.$invalid && !pageForm.pageDescription.$pristine }">
+                                <label for="pageDescription" class="col-sm-2 control-label">Опис</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.description" class="form-control" id="pageDescription" name="pageDescription"></textarea>
+                                    <p ng-show="pageForm.pageDescription.$invalid && !pageForm.pageDescription.$pristine" class="help-block">Введіть опис.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageContent.$invalid && !pageForm.pageContent.$pristine }">
+                                <label for="pageContent" class="col-sm-2 control-label">Контент</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.content" class="form-control" id="pageContent" name="pageContent"></textarea>
+                                    <p ng-show="pageForm.pageContent.$invalid && !pageForm.pageContent.$pristine" class="help-block">Введіть контент.</p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="pageForm.$invalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+                <script type="text/ng-template" id="editPage.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Редагувати сторінку...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="pageForm">
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageUrl.$invalid && !pageForm.pageUrl.$pristine }">
+                                <label for="pageUrl" class="col-sm-2 control-label">Посилання</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="page.url" type="text" class="form-control has-error" id="pageUrl" name="pageUrl" required>
+                                    <p ng-show="pageForm.pageUrl.$invalid && !pageForm.pageUrl.$pristine" class="help-block">Введіть посилання.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageTitle.$invalid && !pageForm.pageTitle.$pristine }">
+                                <label for="pageTitle" class="col-sm-2 control-label">Заголовок</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.title" class="form-control" id="pageTitle" name="pageTitle"></textarea>
+                                    <p ng-show="pageForm.pageTitle.$invalid && !pageForm.pageTitle.$pristine" class="help-block">Введіть заголовок.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageKeywords.$invalid && !pageForm.pageKeywords.$pristine }">
+                                <label for="pageKeywords" class="col-sm-2 control-label">Ключові слова</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.keywords" class="form-control" id="pageKeywords" name="pageKeywords"></textarea>
+                                    <p ng-show="pageForm.pageKeywords.$invalid && !pageForm.pageKeywords.$pristine" class="help-block">Введіть ключові слова.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageDescription.$invalid && !pageForm.pageDescription.$pristine }">
+                                <label for="pageDescription" class="col-sm-2 control-label">Опис</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.description" class="form-control" id="pageDescription" name="pageDescription"></textarea>
+                                    <p ng-show="pageForm.pageDescription.$invalid && !pageForm.pageDescription.$pristine" class="help-block">Введіть опис.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : pageForm.pageContent.$invalid && !pageForm.pageContent.$pristine }">
+                                <label for="pageContent" class="col-sm-2 control-label">Контент</label>
+                                <div class="col-sm-10">
+                                    <textarea ng-model="page.content" class="form-control" id="pageContent" name="pageContent"></textarea>
+                                    <p ng-show="pageForm.pageContent.$invalid && !pageForm.pageContent.$pristine" class="help-block">Введіть контент.</p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="pageForm.$invalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+            </div>
+        </aside>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/angularPagesController.js') }}"></script>
+{% endblock %}

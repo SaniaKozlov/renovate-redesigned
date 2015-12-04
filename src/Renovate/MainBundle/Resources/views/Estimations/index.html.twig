@@ -1,0 +1,447 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Менеджмент кошторисів{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" style="margin: 60px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div ng-controller="EstimationsController" ng-cloak>
+                <div id="infoAlert" class="alert alert-info" role="alert">Зміни збережено!</div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-primary" type="button" ng-click="isCollapsedEstimations = !isCollapsedEstimations" ng-init="isCollapsedEstimations=true">
+                            Кошториси <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                        <div collapse="isCollapsedEstimations">
+                            <form class="form-inline">
+                                <div class="form-group">
+                                    <label for="itemsPerPage">Показувати на сторінці</label>
+                                    <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                        <option>100</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <input placeholder="Пошук кошторисів..." type="text" class="form-control" ng-model="filter.search"/>
+                                </div>
+                                <div class="form-group datepicker">
+                                    <div class="input-group">
+                                        <input placeholder="Від" id="from" ng-click="openFrom($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.from" is-open="openedFrom" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні" />
+                                        <div class="input-group-addon" ng-click="openFrom($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                    </div>
+                                </div>
+                                <div class="form-group datepicker">
+                                    <div class="input-group">
+                                        <input placeholder="До" id="to" ng-click="openTo($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.to" is-open="openedTo" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні"/>
+                                        <div class="input-group-addon" ng-click="openTo($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover table-mobile">
+                                        <thead>
+                                        <tr>
+                                            <th style="background-color: #fff;">#</th>
+                                            <th style="background-color: #fff;">№ кошторису</th>
+                                            <th style="background-color: #fff;">Загальна сума, грн</th>
+                                            <th style="background-color: #fff;">Замовник</th>
+                                            <th style="background-color: #fff;">Виконавець</th>
+                                            <th style="background-color: #fff;">Оновлено</th>
+                                            <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="estimation in estimations">
+                                            <th style="background-color: #fff;" scope="row">[[$index+1]]</th>
+                                            <td>[[estimation.estimationNumber]]</td>
+                                            <td><a href="[[estimation.href]]" target="_blank" class="btn btn-link" role="button">[[estimation.totalAmount | price]]</a></td>
+                                            <td>[[estimation.customer]]</td>
+                                            <td>[[estimation.performer]]</td>
+                                            <td>[[estimation.updated | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                            <td><button ng-click="removeEstimation(estimation)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="addTab(estimation.id)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+                <div id="focus-zone">
+
+                    <div class="row">
+                        <div class="col-md-6" style="z-index: 10; padding: 0;">
+                            <input ng-focus="panelChanged(true, 1)" ng-blur="panelChanged(false, false)" ng-style="{'width': (panel1Actived || panel1Actived == null) ? '100%' : '98%'}" placeholder="Пошук робіт..." type="text" class="form-control" ng-model="filterWorks"/>
+                        </div>
+                        <div class="col-md-6" style="z-index: 10; padding: 0;">
+                            <input ng-focus="panelChanged(true, 2)" ng-blur="panelChanged(false, false)" ng-style="{'width': (panel2Actived || panel1Actived == null) ? '100%' : '98%'}" placeholder="Пошук матеріалів..." type="text" class="form-control" ng-model="filterMaterials"/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6" style="z-index: 10; padding: 0;" ng-click="panelChanged(true, 1)">
+                            <div style="height: 300px; overflow-x: hidden;" ng-style="{'overflow-y': panel1Actived ? 'auto' : 'hidden'}" class="scrolling">
+                                <table class="table table-hover table-mobile">
+                                    <thead>
+                                    <tr class="active">
+                                        <th style="background-color: #fff;">Назва статті витрат</th>
+                                        <th style="background-color: #fff;">Од. виміру</th>
+                                        <th style="background-color: #fff;">Ціна, грн.</th>
+                                        <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                    </tr>
+                                    </thead>
+                                    <thead>
+                                    <tr class="info">
+                                        <th style="background-color: #fff;" colspan="4">РОБОТИ <button ng-click="addCostCategory('works')" type="button" class="close"><span class="glyphicon glyphicon-plus"></span></button></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody ng-repeat="item in costCategoriesWorks" ng-show="costsWorksFiltered.length==0">
+                                    <tr>
+                                        <th style="background-color: #fff;" colspan="4" class="warning"><button ng-show="item.costs.length>0" ng-click="item.collapsed = !item.collapsed" type="button" class="close pull-left"><span ng-show="!item.collapsed" class="glyphicon glyphicon-chevron-down"></span><span ng-show="item.collapsed" class="glyphicon glyphicon-chevron-up"></span></button>&nbsp;[[item.name]] <button ng-click="removeCostCategory(item)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editCostCategory(item)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button><button ng-click="addCost(item)" type="button" class="close"><span class="glyphicon glyphicon-plus"></span></button></th>
+                                    </tr>
+                                    <tr ng-show="item.collapsed" ng-repeat="cost in item.costs">
+                                        <td ng-dblclick="addEstimationCost(cost)" class="clickable" onmousedown="return false" onselectstart="return false">[[cost.name]]</td>
+                                        <td>[[cost.units]]</td>
+                                        <td>[[cost.price | price]]</td>
+                                        <td class="cost-options"><button ng-click="removeCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                    </tr>
+                                    </tbody>
+                                    <tbody ng-repeat="cost in costsWorksFiltered" ng-show="costsWorksFiltered.length>0">
+                                    <tr>
+                                        <td ng-dblclick="addEstimationCost(cost)" class="clickable" onmousedown="return false" onselectstart="return false">[[cost.name]]</td>
+                                        <td>[[cost.units]]</td>
+                                        <td>[[cost.price | price]]</td>
+                                        <td class="cost-options"><button ng-click="removeCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" style="z-index: 10; padding: 0;" ng-click="panelChanged(true, 2)">
+                            <div style="height: 300px; overflow-x: hidden;" ng-style="{'overflow-y': panel2Actived ? 'auto' : 'hidden'}" class="scrolling">
+                                <table class="table table-hover table-mobile">
+                                    <thead>
+                                    <tr class="active">
+                                        <th style="background-color: #fff;">Назва статті витрат</th>
+                                        <th style="background-color: #fff;">Од. виміру</th>
+                                        <th style="background-color: #fff;">Ціна, грн.</th>
+                                        <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                    </tr>
+                                    </thead>
+                                    <thead>
+                                    <tr class="info">
+                                        <th style="background-color: #fff;" colspan="4">МАТЕРІАЛИ <button ng-click="addCostCategory('materials')" type="button" class="close"><span class="glyphicon glyphicon-plus"></span></button></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody ng-repeat="item in costCategoriesMaterials" ng-show="costsMaterialsFiltered.length==0">
+                                    <tr>
+                                        <th style="background-color: #fff;" colspan="4" class="warning"><button ng-show="item.costs.length>0" ng-click="item.collapsed = !item.collapsed" type="button" class="close pull-left"><span ng-show="!item.collapsed" class="glyphicon glyphicon-chevron-down"></span><span ng-show="item.collapsed" class="glyphicon glyphicon-chevron-up"></span></button>&nbsp;[[item.name]] <button ng-click="removeCostCategory(item)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editCostCategory(item)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button><button ng-click="addCost(item)" type="button" class="close"><span class="glyphicon glyphicon-plus"></span></button></th>
+                                    </tr>
+                                    <tr ng-show="item.collapsed" ng-repeat="cost in item.costs">
+                                        <td ng-dblclick="addEstimationCost(cost)" class="clickable" onmousedown="return false" onselectstart="return false">[[cost.name]]</td>
+                                        <td>[[cost.units]]</td>
+                                        <td>[[cost.price | price]]</td>
+                                        <td class="cost-options"><button ng-click="removeCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                    </tr>
+                                    </tbody>
+                                    <tbody ng-repeat="cost in costsMaterialsFiltered" ng-show="costsMaterialsFiltered.length>0">
+                                    <tr>
+                                        <td ng-dblclick="addEstimationCost(cost)" class="clickable" onmousedown="return false" onselectstart="return false">[[cost.name]]</td>
+                                        <td>[[cost.units]]</td>
+                                        <td>[[cost.price | price]]</td>
+                                        <td class="cost-options"><button ng-click="removeCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editCost(cost)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tempBlock" ng-if="showTempBlock" ng-click="panelChanged(false, false)" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9;"></div>
+
+                    <script type="text/ng-template" id="addCostCategory.html">
+                        <div class="modal-header">
+                            <h3 ng-show="costCategory.type=='works'" class="modal-title">Додати категорію робіт...</h3>
+                            <h3 ng-show="costCategory.type=='materials'" class="modal-title">Додати категорію матеріалів...</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="costCategoryForm">
+                                <div class="form-group" ng-class="{'has-error': costCategoryForm.costCategoryName.$invalid && !costCategoryForm.costCategoryName.$pristine}">
+                                    <label for="costCategoryName" class="col-sm-2 control-label">Назва</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="costCategory.name" type="text" class="form-control" id="costCategoryName" name="costCategoryName" required>
+                                        <p ng-show="costCategoryForm.costCategoryName.$invalid && !costCategoryForm.costCategoryName.$pristine" class="help-block">Введіть назву.</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()" ng-disabled="costCategoryForm.$invalid">Зберегти</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                        </div>
+                    </script>
+                    <script type="text/ng-template" id="editCostCategory.html">
+                        <div class="modal-header">
+                            <h3 ng-show="costCategory.type=='works'" class="modal-title">Реадгувати категорію робіт...</h3>
+                            <h3 ng-show="costCategory.type=='materials'" class="modal-title">Редагувати категорію матеріалів...</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="costCategoryForm">
+                                <div class="form-group" ng-class="{'has-error': costCategoryForm.costCategoryName.$invalid && !costCategoryForm.costCategoryName.$pristine}">
+                                    <label for="costCategoryName" class="col-sm-2 control-label">Назва</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="costCategory.name" type="text" class="form-control" id="costCategoryName" name="costCategoryName" required>
+                                        <p ng-show="costCategoryForm.costCategoryName.$invalid && !costCategoryForm.costCategoryName.$pristine" class="help-block">Введіть назву.</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()" ng-disabled="costCategoryForm.$invalid">Зберегти</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                        </div>
+                    </script>
+                    <script type="text/ng-template" id="addCost.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Додати статтю витрат...</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="costForm">
+                                <div class="form-group" ng-class="{'has-error': costForm.costName.$invalid && !costForm.costName.$pristine}">
+                                    <label for="costName" class="col-sm-2 control-label">Назва</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="cost.name" type="text" class="form-control" id="costName" name="costName" required>
+                                        <p ng-show="costForm.costName.$invalid && !costForm.costName.$pristine" class="help-block">Введіть назву.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': costForm.costUnits.$invalid && !costForm.costUnits.$pristine}">
+                                    <label for="costUnits" class="col-sm-2 control-label">Од. виміру</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="cost.units" type="text" class="form-control" id="costUnits" name="costUnits" required>
+                                        <p ng-show="costForm.costUnits.$invalid && !costForm.costUnits.$pristine" class="help-block">Введіть одиниці виміру.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': costForm.costPrice.$invalid && !costForm.costPrice.$pristine}">
+                                    <label for="costPrice" class="col-sm-2 control-label">Ціна</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="cost.price" type="number" min="0.01" step="0.01" class="form-control" id="costPrice" name="costPrice" required>
+                                        <p ng-show="costForm.costPrice.$invalid && !costForm.costPrice.$pristine" class="help-block">Введіть ціну.</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()" ng-disabled="costForm.$invalid">Зберегти</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                        </div>
+                    </script>
+                    <script type="text/ng-template" id="editCost.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Редагувати статтю витрат...</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="costForm">
+                                <div class="form-group" ng-class="{'has-error': costForm.costName.$invalid && !costForm.costName.$pristine}">
+                                    <label for="costName" class="col-sm-2 control-label">Назва</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="cost.name" type="text" class="form-control" id="costName" name="costName" required>
+                                        <p ng-show="costForm.costName.$invalid && !costForm.costName.$pristine" class="help-block">Введіть назву.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': costForm.costUnits.$invalid && !costForm.costUnits.$pristine}">
+                                    <label for="costUnits" class="col-sm-2 control-label">Од. виміру</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="cost.units" type="text" class="form-control" id="costUnits" name="costUnits" required>
+                                        <p ng-show="costForm.costUnits.$invalid && !costForm.costUnits.$pristine" class="help-block">Введіть одиниці виміру.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': costForm.costPrice.$invalid && !costForm.costPrice.$pristine}">
+                                    <label for="costPrice" class="col-sm-2 control-label">Ціна</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="cost.price" type="number" min="0.01" step="0.01" class="form-control" id="costPrice" name="costPrice" required>
+                                        <p ng-show="costForm.costPrice.$invalid && !costForm.costPrice.$pristine" class="help-block">Введіть ціну.</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()" ng-disabled="costForm.$invalid">Зберегти</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                        </div>
+                    </script>
+                </div>
+                <div class="clearfix"></div>
+                <div style="margin-bottom: 10px; padding-top: 10px;">
+                    <button class="btn btn-success" type="button" ng-click="addTab()">
+                        Додати кошторис <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <tabset>
+                            <tab ng-repeat="tab in tabs" active="tab.active" disabled="tab.disabled" ng-controller="TabController" ng-init="tab=tab;addTab=addTab;">
+                                <tab-heading>
+                                    № [[tab.title]]&nbsp;<button ng-click="closeTab($index, $event)" type="button" class="close"><span class="glyphicon glyphicon-remove-sign"></span></button>
+                                </tab-heading>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form class="form-horizontal" name="estimationForm">
+                                            <div class="form-group" ng-class="{'has-error': estimationForm.estimationCustomer.$invalid && !estimationForm.estimationCustomer.$pristine}">
+                                                <label for="estimationCustomer" class="col-sm-2 control-label">Замовник</label>
+                                                <div class="col-sm-10">
+                                                    <input ng-model="estimation.customer" type="text" class="form-control" id="estimationCustomer" name="estimationCustomer" ng-change="fireEstimationChanges()" required>
+                                                    <p ng-show="estimationForm.estimationCustomer.$invalid && !estimationForm.estimationCustomer.$pristine" class="help-block">Введіть замовника.</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-class="{'has-error': estimationForm.estimationPerformer.$invalid && !estimationForm.estimationPerformer.$pristine}">
+                                                <label for="estimationPerformer" class="col-sm-2 control-label">Виконавець</label>
+                                                <div class="col-sm-10">
+                                                    <input ng-model="estimation.performer" type="text" class="form-control" id="estimationPerformer" name="estimationPerformer" ng-change="fireEstimationChanges()" required>
+                                                    <p ng-show="estimationForm.estimationPerformer.$invalid && !estimationForm.estimationPerformer.$pristine" class="help-block">Введіть виконавця.</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-class="{'has-error': estimationForm.estimationDiscount.$invalid && !estimationForm.estimationDiscount.$pristine}">
+                                                <label for="estimationDiscount" class="col-sm-2 control-label">Знижка</label>
+                                                <div class="col-sm-10">
+                                                    <input ng-model="estimation.discount" type="number" min="0" step="0.01" class="form-control" id="estimationDiscount" name="estimationDiscount" ng-change="fireEstimationChanges()" required>
+                                                    <p ng-show="estimationForm.estimationDiscount.$invalid && !estimationForm.estimationDiscount.$pristine" class="help-block">Введіть знижку.</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-class="{'has-error': estimationForm.estimationEstimationNumber.$invalid && !estimationForm.estimationEstimationNumber.$pristine}">
+                                                <label for="estimationEstimationNumber" class="col-sm-2 control-label">№ кошторису</label>
+                                                <div class="col-sm-10">
+                                                    <input ng-model="estimation.estimationNumber" type="text" class="form-control" id="estimationEstimationNumber" name="estimationEstimationNumber" ng-change="fireEstimationChanges()" required>
+                                                    <p ng-show="estimationForm.estimationEstimationNumber.$invalid && !estimationForm.estimationEstimationNumber.$pristine" class="help-block">Введіть № кошторису.</p>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-class="{'has-error': estimationForm.estimationContractNumber.$invalid && !estimationForm.estimationContractNumber.$pristine}">
+                                                <label for="estimationContractNumber" class="col-sm-2 control-label">№ договору</label>
+                                                <div class="col-sm-10">
+                                                    <input ng-model="estimation.contractNumber" type="text" class="form-control" id="estimationContractNumber" name="estimationContractNumber" ng-change="fireEstimationChanges()" required>
+                                                    <p ng-show="estimationForm.estimationContractNumber.$invalid && !estimationForm.estimationContractNumber.$pristine" class="help-block">Введіть № договору.</p>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <ul class="list-unstyled">
+                                            <li><a ng-class="{disabled: !tab.estimationid}" class="btn btn-link btn-xs" href="[[estimation.href]]" role="button" target="_blank">Посилання для перегляду <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span></a></li>
+                                            <li><a ng-class="{disabled: !tab.estimationid}" class="btn btn-link btn-xs" href="#" role="button" ng-click="copyEstimationToTab($event)">Копіювати у новій вкладці <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span></a></li>
+                                            <li>
+                                                <div class="dropdown estimation-additional">
+                                                    <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        Додаткові опції
+                                                        <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                                        <li><a ng-class="{disabled: !tab.estimationid}" class="btn btn-link btn-xs" href="[[estimation.csv]]" target="_blank">Експорт в CSV <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-group datepicker estimation-updated">
+                                                    <div class="input-group">
+                                                        <input placeholder="Дата оновлення" id="estimationUpdated" name="estimationUpdated" ng-click="openUpdated($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="estimation.updated" is-open="openedUpdated" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні" ng-change="fireEstimationChanges()"/>
+                                                        <div class="input-group-addon" ng-click="openUpdated($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h5>Роботи - <span class="label label-info">[[estimation.worksAmount | price]] грн.</span> Матеріали - <span class="label label-info">[[estimation.materialsAmount | price]] грн.</span></h5>
+                                        <h5>Знижка - <span class="label label-success">[[estimation.discount | price]] грн.</span></h5>
+                                        <h3>Разом - <span class="label label-primary">[[estimation.totalAmount | price ]] грн.</span></h3>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 estimations">
+                                        <table class="table table-hover table-mobile">
+                                            <thead>
+                                            <tr>
+                                                <th style="background-color: #fff;">#</th>
+                                                <th style="background-color: #fff;">Назва статті витрат</th>
+                                                <th style="background-color: #fff;">Од. виміру</th>
+                                                <th style="background-color: #fff;">Ціна, грн</th>
+                                                <th style="background-color: #fff;">Кількість</th>
+                                                <th style="background-color: #fff;">Сума, грн</th>
+                                                <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody ng-repeat="costCategory in estimation.costCategories">
+                                            <tr>
+                                                <th style="background-color: #fff;" scope="row" colspan="8">[[(costCategory.name == 'materials') ? 'Матеріали' : 'Роботи']]</th>
+                                            </tr>
+                                            <tr ng-repeat="estimationCost in costCategory.items">
+                                                <th style="background-color: #fff;" scope="row">[[$index+1]]</th>
+                                                <td><input style="width:400px;" ng-model="estimationCost.name" type="text" class="form-control" ng-change="fireEstimationCostChanges(estimationCost)"></td>
+                                                <td><input style="width:100px;" ng-model="estimationCost.units" type="text" class="form-control" ng-change="fireEstimationCostChanges(estimationCost)"></td>
+                                                <td><input style="width:100px;" ng-model="estimationCost.price" type="number" min="0.01" step="0.01" class="form-control" ng-change="fireEstimationCostChanges(estimationCost)"></td>
+                                                <td><input style="width:100px;" ng-model="estimationCost.count" type="number" min="1" step="1" class="form-control" ng-change="fireEstimationCostChanges(estimationCost)"></td>
+                                                <td>[[estimationCost.total | price]]</td>
+                                                <td><button ng-click="removeEstimationCost(estimationCost)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </tab>
+                        </tabset>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/angularEstimationsController.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $("#focus-zone").children().addClass('disabled');
+
+            var $focusZone = $("#focus-zone");
+
+            $(window).on("click.Bst", function(event){
+                if ($focusZone.has(event.target).length == 0 && !$focusZone.is(event.target)){
+                    if ($focusZone.hasClass("focused")){
+                        $focusZone.children().addClass('disabled');
+                        $focusZone.removeClass("focused");
+                        $('body').removeClass('stop-scrolling');
+                    }
+                } else {
+                    if (!$focusZone.hasClass("focused")){
+                        $focusZone.children().removeClass('disabled');
+                        $focusZone.addClass("focused");
+                        $('body').addClass('stop-scrolling');
+                    }
+                }
+            });
+
+        });
+    </script>
+{% endblock %}

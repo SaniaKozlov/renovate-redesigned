@@ -1,0 +1,11 @@
+Дата:	{{estimation.updated|date('d.m.Y')}}	Кошторис	№{{estimation.getId()}}
+Замовник:	{{estimation.getCustomer()}}	Виконавець:	{{estimation.getPerformer()}}
+Вартість робіт:	{{estimation.getWorksAmount()}}	Вартість матеріалів:	{{estimation.getMaterialsAmount()}}	Загальна сума:	{{estimation.getTotalAmount()}}
+
+№	Назва статті витрат	Од.виміру	Ціна	Кількість	Сума
+{% for category in estimation.getCostCategories() %}
+{{(category['name'] == 'works')?'Роботи':'Матеріали'}}
+{% for es in category['items'] %}
+{{loop.index}}	{{es.getCost().getName()}}	{{es.getCost().getUnits()}}	{{es.getCost().getPrice()}}	{{es.getCount()}}	{{es.getTotal()}}
+{% endfor %}
+{% endfor %}

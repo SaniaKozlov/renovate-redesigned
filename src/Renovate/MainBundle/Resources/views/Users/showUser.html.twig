@@ -1,0 +1,121 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {{user.name ~ ' ' ~ user.surname}}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" style="margin: 65px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-mobile user-info">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <ul>
+                                    <li><strong>Ваш особистий баланс</strong><br><h1>{% if user.getPersonalBalance()>0 %}<span class="label label-success">{{user.getPersonalBalance()}} грн.</span>{%else%}<span class="label label-danger">{{user.getPersonalBalance()}} грн.</span>{%endif%}</h1></li>
+                                    <li><strong>Баланс Вашого будинку</strong><br><h1>{% if user.getBuildingBalance()>0 %}<span class="label label-success">{{user.getBuildingBalance()}} грн.</span>{%else%}<span class="label label-danger">{{user.getBuildingBalance()}} грн.</span>{%endif%}</h1></li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li><strong>П.І.П.:</strong> {{user.surname~' '~user.name~' '~user.patronymic}}</li>
+                                    <li><strong>Логін/№ договору:</strong> {{user.username}}</li>
+                                    <li><strong>Дата реєстрації:</strong> {{user.registered|date("d.m.Y")}}</li>
+                                    <li><strong>Номер телефону:</strong> {{user.mobilephone}}</li>
+                                    <li><strong>E-Mail:</strong> {{user.email}}</li>
+                                    <li><strong>Адреса:</strong> {{user.address}}</li>
+                                    <li><strong>Адміністративна одиниця:</strong> {{user.adminUnit}}</li>
+                                    <li><strong>Керівний орган:</strong> {{user.owner}}</li>
+                                </ul>
+                            </td>
+                            {% if (user.getComments()) and (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                <td>{{user.getComments()}}</td>
+                            {% endif %}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr>
+            <div ng-controller="PaymentsController">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="itemsPerPage">Показувати на сторінці</label>
+                                <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                    <option>500</option>
+                                    <option>1000</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-hover table-mobile">
+                            <thead>
+                            <tr>
+                                <th style="background-color: #fff;">#</th>
+                                <th style="background-color: #fff;">Дата операції</th>
+                                <th style="background-color: #fff;">Назва операції</th>
+                                <th style="background-color: #fff;">Сума операції, грн.</th>
+                                <th style="background-color: #fff;">Особистий баланс, грн.</th>
+                                <th style="background-color: #fff;">Баланс будинку, грн.</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="splash" ng-cloak>
+                                <td colspan="8">
+                                    <div class="image center-block"></div>
+                                </td>
+                            </tr>
+                            <tr ng-repeat="payment in payments" ng-class="{green: payment.amount>0, red: payment.amount<0}" ng-cloak>
+                                <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                <td>[[payment.created | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                <td>[[payment.name]]</td>
+                                <td>[[payment.amount]]</td>
+                                <td>[[payment.personalBalance]]</td>
+                                <td>[[payment.buildingBalance]]</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/angularPaymentsController.js') }}"></script>
+    <script>
+        var USERID = "{{ app.request.get('user_id') }}";
+    </script>
+{% endblock %}

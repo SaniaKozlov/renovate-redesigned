@@ -1,0 +1,679 @@
+renovate_main_homepage:
+    path: /
+    defaults: { _controller: RenovateMainBundle:Index:index }
+    
+renovate_login_check:
+    path: /login_check
+    
+renovate_logout:
+    path: /logout
+    
+renovate_contacts:
+    path: /contacts
+    defaults: { _controller: RenovateMainBundle:Contacts:index}
+    
+renovate_aboutus:
+    path: /aboutus
+    defaults: { _controller: RenovateMainBundle:AboutUs:index}
+    
+renovate_aboutme:
+    path: /aboutme
+    defaults: { _controller: RenovateMainBundle:Users:showMe}
+    
+renovate_ng_contacts_contactus:
+    path: /ng/contacts/contact-us
+    defaults: { _controller: RenovateMainBundle:Contacts:contactUsNg}
+    
+renovate_jobs:
+    path: /jobs
+    defaults: { _controller: RenovateMainBundle:Jobs:index}
+    
+renovate_jobs_show_job:
+    path: /jobs/{job_name_translit}
+    defaults: { _controller: RenovateMainBundle:Jobs:showJob}
+    
+renovate_ng_jobs:
+    path: /ng/jobs
+    defaults: { _controller: RenovateMainBundle:Jobs:getJobsNg}
+    
+renovate_ng_jobs_count:
+    path: /ng/jobs/count
+    defaults: { _controller: RenovateMainBundle:Jobs:getJobsCountNg}
+    
+renovate_ng_jobs_add:
+    path: /ng/jobs/add
+    defaults: { _controller: RenovateMainBundle:Jobs:addJobNg}
+    
+renovate_ng_jobs_remove:
+    path: /ng/jobs/remove/{job_id}
+    defaults: { _controller: RenovateMainBundle:Jobs:removeJobNg}
+    
+renovate_ng_jobs_edit:
+    path: /ng/jobs/edit/{job_id}
+    defaults: { _controller: RenovateMainBundle:Jobs:editJobNg}
+    
+renovate_users:
+    path: /users
+    defaults: { _controller: RenovateMainBundle:Users:index}
+    
+renovate_users_show_user:
+    path: /users/{user_id}
+    defaults: { _controller: RenovateMainBundle:Users:showUser}
+    
+renovate_ng_users:
+    path: /ng/users
+    defaults: { _controller: RenovateMainBundle:Users:getUsersNg}
+    
+renovate_ng_users_check_tariff:
+    path: /ng/users/check/tariff
+    defaults: { _controller: RenovateMainBundle:Users:checkUserTariffNg}
+    
+renovate_ng_users_check_username:
+    path: /ng/users/check/username
+    defaults: { _controller: RenovateMainBundle:Users:checkUserUsernameNg}
+    
+renovate_ng_users_check_email:
+    path: /ng/users/check/email
+    defaults: { _controller: RenovateMainBundle:Users:checkUserEmailNg}
+    
+renovate_ng_users_get_clients:
+    path: /ng/users/clients
+    defaults: { _controller: RenovateMainBundle:Users:getClientsNg}
+    
+renovate_ng_users_get_workforce:
+    path: /ng/users/workforce
+    defaults: { _controller: RenovateMainBundle:Users:getWorkforceNg}
+    
+renovate_ng_users_get_workers:
+    path: /ng/users/workers
+    defaults: { _controller: RenovateMainBundle:Users:getWorkersNg}
+    
+renovate_ng_users_count:
+    path: /ng/users/count
+    defaults: { _controller: RenovateMainBundle:Users:getUsersCountNg}
+    
+renovate_ng_users_add:
+    path: /ng/users/add
+    defaults: { _controller: RenovateMainBundle:Users:addUserNg}
+    
+renovate_ng_users_remove:
+    path: /ng/users/remove/{user_id}
+    defaults: { _controller: RenovateMainBundle:Users:removeUserNg}
+    
+renovate_ng_users_edit:
+    path: /ng/users/edit/{user_id}
+    defaults: { _controller: RenovateMainBundle:Users:editUserNg}
+    
+renovate_ng_roles:
+    path: /ng/roles
+    defaults: { _controller: RenovateMainBundle:Roles:getRolesNg}
+    
+renovate_ng_roles_client:
+    path: /ng/roles/client
+    defaults: { _controller: RenovateMainBundle:Roles:getClientRolesNg}
+    
+renovate_ng_roles_simple:
+    path: /ng/roles/simple
+    defaults: { _controller: RenovateMainBundle:Roles:getSimpleRolesNg}
+    
+renovate_ng_roles_privileges:
+    path: /ng/roles/privileges
+    defaults: { _controller: RenovateMainBundle:Roles:getPrivilegesRolesNg}
+    
+renovate_tariffs:
+    path: /tariffs
+    defaults: { _controller: RenovateMainBundle:Tariffs:index}
+    
+renovate_tariffs_panel:
+    path: /tariffs/panel
+    defaults: { _controller: RenovateMainBundle:Tariffs:showPanel}
+    
+renovate_ng_tariffs:
+    path: /ng/tariffs
+    defaults: { _controller: RenovateMainBundle:Tariffs:getTariffsNg}
+    
+renovate_ng_tariffs_count:
+    path: /ng/tariffs/count
+    defaults: { _controller: RenovateMainBundle:Tariffs:getTariffsCountNg}
+    
+renovate_ng_tariffs_private_add:
+    path: /ng/tariffs/private/add
+    defaults: { _controller: RenovateMainBundle:Tariffs:addTariffPrivateNg}
+    
+renovate_ng_tariffs_private_edit:
+    path: /ng/tariffs/private/edit/{tariff_id}
+    defaults: { _controller: RenovateMainBundle:Tariffs:editTariffPrivateNg}
+    
+renovate_ng_tariffs_private_activate:
+    path: /ng/tariffs/private/activate/{tariff_id}
+    defaults: { _controller: RenovateMainBundle:Tariffs:activateTariffPrivateNg}
+    
+renovate_ng_tariffs_public_add:
+    path: /ng/tariffs/public/add
+    defaults: { _controller: RenovateMainBundle:Tariffs:addTariffPublicNg}
+    
+renovate_ng_tariffs_public_edit:
+    path: /ng/tariffs/public/edit/{tariff_id}
+    defaults: { _controller: RenovateMainBundle:Tariffs:editTariffPublicNg}
+    
+renovate_ng_tariffs_remove:
+    path: /ng/tariffs/remove/{tariff_id}
+    defaults: { _controller: RenovateMainBundle:Tariffs:removeTariffNg}
+    
+renovate_documents:
+    path: /documents
+    defaults: { _controller: RenovateMainBundle:Documents:index}
+    
+renovate_ng_documents:
+    path: /ng/documents
+    defaults: { _controller: RenovateMainBundle:Documents:getDocumentsNg}
+    
+renovate_ng_documents_count:
+    path: /ng/documents/count
+    defaults: { _controller: RenovateMainBundle:Documents:getDocumentsCountNg}
+    
+renovate_ng_documents_remove:
+    path: /ng/documents/remove/{document_id}
+    defaults: { _controller: RenovateMainBundle:Documents:removeDocumentNg}
+    
+renovate_documents_upload:
+    path: /documents/upload
+    defaults: { _controller: RenovateMainBundle:Documents:upload}
+    
+renovate_news:
+    path: /news
+    defaults: { _controller: RenovateMainBundle:News:index}
+    
+renovate_news_show_news:
+    path: /news/{news_name_translit}
+    defaults: { _controller: RenovateMainBundle:News:showNews}
+    
+renovate_ng_news:
+    path: /ng/news
+    defaults: { _controller: RenovateMainBundle:News:getNewsNg}
+    
+renovate_ng_news_count:
+    path: /ng/news/count
+    defaults: { _controller: RenovateMainBundle:News:getNewsCountNg}
+    
+renovate_ng_news_add:
+    path: /ng/news/add
+    defaults: { _controller: RenovateMainBundle:News:addNewsNg}
+    
+renovate_ng_news_remove:
+    path: /ng/news/remove/{news_id}
+    defaults: { _controller: RenovateMainBundle:News:removeNewsNg}
+    
+renovate_ng_news_edit:
+    path: /ng/news/edit/{news_id}
+    defaults: { _controller: RenovateMainBundle:News:editNewsNg}
+    
+renovate_results:
+    path: /results
+    defaults: { _controller: RenovateMainBundle:Results:index}
+    
+renovate_results_show_result:
+    path: /results/{result_name_translit}
+    defaults: { _controller: RenovateMainBundle:Results:showResult}
+    
+renovate_ng_results:
+    path: /ng/results
+    defaults: { _controller: RenovateMainBundle:Results:getResultsNg}
+    
+renovate_ng_results_count:
+    path: /ng/results/count
+    defaults: { _controller: RenovateMainBundle:Results:getResultsCountNg}
+    
+renovate_ng_results_add:
+    path: /ng/results/add
+    defaults: { _controller: RenovateMainBundle:Results:addResultNg}
+    
+renovate_ng_results_remove:
+    path: /ng/results/remove/{result_id}
+    defaults: { _controller: RenovateMainBundle:Results:removeResultNg}
+    
+renovate_ng_results_edit:
+    path: /ng/results/edit/{result_id}
+    defaults: { _controller: RenovateMainBundle:Results:editResultNg}
+    
+renovate_articles:
+    path: /articles
+    defaults: { _controller: RenovateMainBundle:Articles:index}
+    
+renovate_articles_show_article:
+    path: /articles/{article_name_translit}
+    defaults: { _controller: RenovateMainBundle:Articles:showArticle}
+
+renovate_get_single_articles:
+    path: /get-single-article
+    defaults: { _controller: RenovateMainBundle:Articles:getSingleArticle }
+
+renovate_ng_articles:
+    path: /ng/articles
+    defaults: { _controller: RenovateMainBundle:Articles:getArticlesNg}
+    
+renovate_ng_articles_count:
+    path: /ng/articles/count
+    defaults: { _controller: RenovateMainBundle:Articles:getArticlesCountNg}
+    
+renovate_ng_articles_add:
+    path: /ng/articles/add
+    defaults: { _controller: RenovateMainBundle:Articles:addArticleNg}
+    
+renovate_ng_articles_remove:
+    path: /ng/articles/remove/{article_id}
+    defaults: { _controller: RenovateMainBundle:Articles:removeArticleNg}
+    
+renovate_ng_articles_edit:
+    path: /ng/articles/edit/{article_id}
+    defaults: { _controller: RenovateMainBundle:Articles:editArticleNg}
+    
+renovate_shares:
+    path: /shares
+    defaults: { _controller: RenovateMainBundle:Shares:index}
+    
+renovate_shares_show_share:
+    path: /shares/{share_name_translit}
+    defaults: { _controller: RenovateMainBundle:Shares:showShare}
+    
+renovate_ng_shares:
+    path: /ng/shares
+    defaults: { _controller: RenovateMainBundle:Shares:getSharesNg}
+    
+renovate_ng_shares_count:
+    path: /ng/shares/count
+    defaults: { _controller: RenovateMainBundle:Shares:getSharesCountNg}
+    
+renovate_ng_shares_add:
+    path: /ng/shares/add
+    defaults: { _controller: RenovateMainBundle:Shares:addShareNg}
+    
+renovate_ng_shares_remove:
+    path: /ng/shares/remove/{share_id}
+    defaults: { _controller: RenovateMainBundle:Shares:removeShareNg}
+    
+renovate_ng_shares_edit:
+    path: /ng/shares/edit/{share_id}
+    defaults: { _controller: RenovateMainBundle:Shares:editShareNg}
+    
+renovate_partners:
+    path: /partners
+    defaults: { _controller: RenovateMainBundle:Partners:index}
+    
+renovate_ng_partners:
+    path: /ng/partners
+    defaults: { _controller: RenovateMainBundle:Partners:getPartnersNg}
+    
+renovate_ng_partners_count:
+    path: /ng/partners/count
+    defaults: { _controller: RenovateMainBundle:Partners:getPartnersCountNg}
+    
+renovate_ng_partners_add:
+    path: /ng/partners/add
+    defaults: { _controller: RenovateMainBundle:Partners:addPartnerNg}
+    
+renovate_ng_partners_remove:
+    path: /ng/partners/remove/{partner_id}
+    defaults: { _controller: RenovateMainBundle:Partners:removePartnerNg}
+    
+renovate_ng_partners_edit:
+    path: /ng/partners/edit/{partner_id}
+    defaults: { _controller: RenovateMainBundle:Partners:editPartnerNg}
+    
+renovate_repairs:
+    path: /repairs
+    defaults: { _controller: RenovateMainBundle:Repairs:index}
+    
+renovate_ng_repairs:
+    path: /ng/repairs
+    defaults: { _controller: RenovateMainBundle:Repairs:getRepairsNg}
+    
+renovate_ng_repairs_count:
+    path: /ng/repairs/count
+    defaults: { _controller: RenovateMainBundle:Repairs:getRepairsCountNg}
+    
+renovate_ng_repairs_paid_set:
+    path: /ng/repairs/paid/set
+    defaults: { _controller: RenovateMainBundle:Repairs:setRepairsPaidNg}
+    
+renovate_ng_repairs_add:
+    path: /ng/repairs/add
+    defaults: { _controller: RenovateMainBundle:Repairs:addRepairNg}
+    
+renovate_ng_repairs_remove:
+    path: /ng/repairs/remove/{repair_id}
+    defaults: { _controller: RenovateMainBundle:Repairs:removeRepairNg}
+    
+renovate_ng_repairs_edit:
+    path: /ng/repairs/edit/{repair_id}
+    defaults: { _controller: RenovateMainBundle:Repairs:editRepairNg}
+    
+renovate_services:
+    path: /services
+    defaults: { _controller: RenovateMainBundle:Services:index}
+    
+renovate_ng_services:
+    path: /ng/services
+    defaults: { _controller: RenovateMainBundle:Services:getServicesNg}
+    
+renovate_ng_services_calculator:
+    path: /ng/services/calculator
+    defaults: { _controller: RenovateMainBundle:Services:getServicesCalculatorNg}
+    
+renovate_ng_services_count:
+    path: /ng/services/count
+    defaults: { _controller: RenovateMainBundle:Services:getServicesCountNg}
+    
+renovate_ng_services_add:
+    path: /ng/services/add
+    defaults: { _controller: RenovateMainBundle:Services:addServiceNg}
+    
+renovate_ng_services_edit:
+    path: /ng/services/edit/{service_id}
+    defaults: { _controller: RenovateMainBundle:Services:editServiceNg}
+    
+renovate_ng_services_remove:
+    path: /ng/services/remove/{service_id}
+    defaults: { _controller: RenovateMainBundle:Services:removeServiceNg}
+    
+renovate_ng_service_categories_all:
+    path: /ng/service-categories/all
+    defaults: { _controller: RenovateMainBundle:ServiceCategories:getServiceCategoriesAllNg}
+    
+renovate_search:
+    path: /search
+    defaults: { _controller: RenovateMainBundle:Search:index}
+    
+renovate_pages:
+    path: /pages
+    defaults: { _controller: RenovateMainBundle:Pages:index}
+    
+renovate_ng_pages:
+    path: /ng/pages
+    defaults: { _controller: RenovateMainBundle:Pages:getPagesNg}
+    
+renovate_ng_pages_count:
+    path: /ng/pages/count
+    defaults: { _controller: RenovateMainBundle:Pages:getPagesCountNg}
+    
+renovate_ng_pages_add:
+    path: /ng/pages/add
+    defaults: { _controller: RenovateMainBundle:Pages:addPageNg}
+    
+renovate_ng_pages_edit:
+    path: /ng/pages/edit/{page_id}
+    defaults: { _controller: RenovateMainBundle:Pages:editPageNg}
+    
+renovate_ng_pages_remove:
+    path: /ng/pages/remove/{page_id}
+    defaults: { _controller: RenovateMainBundle:Pages:removePageNg}
+    
+renovate_vacancies:
+    path: /vacancies
+    defaults: { _controller: RenovateMainBundle:Vacancies:index}
+    
+renovate_vacancies_show_vacancy:
+    path: /vacancies/{vacancy_name_translit}
+    defaults: { _controller: RenovateMainBundle:Vacancies:showVacancy}
+    
+renovate_ng_vacancies:
+    path: /ng/vacancies
+    defaults: { _controller: RenovateMainBundle:Vacancies:getVacanciesNg}
+    
+renovate_ng_vacancies_count:
+    path: /ng/vacancies/count
+    defaults: { _controller: RenovateMainBundle:Vacancies:getVacanciesCountNg}
+    
+renovate_ng_vacancies_add:
+    path: /ng/vacancies/add
+    defaults: { _controller: RenovateMainBundle:Vacancies:addVacancyNg}
+    
+renovate_ng_vacancies_remove:
+    path: /ng/vacancies/remove/{vacancy_id}
+    defaults: { _controller: RenovateMainBundle:Vacancies:removeVacancyNg}
+    
+renovate_ng_vacancies_edit:
+    path: /ng/vacancies/edit/{vacancy_id}
+    defaults: { _controller: RenovateMainBundle:Vacancies:editVacancyNg}
+    
+renovate_prices:
+    path: /prices
+    defaults: { _controller: RenovateMainBundle:Prices:index}
+    
+renovate_ng_prices:
+    path: /ng/prices
+    defaults: { _controller: RenovateMainBundle:Prices:getPricesNg}
+    
+renovate_ng_prices_count:
+    path: /ng/prices/count
+    defaults: { _controller: RenovateMainBundle:Prices:getPricesCountNg}
+    
+renovate_ng_prices_add:
+    path: /ng/prices/add
+    defaults: { _controller: RenovateMainBundle:Prices:addPriceNg}
+    
+renovate_ng_prices_remove:
+    path: /ng/prices/remove/{price_id}
+    defaults: { _controller: RenovateMainBundle:Prices:removePriceNg}
+    
+renovate_ng_prices_edit:
+    path: /ng/prices/edit/{price_id}
+    defaults: { _controller: RenovateMainBundle:Prices:editPriceNg}
+    
+renovate_tasks:
+    path: /tasks
+    defaults: { _controller: RenovateMainBundle:Tasks:index}
+    
+renovate_ng_tasks:
+    path: /ng/tasks
+    defaults: { _controller: RenovateMainBundle:Tasks:getTasksNg}
+    
+renovate_ng_tasks_count:
+    path: /ng/tasks/count
+    defaults: { _controller: RenovateMainBundle:Tasks:getTasksCountNg}
+    
+renovate_ng_tasks_add:
+    path: /ng/tasks/add
+    defaults: { _controller: RenovateMainBundle:Tasks:addTaskNg}
+    
+renovate_ng_tasks_remove:
+    path: /ng/tasks/remove/{task_id}
+    defaults: { _controller: RenovateMainBundle:Tasks:removeTaskNg}
+    
+renovate_ng_tasks_edit:
+    path: /ng/tasks/edit/{task_id}
+    defaults: { _controller: RenovateMainBundle:Tasks:editTaskNg}
+    
+renovate_ng_tasks_finish:
+    path: /ng/tasks/finish/{task_id}
+    defaults: { _controller: RenovateMainBundle:Tasks:finishTaskNg}
+    
+renovate_ng_tasks_approve:
+    path: /ng/tasks/approve/{task_id}
+    defaults: { _controller: RenovateMainBundle:Tasks:approveTaskNg}
+    
+renovate_ng_tasks_decline:
+    path: /ng/tasks/decline/{task_id}
+    defaults: { _controller: RenovateMainBundle:Tasks:declineTaskNg}
+    
+renovate_ng_price_categories_all:
+    path: /ng/price-categories/all
+    defaults: { _controller: RenovateMainBundle:PriceCategories:getPriceCategoriesAllNg}
+    
+renovate_ng_price_categories_add:
+    path: /ng/price-categories/add
+    defaults: { _controller: RenovateMainBundle:PriceCategories:addPriceCategoryNg}
+    
+renovate_ng_price_categories_edit:
+    path: /ng/price-categories/edit/{priceCategory_id}
+    defaults: { _controller: RenovateMainBundle:PriceCategories:editPriceCategoryNg}
+    
+renovate_ng_price_categories_remove:
+    path: /ng/price-categories/remove/{priceCategory_id}
+    defaults: { _controller: RenovateMainBundle:PriceCategories:removePriceCategoryNg}
+    
+renovate_payments:
+    path: /payments
+    defaults: { _controller: RenovateMainBundle:Payments:index}
+    
+renovate_payments_import:
+    path: /payments/import
+    defaults: { _controller: RenovateMainBundle:Payments:import}
+    
+renovate_ng_payments_my:
+    path: /ng/payments/my
+    defaults: { _controller: RenovateMainBundle:Payments:getMyPaymentsNg}
+    
+renovate_ng_payments_my_count:
+    path: /ng/payments/my/count
+    defaults: { _controller: RenovateMainBundle:Payments:getMyPaymentsCountNg}   
+
+renovate_ng_payments_user:
+    path: /ng/payments/{user_id}
+    defaults: { _controller: RenovateMainBundle:Payments:getUserPaymentsNg}
+    
+renovate_ng_payments_user_count:
+    path: /ng/payments/{user_id}/count
+    defaults: { _controller: RenovateMainBundle:Payments:getUserPaymentsCountNg}
+    
+renovate_estimations:
+    path: /estimations
+    defaults: { _controller: RenovateMainBundle:Estimations:index}
+    
+renovate_estimations_show:
+    path: /estimations/show/{estimation_id}
+    defaults: { _controller: RenovateMainBundle:Estimations:showEstimation}
+    
+renovate_estimations_csv:
+    path: /estimations/csv/{estimation_id}
+    defaults: { _controller: RenovateMainBundle:Estimations:csvEstimation}
+    
+renovate_ng_estimations:
+    path: /ng/estimations
+    defaults: { _controller: RenovateMainBundle:Estimations:getEstimationsNg}
+    
+renovate_ng_estimations_save:
+    path: /ng/estimations/save
+    defaults: { _controller: RenovateMainBundle:Estimations:saveEstimationNg}
+    
+renovate_ng_estimations_count:
+    path: /ng/estimations/count
+    defaults: { _controller: RenovateMainBundle:Estimations:getEstimationsCountNg}
+    
+renovate_ng_estimations_get:
+    path: /ng/estimations/{estimation_id}
+    defaults: { _controller: RenovateMainBundle:Estimations:getEstimationNg}
+    
+renovate_ng_estimations_remove:
+    path: /ng/estimations/remove/{estimation_id}
+    defaults: { _controller: RenovateMainBundle:Estimations:removeEstimationNg}
+    
+renovate_ng_estimations_copy:
+    path: /ng/estimations/copy/{estimation_id}
+    defaults: { _controller: RenovateMainBundle:Estimations:copyEstimationNg}
+    
+renovate_ng_cost_categories:
+    path: /ng/cost-categories
+    defaults: { _controller: RenovateMainBundle:CostCategories:getCostCategoriesNg}
+    
+renovate_ng_cost_categories_add:
+    path: /ng/cost-categories/add
+    defaults: { _controller: RenovateMainBundle:CostCategories:addCostCategoryNg}
+    
+renovate_ng_cost_categories_remove:
+    path: /ng/cost-categories/remove/{costCategory_id}
+    defaults: { _controller: RenovateMainBundle:CostCategories:removeCostCategoryNg}
+    
+renovate_ng_cost_categories_edit:
+    path: /ng/cost-categories/edit/{costCategory_id}
+    defaults: { _controller: RenovateMainBundle:CostCategories:editCostCategoryNg}
+    
+renovate_ng_costs_add:
+    path: /ng/costs/add
+    defaults: { _controller: RenovateMainBundle:Costs:addCostNg}
+    
+renovate_ng_costs_edit:
+    path: /ng/costs/edit/{cost_id}
+    defaults: { _controller: RenovateMainBundle:Costs:editCostNg}
+    
+renovate_ng_costs_remove:
+    path: /ng/costs/remove/{cost_id}
+    defaults: { _controller: RenovateMainBundle:Costs:removeCostNg}
+    
+renovate_ng_costs_filter:
+    path: /ng/costs/filter
+    defaults: { _controller: RenovateMainBundle:Costs:filterCostNg}
+    
+renovate_ng_estimation_costs_add:
+    path: /ng/estimation-costs/add
+    defaults: { _controller: RenovateMainBundle:EstimationCosts:addEstimationCostNg}
+    
+renovate_ng_estimation_costs_remove:
+    path: /ng/estimation-costs/remove/{estimationCost_id}
+    defaults: { _controller: RenovateMainBundle:EstimationCosts:removeEstimationCostNg}
+    
+renovate_ng_estimation_costs_edit:
+    path: /ng/estimation-costs/edit/{estimationCost_id}
+    defaults: { _controller: RenovateMainBundle:EstimationCosts:editEstimationCostNg}
+
+renovate_projects:
+    path: /projects
+    defaults: { _controller: RenovateMainBundle:Projects:index}
+
+renovate_projects_report:
+    path: /projects/report/{project_id}
+    defaults: { _controller: RenovateMainBundle:Projects:report}
+
+renovate_projects_report_full:
+    path: /projects/reportfull/{project_id}
+    defaults: { _controller: RenovateMainBundle:Projects:reportFull}
+
+renovate_ng_projects:
+    path: /ng/projects
+    defaults: { _controller: RenovateMainBundle:Projects:getProjectsNg}
+
+renovate_ng_projects_count:
+    path: /ng/projects/count
+    defaults: { _controller: RenovateMainBundle:Projects:getProjectsCountNg}
+
+renovate_ng_projects_add:
+    path: /ng/projects/add
+    defaults: { _controller: RenovateMainBundle:Projects:addProjectNg}
+
+renovate_ng_projects_edit:
+    path: /ng/projects/edit/{project_id}
+    defaults: { _controller: RenovateMainBundle:Projects:editProjectNg}
+
+renovate_ng_projects_remove:
+    path: /ng/projects/remove/{project_id}
+    defaults: { _controller: RenovateMainBundle:Projects:removeProjectNg}
+
+renovate_ng_events:
+    path: /ng/events
+    defaults: { _controller: RenovateMainBundle:Events:getEventsNg}
+
+renovate_ng_events_edit:
+    path: /ng/events/edit/{event_id}
+    defaults: { _controller: RenovateMainBundle:Events:editEventNg}
+
+renovate_ng_events_add:
+    path: /ng/events/add
+    defaults: { _controller: RenovateMainBundle:Events:addEventNg}
+
+renovate_ng_events_remove:
+    path: /ng/events/remove/{event_id}
+    defaults: { _controller: RenovateMainBundle:Events:removeEventNg}
+
+renovate_portfolio:
+    path: /portfolio
+    defaults: { _controller: RenovateMainBundle:Portfolio:portfolio }
+
+renovate_add_new_portfolio:
+    path: /portfolio/add
+    defaults: { _controller: RenovateMainBundle:Portfolio:addNewPortfolio }
+
+renovate_change_homepage:
+    path: /portfolio/{portfolio_id}
+    defaults: { _controller: RenovateMainBundle:Portfolio:changeHomepage }
+    requirements:
+        portfolio_id: \d+

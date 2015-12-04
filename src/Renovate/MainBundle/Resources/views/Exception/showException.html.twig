@@ -1,0 +1,35 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Помилка{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		{% if exception.getStatusCode() == 404 %}
+		<div class="jumbotron bg-danger">
+		  <h1>Помилка(404)</h1>
+		  <p><em>Вказаний ресурс не знайдено!</em></p> 
+		  <p><strong>Будь-ласка перевірте введену адресу!</strong></p>
+		</div>
+		{% elseif exception.getStatusCode() == 403 %}
+		<div class="jumbotron bg-danger">
+		  <h1>Доступ заборонений(403)</h1>
+		</div>
+		{% elseif exception.getStatusCode() == 500 %}
+		<div class="jumbotron bg-danger">
+		  <h1>Помилка(500)</h1>
+		  <p><em>Зупинка обробки даних сервером!</em></p>
+		  <p><strong>Будь-ласка користуйтеся навігацією ресурсу для запобігання виникнення подібних проблем!</strong></p>
+		</div>
+		{% else %}
+		<div class="jumbotron bg-danger">
+		  <h1>Помилка({{exception.getStatusCode()}})</h1>
+		  <p><em>Невідома помилка!</em></p>
+		</div>
+		{% endif %}
+		{% if app.user and is_granted('ROLE_ADMIN') %}
+		<div class="alert alert-danger" role="alert">{{exception.getMessage()}}</div>
+		{% endif %}
+	</div>
+</div>
+{% endblock %} 

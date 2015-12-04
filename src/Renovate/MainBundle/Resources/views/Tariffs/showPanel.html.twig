@@ -1,0 +1,404 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Тарифи компанії{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" style="margin: 60px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div class="row" ng-controller="TariffsPanelController">
+                <div class="col-md-12">
+                    <button class="btn btn-default" ng-class="{active: publicTariffsColapsed}" ng-click="publicTariffsColapsed = !publicTariffsColapsed">Види тарифів</button>
+                    <hr>
+                    <div collapse="publicTariffsColapsed">
+                        <div class="well well-lg">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button ng-click="addTariffPublic()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover table-mobile">
+                                        <thead>
+                                        <tr>
+                                            <th style="background-color: #F5F5F5;">#</th>
+                                            <th style="background-color: #F5F5F5;">Назва</th>
+                                            <th style="background-color: #F5F5F5;">Знижка, %</th>
+                                            <th style="background-color: #F5F5F5;">Сторінка</th>
+                                            <th style="background-color: #F5F5F5;">Створено</th>
+                                            <th style="background-color: #F5F5F5;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr class="splash" ng-cloak>
+                                            <td colspan="8">
+                                                <div class="image center-block"></div>
+                                            </td>
+                                        </tr>
+                                        <tr ng-repeat="tariff in tariffs" ng-cloak>
+                                            <th style="background-color: #F5F5F5;" scope="row">[[$index+1]]</th>
+                                            <td>[[tariff.name]]</td>
+                                            <td>[[tariff.discount]]</td>
+                                            <td>[[tariff.page]]</td>
+                                            <td>[[tariff.created | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                            <td>{% if is_granted('ROLE_ADMIN') %}<button ng-click="removeTariffPublic(tariff)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button>{% endif %}<button ng-click="editTariffPublic(tariff)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button class="btn btn-default" ng-class="{active: activatingTariffsColapsed}" ng-click="activatingTariffsColapsed = !activatingTariffsColapsed">Тарифи клієнтів</button>
+                    <hr>
+                    <div collapse="activatingTariffsColapsed">
+                        <div class="well well-lg">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form class="form-inline">
+                                        <div class="form-group">
+                                            <label for="itemsPerPage">На сторінці</label>
+                                            <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                                <option>10</option>
+                                                <option>25</option>
+                                                <option>50</option>
+                                                <option>100</option>
+                                                <option>500</option>
+                                                <option>1000</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="clients">Клієнти</label>
+                                            <select id="clients" ng-options="client.id as (client.surname+' '+client.name+'('+client.username+')') for client in clients" class="form-control" ng-model="filter.userid">
+                                                <option value="">усі</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group datepicker">
+                                            <div class="input-group">
+                                                <input placeholder="Від" id="from" ng-click="openFrom($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.from" is-open="openedFrom" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні" />
+                                                <div class="input-group-addon" ng-click="openFrom($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group datepicker">
+                                            <div class="input-group">
+                                                <input placeholder="До" id="to" ng-click="openTo($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.to" is-open="openedTo" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні"/>
+                                                <div class="input-group-addon" ng-click="openTo($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="radio-inline">
+                                                <input ng-model="filter.active" type="radio" name="inlineRadioOptions" id="inlineRadio1"> усі
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input ng-model="filter.active" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1"> активні
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input ng-model="filter.active" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0"> не активні
+                                            </label>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover table-mobile">
+                                        <thead>
+                                        <tr>
+                                            <th style="background-color: #F5F5F5;">#</th>
+                                            <th style="background-color: #F5F5F5;">Клієнт</th>
+                                            <th style="background-color: #F5F5F5;">Назва</th>
+                                            <th style="background-color: #F5F5F5;">Ціна, грн/1 М<sup><small>2</small></sup></th>
+                                            <th style="background-color: #F5F5F5;">Площа, М<sup><small>2</small></sup></th>
+                                            <th style="background-color: #F5F5F5;">Щомісячний платіж, грн</th>
+                                            <th style="background-color: #F5F5F5;">Знижка, %</th>
+                                            <th style="background-color: #F5F5F5;">Знижка, грн</th>
+                                            <th style="background-color: #F5F5F5;">До сплати, грн</th>
+                                            <th style="background-color: #F5F5F5;">Активний</th>
+                                            <th style="background-color: #F5F5F5;">Створено</th>
+                                            <th style="background-color: #F5F5F5;">Активований</th>
+                                            <th style="background-color: #F5F5F5;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr class="splash" ng-cloak>
+                                            <td colspan="8">
+                                                <div class="image center-block"></div>
+                                            </td>
+                                        </tr>
+                                        <tr ng-repeat="tariff in tariffsPrivate" ng-cloak>
+                                            <th style="background-color: #F5F5F5;" scope="row">[[$index+1]]</th>
+                                            <td><cite title="[[tariff.user.name + ' ' + tariff.user.surname]]">[[tariff.user.username]]</cite></td>
+                                            <td>[[tariff.name]]</td>
+                                            <td>[[tariff.tariffPrices[0].value]]</td>
+                                            <td>[[tariff.squaring]]</td>
+                                            <td>[[tariff.payment]]</td>
+                                            <td>[[tariff.discount]]</td>
+                                            <td>[[((tariff.tariffPrices[0].value*tariff.squaring)*(tariff.discount/100)).toFixed(2)]]</td>
+                                            <td>[[((tariff.tariffPrices[0].value*tariff.squaring)*((100-tariff.discount)/100)).toFixed(2)]]</td>
+                                            <td><span ng-show="tariff.active" class="label label-success"><span class="glyphicon glyphicon-ok-sign"></span></span><span ng-show="!tariff.active" class="label label-danger"><span class="glyphicon glyphicon-exclamation-sign"></span></span></td>
+                                            <td>[[tariff.created | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                            <td><button ng-show="!tariff.active" ng-click="activateTariffPrivate(tariff)" type="button" class="close pull-left"><span class="glyphicon glyphicon-ok-sign"></span></button>[[tariff.activated | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                            <td><button ng-click="removeTariffPrivate(tariff)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button>{% if is_granted('ROLE_ADMIN') %}<button ng-click="editTariffPrivate(tariff)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script type="text/ng-template" id="TariffsPanelAddTariffPublic.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Додати тариф...</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" name="tariffForm">
+                        <div class="form-group" ng-class="{'has-error': tariffForm.tariffName.$invalid && !tariffForm.tariffName.$pristine}">
+                            <label for="tariffName" class="col-sm-2 control-label">Назва</label>
+                            <div class="col-sm-10">
+                                <input ng-model="tariff.name" type="text" class="form-control" id="tariffName" name="tariffName" required>
+                                <p ng-show="tariffForm.tariffName.$invalid && !tariffForm.tariffName.$pristine" class="help-block">Введіть назву.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': tariffForm.tariffDiscount.$invalid && !tariffForm.tariffDiscount.$pristine}">
+                            <label for="tariffDiscount" class="col-sm-2 control-label">Знижка (%)</label>
+                            <div class="col-sm-10">
+                                <input ng-model="tariff.discount" type="number" min="0.001" step="0.001" class="form-control" id="tariffDiscount" name="tariffDiscount" required>
+                                <p ng-show="tariffForm.tariffDiscount.$invalid && !tariffForm.tariffDiscount.$pristine" class="help-block">Введіть знижку.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': tariffForm.tariffPage.$invalid && !tariffForm.tariffPage.$pristine}">
+                            <label for="tariffPage" class="col-sm-2 control-label">Сторінка</label>
+                            <div class="col-sm-10">
+                                <input ng-model="tariff.page" type="text" class="form-control" id="tariffPage" name="tariffPage" required>
+                                <p ng-show="tariffForm.tariffPage.$invalid && !tariffForm.tariffPage.$pristine" class="help-block">Введіть сторінку.</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-12" ng-repeat="servicesList in services">
+                                        <div ng-if="$even" class="panel panel-info">
+                                            <div class="panel-heading">[[servicesList.category]]</div>
+                                            <div class="panel-body">
+                                                <div class="col-sm-12" ng-repeat="service in servicesList.services">
+                                                    <div class="form-group" ng-if="service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input ng-model="tariff.services[service.id].checked" type="checkbox"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" ng-if="!service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input type="checkbox" ng-model="tariff.services[service.id].checked" ng-init="checkbox1=tariff.services[service.id].checked" ng-click="checkbox1=!checkbox1"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                        <label class="radio-inline" ng-repeat="option in service.options" ng-init="tariff.services[service.id].value == null">
+                                                            <input type="radio" name="[[service.name]][[service.id]]" id="[[option.value]]" value="[[option.id]]" ng-model="tariff.services[service.id].optionid" ng-disabled="!checkbox1"> [[option.name]]
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-12" ng-repeat="servicesList in services">
+                                        <div ng-if="$odd" class="panel panel-info">
+                                            <div class="panel-heading">[[servicesList.category]]</div>
+                                            <div class="panel-body">
+                                                <div class="col-sm-12" ng-repeat="service in servicesList.services">
+                                                    <div class="form-group" ng-if="service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input ng-model="tariff.services[service.id].checked" type="checkbox"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" ng-if="!service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input type="checkbox" ng-model="tariff.services[service.id].checked" ng-init="checkbox1=tariff.services[service.id].checked" ng-click="checkbox1=!checkbox1"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                        <label class="radio-inline" ng-repeat="option in service.options" ng-init="tariff.services[service.id].value == null">
+                                                            <input type="radio" name="[[service.name]][[service.id]]" id="[[option.value]]" value="[[option.id]]" ng-model="tariff.services[service.id].optionid" ng-disabled="!checkbox1"> [[option.name]]
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <ul class="list-unstyled text-right">
+                            <li ng-repeat="price in prices"><h4>[[price.name]] - <span class="label label-success">[[price.price]] грн</span></h4></li>
+                        </ul>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()" ng-disabled="tariffForm.$invalid">Зберегти</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                </div>
+            </script>
+            <script type="text/ng-template" id="TariffsPanelEditTariffPublic.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Редагувати тариф...</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" name="tariffForm">
+                        <div class="form-group" ng-class="{'has-error': tariffForm.tariffName.$invalid && !tariffForm.tariffName.$pristine}">
+                            <label for="tariffName" class="col-sm-2 control-label">Назва</label>
+                            <div class="col-sm-10">
+                                <input ng-model="tariff.name" type="text" class="form-control" id="tariffName" name="tariffName" required>
+                                <p ng-show="tariffForm.tariffName.$invalid && !tariffForm.tariffName.$pristine" class="help-block">Введіть назву.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': tariffForm.tariffDiscount.$invalid && !tariffForm.tariffDiscount.$pristine}">
+                            <label for="tariffDiscount" class="col-sm-2 control-label">Знижка (%)</label>
+                            <div class="col-sm-10">
+                                <input ng-model="tariff.discount" type="number" min="0.001" step="0.001" class="form-control" id="tariffDiscount" name="tariffDiscount" required>
+                                <p ng-show="tariffForm.tariffDiscount.$invalid && !tariffForm.tariffDiscount.$pristine" class="help-block">Введіть знижку.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': tariffForm.tariffPage.$invalid && !tariffForm.tariffPage.$pristine}">
+                            <label for="tariffPage" class="col-sm-2 control-label">Сторінка</label>
+                            <div class="col-sm-10">
+                                <input ng-model="tariff.page" type="text" class="form-control" id="tariffPage" name="tariffPage" required>
+                                <p ng-show="tariffForm.tariffPage.$invalid && !tariffForm.tariffPage.$pristine" class="help-block">Введіть сторінку.</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-12" ng-repeat="servicesList in services">
+                                        <div ng-if="$even" class="panel panel-info">
+                                            <div class="panel-heading">[[servicesList.category]]</div>
+                                            <div class="panel-body">
+                                                <div class="col-sm-12" ng-repeat="service in servicesList.services">
+                                                    <div class="form-group" ng-if="service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input ng-model="tariff.services[service.id].checked" type="checkbox"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" ng-if="!service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input type="checkbox" ng-model="tariff.services[service.id].checked" ng-init="checkbox1=tariff.services[service.id].checked" ng-click="checkbox1=!checkbox1"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                        <label class="radio-inline" ng-repeat="option in service.options" ng-init="tariff.services[service.id].value == null">
+                                                            <input type="radio" name="[[service.name]][[service.id]]" id="[[option.value]]" value="[[option.id]]" ng-model="tariff.services[service.id].optionid" ng-disabled="!checkbox1"> [[option.name]]
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-12" ng-repeat="servicesList in services">
+                                        <div ng-if="$odd" class="panel panel-info">
+                                            <div class="panel-heading">[[servicesList.category]]</div>
+                                            <div class="panel-body">
+                                                <div class="col-sm-12" ng-repeat="service in servicesList.services">
+                                                    <div class="form-group" ng-if="service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input ng-model="tariff.services[service.id].checked" type="checkbox"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group" ng-if="!service.logical">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input type="checkbox" ng-model="tariff.services[service.id].checked" ng-init="checkbox1=tariff.services[service.id].checked" ng-click="checkbox1=!checkbox1"> [[service.name]]
+                                                            </label>
+                                                        </div>
+                                                        <label class="radio-inline" ng-repeat="option in service.options" ng-init="tariff.services[service.id].value == null">
+                                                            <input type="radio" name="[[service.name]][[service.id]]" id="[[option.value]]" value="[[option.id]]" ng-model="tariff.services[service.id].optionid" ng-disabled="!checkbox1"> [[option.name]]
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <ul class="list-unstyled text-right">
+                            <li ng-repeat="price in prices"><h4>[[price.name]] - <span class="label label-success">[[price.price]] грн</span></h4></li>
+                        </ul>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()" ng-disabled="tariffForm.$invalid">Зберегти</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                </div>
+            </script>
+            <script type="text/ng-template" id="TariffsPanelEditTariffPrivate.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Редагувати тариф...</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" name="tariffForm">
+
+                        <div class="form-group" ng-class="{'has-error': tariffForm.tariffDiscount.$invalid && !tariffForm.tariffDiscount.$pristine}">
+                            <label for="tariffDiscount" class="col-sm-2 control-label">Знижка (%)</label>
+                            <div class="col-sm-10">
+                                <input ng-model="tariff.discount" type="number" min="0.001" step="0.001" class="form-control" id="tariffDiscount" name="tariffDiscount" required>
+                                <p ng-show="tariffForm.tariffDiscount.$invalid && !tariffForm.tariffDiscount.$pristine" class="help-block">Введіть знижку.</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()" ng-disabled="tariffForm.$invalid">Зберегти</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                </div>
+            </script>
+        </aside>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/angularTariffsController.js') }}"></script>
+{% endblock %}

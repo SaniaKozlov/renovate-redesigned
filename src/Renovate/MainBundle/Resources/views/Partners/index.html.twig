@@ -1,0 +1,187 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Менеджмент партнерів{% endblock %}
+
+{% block head %}
+    <link href="{{ asset('bundles/renovate/css/uploadify.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <section class="news-desc" style="margin: 60px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div ng-controller="PartnersController">
+                <div class="row">
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>
+                                <div class="col-sm-3">
+                                    <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                        <option>100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="col-md-4">
+                            <button ng-click="addPartner()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-hover table-mobile">
+                            <thead>
+                            <tr>
+                                <th style="background-color: #fff;">#</th>
+                                <th style="background-color: #fff;">Назва</th>
+                                <th style="background-color: #fff;">Обкладинка</th>
+                                <th style="background-color: #fff;">Посилання</th>
+                                <th style="background-color: #fff;">На головній</th>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                {% endif %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="splash" ng-cloak>
+                                <td colspan="6">
+                                    <div class="image center-block"></div>
+                                </td>
+                            </tr>
+                            <tr ng-repeat="partner in partners" ng-cloak>
+                                <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                <td>[[partner.name]]</td>
+                                <td>[[partner.document.name]]</td>
+                                <td>[[partner.url]]</td>
+                                <td><span ng-show="partner.onhomepage" class="label label-success"><span class="glyphicon glyphicon-home"></span></span><span ng-show="!partner.onhomepage" class="label label-danger"><span class="glyphicon glyphicon-home"></span></span></td>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <td><button ng-click="removePartner(partner)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editPartner(partner)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                {% endif %}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <script type="text/ng-template" id="addPartner.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Додати партнера...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="partnerForm">
+                            <div class="form-group" ng-class="{ 'has-error' : partnerForm.partnerName.$invalid && !partnerForm.partnerName.$pristine }">
+                                <label for="partnerName" class="col-sm-2 control-label">Назва</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="partner.name" type="text" class="form-control has-error" id="partnerName" name="partnerName" required>
+                                    <p ng-show="partnerForm.partnerName.$invalid && !partnerForm.partnerName.$pristine" class="help-block">Введіть назву.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : partnerForm.partnerUrl.$invalid && !partnerForm.partnerUrl.$pristine }">
+                                <label for="partnerUrl" class="col-sm-2 control-label">Посилання</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="partner.url" type="text" class="form-control" id="partnerUrl" name="partnerUrl" required>
+                                    <p ng-show="partnerForm.partnerUrl.$invalid && !partnerForm.partnerUrl.$pristine" class="help-block">Введіть посилання.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': partnerForm.partnerDocument.$invalid && !partnerForm.partnerDocument.$pristine}">
+                                <label for="partnerDocument" class="col-sm-2 control-label">Обкладинка</label>
+                                <div class="col-sm-10">
+                                    <select ng-options="document.id as document.name for document in documents" class="form-control" id="partnerDocument" ng-model="partner.documentid" name="partnerDocument" required>
+                                    </select>
+                                    <p ng-show="partnerForm.partnerDocument.$invalid && !partnerForm.partnerDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                                    <input type="file" name="file_upload" id="file_upload" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="partner.onhomepage" ng-init="partner.onhomepage=false"> Показувати на головній
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="partnerForm.$invalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+                <script type="text/ng-template" id="editPartner.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Редагування партнера...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="partnerForm">
+                            <div class="form-group" ng-class="{ 'has-error' : partnerForm.partnerName.$invalid && !partnerForm.partnerName.$pristine }">
+                                <label for="partnerName" class="col-sm-2 control-label">Назва</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="partner.name" type="text" class="form-control has-error" id="partnerName" name="partnerName" required>
+                                    <p ng-show="partnerForm.partnerName.$invalid && !partnerForm.partnerName.$pristine" class="help-block">Введіть назву.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{ 'has-error' : partnerForm.partnerUrl.$invalid && !partnerForm.partnerUrl.$pristine }">
+                                <label for="partnerUrl" class="col-sm-2 control-label">Посилання</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="partner.url" type="text" class="form-control" id="partnerUrl" name="partnerUrl" required>
+                                    <p ng-show="partnerForm.partnerUrl.$invalid && !partnerForm.partnerUrl.$pristine" class="help-block">Введіть посилання.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': partnerForm.partnerDocument.$invalid && !partnerForm.partnerDocument.$pristine}">
+                                <label for="partnerDocument" class="col-sm-2 control-label">Обкладинка</label>
+                                <div class="col-sm-10">
+                                    <select ng-options="document.id as document.name for document in documents" class="form-control" id="partnerDocument" ng-model="partner.documentid" name="partnerDocument" required>
+                                    </select>
+                                    <p ng-show="partnerForm.partnerDocument.$invalid && !partnerForm.partnerDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                                    <input type="file" name="file_upload" id="file_upload" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="partner.onhomepage"> Показувати на головній
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="partnerForm.$invalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+            </div>
+        </aside>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/jquery.uploadify.min.js') }}"></script>
+    <script>
+        var TIMESTAMP = '{{ timestamp }}';
+        var TOKEN = '{{ token }}';
+    </script>
+{% endblock %}

@@ -1,0 +1,11 @@
+parameters:
+#    renovate_main.example.class: Renovate\MainBundle\Example
+
+services:
+    renovate.transliterater:
+        class: Renovate\MainBundle\Services\Transliterater
+        
+    renovate.pages:
+        class: Renovate\MainBundle\Services\Pages
+        arguments: 
+            - @doctrine.orm.entity_manager

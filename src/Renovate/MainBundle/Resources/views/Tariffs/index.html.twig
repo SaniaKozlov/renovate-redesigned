@@ -1,0 +1,240 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}Калькулятор тарифів{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" style="margin-top: 30px;">
+
+        <h1 class="textshadowblue">Калькулятор тарифів</h1>
+
+        <div style="margin-top: 50px;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tariffs center-block" ng-controller="TariffsController" ng-cloak>
+                        <div class="splash" ng-cloak>
+                            <div class="image center-block"></div>
+                        </div>
+                        <div class="header">
+                            <div class="gen">ТАБЛИЦЯ ТАРИФІВ</div>
+                            <div class="min uppercase">[[tariffs[2].name]]<span ng-show="tariffs[2].edited">+</span></div>
+                            <div class="mid uppercase">[[tariffs[1].name]]<span ng-show="tariffs[1].edited">+</span></div>
+                            <div class="max uppercase">[[tariffs[0].name]]<span ng-show="tariffs[0].edited">+</span></div>
+                        </div>
+                        <div class="row-1">
+                            <div class="col-1">ВИБІР КОНТРАКТУ</div>
+                            <div class="col-2"><p>[[(tariffs[2].squaring*tariffs[2].price).toFixed(2)]] ГРН</p><span>В МІСЯЦЬ</span></div>
+                            <div class="col-3"><p>[[(tariffs[1].squaring*tariffs[1].price).toFixed(2)]] ГРН</p><span>В МІСЯЦЬ</span></div>
+                            <div class="col-4"><p>[[(tariffs[0].squaring*tariffs[0].price).toFixed(2)]] ГРН</p><span>В МІСЯЦЬ</span></div>
+                        </div>
+                        <div class="row-2">
+                            <div class="col-1">
+                                <div class="col-11"><a href="" ng-class="{active: currentClientRole.id == '5'}" ng-click="currentClientRole=clientRoles[0]">Для ОСББ</a></div>
+                                <div class="col-12"><a href="" ng-class="{active: currentClientRole.id == '6'}" ng-click="currentClientRole=clientRoles[1]">Для багатоквартирних будинків</a></div>
+                            </div>
+                            <div class="col-2"><button ng-click="activateTariff(tariffs[2])">АКТИВУВАТИ</button></div>
+                            <div class="col-3"><button ng-click="activateTariff(tariffs[1])">АКТИВУВАТИ</button></div>
+                            <div class="col-4"><button ng-click="activateTariff(tariffs[0])">АКТИВУВАТИ</button></div>
+                        </div>
+                        <div class="row-3">
+                            <div class="col-1">
+                                <div class="col-11"><a href="" ng-class="{active: currentClientRole.id == '7'}" ng-click="currentClientRole=clientRoles[2]">Для приватних будинків</a></div>
+                                <div class="col-12"><a href="" ng-class="{active: currentClientRole.id == '8'}" ng-click="currentClientRole=clientRoles[3]">Для приватних установ</a></div>
+                            </div>
+                            <div class="col-2">Прорахувати для <input type="number" ng-model="tariffs[2].squaring" min="1"/> М<sup><small>2</small></sup></div>
+                            <div class="col-3">Прорахувати для <input type="number" ng-model="tariffs[1].squaring" min="1"/> М<sup><small>2</small></sup></div>
+                            <div class="col-4">Прорахувати для <input type="number" ng-model="tariffs[0].squaring" min="1"/> М<sup><small>2</small></sup></div>
+                        </div>
+                        <div class="row-4">
+                            <div class="col-1"><a href="" ng-class="{active: currentClientRole.id == '9'}" ng-click="currentClientRole=clientRoles[4]">Для державних установ</a></div>
+                            <div class="col-2">Знижка <p>[[((tariffs[2].squaring*tariffs[2].price)*(tariffs[2].discount/100)).toFixed(2)]] грн</p></div>
+                            <div class="col-3">Знижка <p>[[((tariffs[1].squaring*tariffs[1].price)*(tariffs[1].discount/100)).toFixed(2)]] грн</p></div>
+                            <div class="col-4">Знижка <p>[[((tariffs[0].squaring*tariffs[0].price)*(tariffs[0].discount/100)).toFixed(2)]] грн</p></div>
+                        </div>
+                        <div class="row-5">
+                            <div class="col-1">&nbsp;</div>
+                            <div class="col-2"><a href="" ng-click="editTariff(tariffs[2])">Додати послуги</a></div>
+                            <div class="col-3"><a href="" ng-click="editTariff(tariffs[1])">Додати послуги</a></div>
+                            <div class="col-4"><a href="" ng-click="editTariff(tariffs[0])">Додати послуги</a></div>
+                        </div>
+                        <div class="row-6">
+                            <div class="col-1">&nbsp;</div>
+                            <div class="col-2"><a href="[[tariffs[2].page]]">Детальніше про тариф</a></div>
+                            <div class="col-3"><a href="[[tariffs[1].page]]">Детальніше про тариф</a></div>
+                            <div class="col-4"><a href="[[tariffs[0].page]]">Детальніше про тариф</a></div>
+                        </div>
+                        <div class="row-7">
+                            <div class="col-1">&nbsp;</div>
+                            <div class="col-2">&nbsp;</div>
+                            <div class="col-3">&nbsp;</div>
+                            <div class="col-4">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <script type="text/ng-template" id="TariffsEditTariff.html">
+        <div class="modal-header">
+            <h4 class="modal-title text-center">Калькулятор розрахунку тарифу</h4>
+            <h4 class="modal-title text-center">"[[tariff.name]]"<span ng-show="tariff.edited">+</span></h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal" name="tariffForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-12" ng-repeat="servicesList in services">
+                                <div ng-if="$even" class="panel panel-info">
+                                    <div class="panel-heading">[[servicesList.category]]</div>
+                                    <div class="panel-body">
+                                        <div class="col-sm-12" ng-repeat="service in servicesList.services">
+                                            <div class="form-group" ng-if="service.logical">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input ng-model="tariff.services[service.id].checked" type="checkbox" ng-disabled="tariff.services[service.id].fixed"> [[service.name]]
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-if="!service.logical">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" ng-model="tariff.services[service.id].checked" ng-init="checkbox1=tariff.services[service.id].checked" ng-click="checkbox1=!checkbox1" ng-disabled="tariff.services[service.id].fixed"> [[service.name]]
+                                                    </label>
+                                                </div>
+                                                <label class="radio-inline" ng-repeat="option in service.options" ng-init="tariff.services[service.id].value == null">
+                                                    <input type="radio" name="[[service.name]][[service.id]]" id="[[option.value]]" value="[[option.id]]" ng-model="tariff.services[service.id].optionid" ng-disabled="!checkbox1 || option.fixed == true"> [[option.name]]
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-12" ng-repeat="servicesList in services">
+                                <div ng-if="$odd" class="panel panel-info">
+                                    <div class="panel-heading">[[servicesList.category]]</div>
+                                    <div class="panel-body">
+                                        <div class="col-sm-12" ng-repeat="service in servicesList.services">
+                                            <div class="form-group" ng-if="service.logical">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input ng-model="tariff.services[service.id].checked" type="checkbox" ng-disabled="tariff.services[service.id].fixed"> [[service.name]]
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-if="!service.logical">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" ng-model="tariff.services[service.id].checked" ng-init="checkbox1=tariff.services[service.id].checked" ng-click="checkbox1=!checkbox1" ng-disabled="tariff.services[service.id].fixed"> [[service.name]]
+                                                    </label>
+                                                </div>
+                                                <label class="radio-inline" ng-repeat="option in service.options" ng-init="tariff.services[service.id].value == null">
+                                                    <input type="radio" name="[[service.name]][[service.id]]" id="[[option.value]]" value="[[option.id]]" ng-model="tariff.services[service.id].optionid" ng-disabled="!checkbox1 || option.fixed == true"> [[option.name]]
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">Результати</div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="tariffPrice" class="col-sm-7 control-label">Ціна тарифу</label>
+                                    <div class="col-sm-3">
+                                        <input ng-model="tariff.price" type="text" class="form-control" id="tariffPrice" name="tariffPrice" disabled>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p class="form-control-static">ГРН</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tariffPayment" class="col-sm-7 control-label">Щомісячний платіж</label>
+                                    <div class="col-sm-3">
+                                        <input ng-model="tariff.payment" type="text" class="form-control" id="tariffPayment" name="tariffPayment" disabled>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p class="form-control-static">ГРН</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tariffSaving" class="col-sm-7 control-label">Знижка</label>
+                                    <div class="col-sm-3">
+                                        <input ng-model="tariff.saving" type="text" class="form-control" id="tariffSaving" name="tariffSaving" disabled>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p class="form-control-static">ГРН</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()" ng-disabled="tariffForm.$invalid">Зберегти</button>
+            <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="TariffsActivateTariff.html">
+        <div class="modal-header">
+            <h4 class="modal-title text-center">Активація тарифу</h4>
+            <h4 class="modal-title text-center">"[[tariff.name]]"<span ng-show="tariff.edited">+</span></h4>
+        </div>
+        <div class="modal-body text-center" ng-show="infoMessage">
+            <h2 class="text-danger"><strong>Нажаль активація тарифу не доступна!</strong></h2>
+            <h3 class="text-info" ng-show="infoMessage==1">Ви не є зареєстровані в системі компанії RENOVATE.</h3>
+            <h3 class="text-info" ng-show="infoMessage==2">Ви не є клієнтом компанії RENOVATE.</h3>
+            <h3 class="text-info" ng-show="infoMessage==3">Активація доступна тільки для: <strong>[[currentClientRole.name]]</strong>.</h3>
+            <h3 class="text-info" ng-show="infoMessage==4">Ваш тариф вже активований і очікує на підтвердження.</h3>
+            <h4 class="text-success"><em>Будь-ласка зв`яжіться з нашим офісом.</em></h4>
+        </div>
+        <div class="modal-body text-center" ng-show="!infoMessage">
+            <h2 class="text-info">Ви дійсно бажаєте активувати тариф?</h2>
+            <h4 class="text-danger"><strong><em>Ваш запит буде надіслано до офісу компанії RENOVATE.</em></strong></h4>
+        </div>
+        <div class="modal-footer" ng-show="infoMessage">
+            <button class="btn btn-primary" ng-click="ok()">Гаразд</button>
+        </div>
+        <div class="modal-footer" ng-show="!infoMessage">
+            <button class="btn btn-danger" ng-click="activate()">Активувати</button>
+            <button class="btn btn-success" ng-click="cancel()">Відміна</button>
+        </div>
+    </script>
+    {% endblock %}
+
+    {% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/angularTariffsController.js') }}"></script>
+{% endblock %}

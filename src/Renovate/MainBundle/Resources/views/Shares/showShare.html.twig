@@ -1,0 +1,96 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}{{share.name}}{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% else %}
+        <meta name="description" content="{{share.description | striptags | slice(0, 300)}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+{% endblock %}
+
+{% block social %}<meta name="og:image" content="{{asset(share.document.path)}}"/>{% endblock %}
+
+{% block content %}
+
+
+    <section class="news-desc hidden-xs hidden-sm">
+        <aside style="width: 80%; margin-right: 0% !important;">
+
+            <h1 class="textshadowblue" style="margin-top: 20px; width: 580px; line-height: 1.5;">{{ share.name }}</h1>
+
+            <article style="padding-bottom: 60px; background: none;">
+
+                <div style="padding-top: 0; position: absolute;">
+                    <img width="220px" src="{{asset(share.document.path)}}" alt="{{share.name}}"/>
+                </div>
+
+                <div class="summary">
+                    {{share.description | raw}}
+                </div>
+
+            </article>
+
+        </aside>
+    </section>
+
+    <div style="margin-left: 2%;" class="visible-xs visible-sm">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1 class="textshadowblue" style="margin-top: 20px;">{{ share.name }}</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <img width="220px" src="{{asset(share.document.path)}}" alt="{{share.name}}"/>
+            </div>
+            <div class="col-xs-12">{{share.description | raw}}</div>
+        </div>
+    </div>
+
+    {#<div class="row">#}
+        {#<div class="col-md-2" style="margin-top: 5px;">#}
+            {#<!-- VK -->#}
+            {#<div id="vk_like" class="vk" content-title="{{share.getName()}}"></div>#}
+        {#</div>#}
+        {#<div class="col-md-2" style="margin-top: 5px;">#}
+            {#<!-- FB -->#}
+            {#<div class="fb-share-button" data-href="{{ app.request.uri }}" data-layout="button_count"></div>#}
+        {#</div>#}
+    {#</div>#}
+    {#<div class="row">#}
+        {#<div class="col-md-12">#}
+            {#<h2>{{share.name}}</h2>#}
+            {#<p>{{share.created|date("d.m.Y H:i")}}</p>#}
+            {#<hr>#}
+        {#</div>#}
+    {#</div>#}
+    {#<div class="row">#}
+        {#<div class="col-md-12">#}
+            {#<div class="data-content">#}
+                {#<div class="col-md-4">#}
+                    {#<img src="{{asset(share.document.path)}}" alt="{{share.name}}" class="img-thumbnail">#}
+                {#</div>#}
+                {#<div class="text-justify">{{share.description | raw}}</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
+{% endblock %}

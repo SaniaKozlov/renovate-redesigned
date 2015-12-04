@@ -1,0 +1,174 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}{{article.name}}{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% else %}
+        <meta name="description" content="{{article.description | striptags | slice(0, 300)}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    <link href="{{ asset('bundles/renovate/css/uploadify.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+    <script src="{{ asset('bundles/renovate/plugins/ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
+{% block social %}<meta name="og:image" content="{{asset(article.document.path)}}"/>{% endblock %}
+
+{% block content %}
+
+    <div ng-controller="ArticlesController">
+
+        <div ng-init="getSingleArticle('{{ article.id }}')"></div>
+
+        {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+            <section class="news-desc hidden-xs hidden-sm">
+                <aside style="width: 95%; margin-right: 0% !important;">
+                    {#<button ng-click="removeArticle(singleArticle)" type="button" class="close">#}
+                        {#<span class="glyphicon glyphicon-remove"></span>#}
+                    {#</button>#}
+                    <button ng-click="editArticle(singleArticle)" type="button" class="close">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button>
+                </aside>
+            </section>
+        {% endif %}
+
+
+        <section class="news-desc hidden-xs hidden-sm">
+            <aside style="width: 95%; margin-right: 0% !important;">
+
+                <h1 class="textshadowblue" style="margin-top: 20px; line-height: 1.5;">[[ singleArticle.name ]]</h1>
+
+                <div style="float: left; margin: 0 25px 1px 0;">
+                    <img width="400px" ng-src="[[ '/' + singleArticle.document.url ]]" alt="[[ singleArticle.name ]]" style="box-shadow: 0 5px 20px rgba(65,65,88,0.4); border-radius: 10px;">
+                </div>
+
+                <div class="summary" style="padding: 0 !important;" ng-bind-html="singleArticle.description"></div>
+
+            </aside>
+        </section>
+
+        <div style="margin-left: 2%;" class="visible-xs visible-sm">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1 class="textshadowblue" style="margin-top: 20px;">[[ singleArticle.name ]]</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <img width="220px" ng-src="[[ '/' + singleArticle.document.url ]]" alt="[[ singleArticle.name ]]"/>
+                </div>
+                <div class="col-xs-12" ng-bind-html="singleArticle.description"></div>
+            </div>
+        </div>
+
+
+        <script type="text/ng-template" id="editArticle.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Редагування статті...</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="articleForm">
+                    <div class="form-group" ng-class="{'has-error': articleForm.articleName.$invalid && !articleForm.articleName.$pristine}">
+                        <label for="articleName" class="col-sm-2 control-label">Назва</label>
+                        <div class="col-sm-10">
+                            <input ng-model="article.name" type="text" class="form-control" id="articleName" name="articleName" required>
+                            <p ng-show="articleForm.articleName.$invalid && !articleForm.articleName.$pristine" class="help-block">Введіть назву.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': articleForm.articleDocument.$invalid && !articleForm.articleDocument.$pristine}">
+                        <label for="articleDocument" class="col-sm-2 control-label">Обкладинка</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="articleDocument" ng-model="article.documentid" name="articleDocument" required>
+                            </select>
+                            <p ng-show="articleForm.articleDocument.$invalid && !articlebForm.articleDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                            <input type="file" name="file_upload" id="file_upload" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': articleForm.articleLabel.$invalid && !articleForm.articleLabel.$pristine}">
+                        <label for="articleLabel" class="col-sm-2 control-label">Ярлик</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="articleLabel" ng-model="article.labelid" name="articleLabel">
+                            </select>
+                            <p ng-show="articleForm.articleLabel.$invalid && !articleForm.articleLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': articleForm.articleDescription.$invalid && !articleForm.articleDescription.$pristine}">
+                        <label for="articleDescription" class="col-sm-2 control-label">Опис</label>
+                        <div class="col-sm-10">
+                            <textarea ng-model="article.description" id="articleDescription" class="form-control" rows="5" name="articleDescription" required></textarea>
+                            <p ng-show="articleForm.articleDescription.$invalid && !articleForm.articleDescription.$pristine" class="help-block">Введіть опис.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="article.onhomepage"> Показувати на головній
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="ok()" ng-disabled="articleForm.$invalid">Зберегти</button>
+                <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+            </div>
+        </script>
+    </div>
+
+
+    {#<div class="row">#}
+        {#<div class="col-md-2" style="margin-top: 5px;">#}
+            {#<!-- VK -->#}
+            {#<div id="vk_like" class="vk" content-title="{{article.getName()}}"></div>#}
+        {#</div>#}
+        {#<div class="col-md-2" style="margin-top: 5px;">#}
+            {#<!-- FB -->#}
+            {#<div class="fb-share-button" data-href="{{ app.request.uri }}" data-layout="button_count"></div>#}
+        {#</div>#}
+    {#</div>#}
+    {#<div class="row">#}
+        {#<div class="col-md-12">#}
+            {#<h2>{{article.name}}</h2>#}
+            {#<p>{{article.created|date("d.m.Y H:i")}}</p>#}
+            {#<hr>#}
+        {#</div>#}
+    {#</div>#}
+    {#<div class="row">#}
+        {#<div class="col-md-12">#}
+            {#<div class="data-content">#}
+                {#<div class="col-md-4">#}
+                    {#<img src="{{asset(article.document.path)}}" alt="{{article.name}}" class="img-thumbnail">#}
+                {#</div>#}
+                {#<div class="text-justify">{{article.description | raw}}</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/jquery.uploadify.min.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/angularArticlesController.js') }}"></script>
+    <script>
+        var TIMESTAMP = '{{ timestamp }}';
+        var TOKEN = '{{ token }}';
+
+        {#var ARTICLE = {{ article.getInArray() }};#}
+    </script>
+    <script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
+{% endblock %}

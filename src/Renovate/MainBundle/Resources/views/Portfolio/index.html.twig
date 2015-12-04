@@ -1,0 +1,52 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Портфоліо{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" style="margin: 65px 0 30px;">
+        <aside style="width: 95%; margin-right: 0 !important;">
+
+            <h1 class="textshadowblue" style="margin-top: 3px; display: inline-block">Портфоліо</h1>
+            <a style="cursor: pointer; margin-left: 20px;">
+                <i data-toggle="modal" data-target="#add_new_portfolio" style="font-size: 2.5em; color: green;" class="fa fa-plus"></i>
+            </a>
+
+            {% if portfolios | length != 0 %}
+                <table class="table">
+                    <thead>
+
+                    <tr>
+                        <th style="background-color: #fff !important;">#</th>
+                        <th style="background-color: #fff !important;">Ім’я</th>
+                        <th style="background-color: #fff !important;">Показувати на головній</th>
+                    </tr>
+
+                    </thead>
+                    <tbody>
+                    {% for portfolio in portfolios %}
+                        <form name="{{ 'form' ~ portfolio.id }}" action="{{ path('renovate_change_homepage', {'portfolio_id': portfolio.id}) }}" method="post">
+                            <tr>
+                                <td style="width: 300px;">
+                                    <img src="{{ asset('') }}bundles/renovate/documents/portfolios/{{ portfolio.image }}" style="width: 100%; height: 150px; object-fit: cover;">
+                                </td>
+                                <td>{{ portfolio.image }}</td>
+                                <td style="width: 150px;">
+                                    <input style="cursor: pointer;" type="checkbox" name="showOnHome" onclick="{{ 'form' ~ portfolio.id }}.submit()" {% if portfolio.showOnHomePage %} checked {% endif %}>
+                                </td>
+                            </tr>
+                        </form>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            {% else %}
+                <div style="font-size: 2em; margin: 30px 0; color: #151F70;">У вас поки що немає портфоліо!!!</div>
+            {% endif %}
+
+        </aside>
+    </section>
+
+    {% include "@RenovateMain/Portfolio/addPortfolio.html.twig" %}
+
+{% endblock %}

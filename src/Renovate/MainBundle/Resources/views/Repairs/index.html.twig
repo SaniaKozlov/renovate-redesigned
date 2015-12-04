@@ -1,0 +1,222 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Ремонтні роботи{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" style="margin: 65px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div ng-controller="RepairsController">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="itemsPerPage">На сторінці</label>
+                                <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                    <option>500</option>
+                                    <option>1000</option>
+                                </select>
+                            </div>
+                            {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                <div class="form-group">
+                                    <label for="workers">Робітники</label>
+                                    <select id="workers" ng-options="worker.id as (worker.name+' '+worker.surname+'('+worker.username+')') for worker in workers" class="form-control" ng-model="filter.userid">
+                                        <option value="">усі</option>
+                                    </select>
+                                </div>
+                            {% endif %}
+                            <div class="form-group datepicker">
+                                <div class="input-group">
+                                    <input placeholder="Від" id="from" ng-click="openFrom($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.from" is-open="openedFrom" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні" />
+                                    <div class="input-group-addon" ng-click="openFrom($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                </div>
+                            </div>
+                            <div class="form-group datepicker">
+                                <div class="input-group">
+                                    <input placeholder="До" id="to" ng-click="openTo($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.to" is-open="openedTo" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні"/>
+                                    <div class="input-group-addon" ng-click="openTo($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="radio-inline">
+                                    <input ng-model="filter.paid" type="radio" name="inlineRadioOptions" id="inlineRadio1"> усі
+                                </label>
+                                <label class="radio-inline">
+                                    <input ng-model="filter.paid" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1"> розраховані
+                                </label>
+                                <label class="radio-inline">
+                                    <input ng-model="filter.paid" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0"> не розраховані
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                        <div class="col-md-12" style="margin-top: 20px;">
+                            <button ng-click="addRepair()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                            <button ng-show="repairsSelectedIds.length > 0" ng-click="setPaid(true)" type="button" class="btn btn-gray">Розраховано&nbsp;<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span></button>
+                            <button ng-show="repairsSelectedIds.length > 0" ng-click="setPaid(false)" type="button" class="btn btn-green">Не розраховано&nbsp;<span class="glyphicon glyphicon-usd" aria-hidden="true"></span></button>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-hover table-mobile" ng-class="{repairs: isAdmin}">
+                            <thead>
+                            <tr class="info">
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <th><input type="checkbox" ng-checked="repairsSelectedAll" ng-click="repairsSelectAll()"> Усі</th>
+                                {% endif %}
+                                <th>#</th>
+                                <th>Опис</th>
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <th>Робітник</th>
+                                {% endif %}
+                                <th>Дата</th>
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <th>Внесено</th>
+                                {% endif %}
+                                <th>Ціна</th>
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <th><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                {% endif %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="splash" ng-cloak>
+                                <td colspan="7">
+                                    <div class="image center-block"></div>
+                                </td>
+                            </tr>
+                            <tr ng-click="selectItem(repair.id)" ng-class="{red: !repair.paid && repair.price < 0, green: !repair.paid && repair.price > 0, gray: repair.paid}" ng-repeat="repair in repairs" ng-cloak>
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <th><input type="checkbox" ng-checked="isSelected(repair.id)"></th>
+                                {% endif %}
+                                <th scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                <td>[[repair.description]]</td>
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <td><cite title="[[repair.user.name + ' ' + repair.user.surname]]">[[repair.user.username]]</cite></td>
+                                {% endif %}
+                                <td>[[repair.created | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <td><cite title="[[repair.user.name + ' ' + repair.user.surname]]">[[repair.user.username]]</cite></td>
+                                {% endif %}
+                                <td class="price">[[repair.price]]</td>
+                                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                    <td><button ng-click="removeRepair(repair, $event)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editRepair(repair, $event)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                {% endif %}
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr class="danger">
+                                <th ng-show="isAdmin"></th>
+                                <td><strong>#</strong></td>
+                                <td colspan="[[isAdmin ? '4' : '2']]"><strong>Загальна сума</strong></td>
+                                <td colspan="2" class="price">[[totalPrice]] грн.</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                    <script type="text/ng-template" id="addRepair.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Додати ремонтні роботи...</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="repairForm">
+                                <div class="form-group" ng-class="{ 'has-error' : repairForm.repairDescription.$invalid && !repairForm.repairDescription.$pristine }">
+                                    <label for="repairDescription" class="col-sm-2 control-label">Опис</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="repair.description" type="text" class="form-control has-error" id="repairDescription" name="repairDescription" required>
+                                        <p ng-show="repairForm.repairDescription.$invalid && !repairForm.repairDescription.$pristine" class="help-block">Введіть опис.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{ 'has-error' : repairForm.repairPrice.$invalid && !repairForm.repairPrice.$pristine }">
+                                    <label for="repairPrice" class="col-sm-2 control-label">Ціна</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="repair.price" type="number" class="form-control" id="repairPrice" name="repairPrice" required>
+                                        <p ng-show="repairForm.repairPrice.$invalid && !repairForm.repairPrice.$pristine" class="help-block">Введіть ціну.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': repairForm.repairWorker.$invalid && !repairForm.repairWorker.$pristine}">
+                                    <label for="repairWorker" class="col-sm-2 control-label">Робітник</label>
+                                    <div class="col-sm-10">
+                                        <select ng-options="worker.id as (worker.name+' '+worker.surname+'('+worker.username+')') for worker in workers" class="form-control" id="repairWorker" ng-model="repair.userid" name="repairWorker" required>
+                                        </select>
+                                        <p ng-show="repairForm.repairWorker.$invalid && !repairForm.repairWorker.$pristine" class="help-block">Оберіть робітника.</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()" ng-disabled="repairForm.$invalid">Зберегти</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                        </div>
+                    </script>
+                    <script type="text/ng-template" id="editRepair.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Редагування ромонтних робіт...</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" name="repairForm">
+                                <div class="form-group" ng-class="{ 'has-error' : repairForm.repairDescription.$invalid && !repairForm.repairDescription.$pristine }">
+                                    <label for="repairDescription" class="col-sm-2 control-label">Опис</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="repair.description" type="text" class="form-control has-error" id="repairDescription" name="repairDescription" required>
+                                        <p ng-show="repairForm.repairDescription.$invalid && !repairForm.repairDescription.$pristine" class="help-block">Введіть опис.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{ 'has-error' : repairForm.repairPrice.$invalid && !repairForm.repairPrice.$pristine }">
+                                    <label for="repairPrice" class="col-sm-2 control-label">Ціна</label>
+                                    <div class="col-sm-10">
+                                        <input ng-model="repair.price" type="number" class="form-control" id="repairPrice" name="repairPrice" required>
+                                        <p ng-show="repairForm.repairPrice.$invalid && !repairForm.repairPrice.$pristine" class="help-block">Введіть ціну.</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': repairForm.repairWorker.$invalid && !repairForm.repairWorker.$pristine}">
+                                    <label for="repairWorker" class="col-sm-2 control-label">Робітник</label>
+                                    <div class="col-sm-10">
+                                        <select ng-options="worker.id as (worker.name+' '+worker.surname+'('+worker.username+')') for worker in workers" class="form-control" id="repairWorker" ng-model="repair.userid" name="repairWorker" required>
+                                        </select>
+                                        <p ng-show="repairForm.repairWorker.$invalid && !repairForm.repairWorker.$pristine" class="help-block">Оберіть робітника.</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()" ng-disabled="repairForm.$invalid">Зберегти</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                        </div>
+                    </script>
+                {% endif %}
+            </div>
+        </aside>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/angularRepairsController.js') }}"></script>
+{% endblock %}

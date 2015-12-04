@@ -1,0 +1,1 @@
+VK.Widgets.Group("vk_groups", {mode: 0, width: "auto", height: "200", color1: 'FDFDFD', color2: '2B587A', color3: '5B7FA6'}, 86396472);

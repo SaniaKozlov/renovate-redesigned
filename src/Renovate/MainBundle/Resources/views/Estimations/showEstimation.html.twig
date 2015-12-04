@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ua">
+  <head>
+  	<style>
+  		table {
+  			font-family: "Times New Roman", Times, serif;
+  			border-collapse: collapse;
+  			border-left: 1px solid black;
+  			width: 1000px;
+  			margin: 0 auto;
+  			font-size: 12px;
+  		}
+  		
+  		table.estimation{
+  			border: 0;
+  		}
+  		
+  		table.estimation td {
+  			border-right: 0;
+  		}
+  		
+  		table.estimation td.contract {
+  			width: 14%;
+  			text-align: left;
+  			padding-bottom: 20px;
+  		}
+  		
+  		td,th {
+  			padding-left: 5px;
+  			padding-right: 5px;
+  			border-right: 1px solid black;
+  			border-bottom: 1px solid black;
+  		}
+  		
+  		td.thick {
+  			width: 233px;
+  		}
+  		
+  		th.thin {
+  			width: 50px;
+  		}
+  		
+  		table.footer {
+  			margin-top: 50px;
+  			border: 0;
+  		}
+  		
+  		table.footer td {
+  			border: 0;
+  		}
+  		table.footer td.signature {
+  			padding-top: 30px;
+  			text-align: center;
+  			width: 30%;
+  		}
+  	</style>
+  </head>
+  <body>
+  	<table class="estimation">
+  		<tbody>
+  			<tr>
+  				<td>&nbsp;</td>
+  				<td class="contract">Додаток <div>до договору <strong>№{{estimation.contractNumber}}</strong></div></td>
+  			</tr>
+  		</tbody>
+  	</table>
+  	<table>
+  		<tbody>
+	        <tr>
+	          <td>Дата: <strong>{{estimation.updated|date("d.m.Y")}}</strong></td>
+	          <td class="thick">Кошторис <strong>№{{estimation.estimationNumber}}</strong></td>
+	        </tr>
+   		</tbody>
+  	</table>
+  	<table>
+  		<tbody>
+	        <tr>
+	        	<td>Замовник: <strong>{{estimation.customer}}</strong></td>
+	        </tr>
+	        <tr>
+	        	<td>Виконавець: <strong>{{estimation.performer}}</strong></td>
+	        </tr>
+	    </tbody>
+	</table>
+	<table>
+  		<tbody>
+	        <tr>
+	        	<td>Вартість робіт: <strong>{{estimation.getWorksAmount()|number_format(2, '.', ' ')}} грн.</strong></td>
+	        	<td>Вартість матеріалів: <strong>{{estimation.getMaterialsAmount()|number_format(2, '.', ' ')}} грн.</strong></td>
+	        	{% if estimation.getDiscount() > 0 %}
+	        	<td>Знижка: <strong>{{estimation.getDiscount()|number_format(2, '.', ' ')}} грн.</strong></td>
+	        	{% endif %}
+	        	<td class="thick">Загальна сума: <strong>{{estimation.getTotalAmount()|number_format(2, '.', ' ')}} грн.</strong></td>
+	        </tr>
+	    </tbody>
+	</table>
+ 	<table>
+ 		<thead>
+	        <tr>
+	          <th class="thin">№</th>
+	          <th>Назва статті витрат</th>
+	          <th class="thin">Од. <div>виміру</div></th>
+	          <th class="thin">Ціна, <div>грн</div></th>
+	          <th class="thin">К-сть</th>
+	          <th class="thin">Сума, <div>грн</div></th>
+	        </tr>
+   		</thead>
+   		{% for category in estimation.getCostCategories() %}
+   		<tbody>
+   			<tr>
+   				<td colspan="6"><strong>{{(category.name == 'works') ? 'Роботи' : 'Матеріали'}}</strong></td>
+          	</tr>
+   			{% for item in category.items %}
+   			<tr>
+   				<th>{{loop.index}}</th>
+   				<td>{{item.getName()}}</td>
+   				<td>{{item.getUnits()}}</td>
+   				<td>{{item.getPrice()|number_format(2, '.', ' ')}}</td>
+   				<td>{{item.getCount()}}</td>
+   				<td>{{item.getTotal()|number_format(2, '.', ' ')}}</td>
+          	</tr>
+          	{% endfor %}
+   		</tbody>
+   		{% endfor %}
+ 	</table>
+ 	<table class="footer">
+ 		<tbody>
+ 			<tr>
+ 				<td>Замовник: {{estimation.customer}}</td>
+ 				<td class="signature">__________________________________<div><em>підпис</em></div></td>
+ 			</tr>
+ 			<tr>
+ 				<td>Від ТОВ "РЕНОВЕЙТ"<div>Вінце Олександр Іванович</div></td>
+ 				<td class="signature">__________________________________<div><em>підпис</em></div></td>
+ 			</tr>
+ 		</tbody>
+ 	</table>
+  </body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ua">
+    <head>
+        <title>ЗВІТ | {{ project.getName() }}</title>
+        <link rel="icon" href="{{ asset('bundles/renovate/images/logo.ico') }}">
+        <style>
+            table.main-info > tbody > tr > td:first-child {
+                font-weight: bold;
+                width: 30%;
+            }
+            table {
+                font-family: "Times New Roman", Times, serif;
+                font-size: 12px;
+                border-collapse: collapse;
+                text-align: left;
+                width: 1000px;
+                margin: 0 auto;
+            }
+            th, td{
+                border: 1px solid black;
+                padding: 5px;
+            }
+            hr {
+                width: 1000px;
+                border: 0;
+                height: 1px;
+                background: #333;
+                background-image: linear-gradient(to right, #ccc, #333, #ccc);
+            }
+        </style>
+    </head>
+    <body>
+        <table class="main-info">
+            <tbody>
+                <tr>
+                    <td>Назва проекту</td>
+                    <td colspan="8">{{ project.getName() }}</td>
+                </tr>
+                <tr>
+                    <td>Передбачений термін, год.</td>
+                    <td colspan="8">{{ project.getTime() }}</td>
+                </tr>
+                <tr>
+                    <td>Статус проекту</td>
+                    <td colspan="8">{{ (project.getFinished())?'Завершено':'Триває' }}</td>
+                </tr>
+                <tr>
+                    <td>Початок проекту</td>
+                    <td colspan="8">{{ report['startProject']|date('Y-m-d H:i') }}</td>
+                </tr>
+                <tr>
+                    <td>Кінець проекту</td>
+                    <td colspan="8">{{ report['endProject']|date('Y-m-d H:i') }}</td>
+                </tr>
+                <tr>
+                    <td>Бюджет проекту, грн.</td>
+                    <td colspan="8">{{ project.getBudget()|number_format(2, '.', ' ') }}</td>
+                </tr>
+                <tr>
+                    <td>Бюджет робітників, грн. (%)</td>
+                    <td colspan="8">{{ report['budgetWorkers']|number_format(2, '.', ' ')~' '~'('~project.getPercentWorkers()~')' }}</td>
+                </tr>
+                <tr>
+                    <td>Бюджет бригадира, грн. (%)</td>
+                    <td colspan="8">{{ report['budgetBrigadier']|number_format(2, '.', ' ')~' '~'('~project.getPercentBrigadier()~')' }}</td>
+                </tr>
+                <tr>
+                    <td>Вартісь робіт за годину, грн.</td>
+                    <td colspan="8">{{ report['hourPrice']|number_format(2, '.', ' ') }}</td>
+                </tr>
+                <tr>
+                    <td>Робочий час, год.</td>
+                    <td>Пн-Пт</td>
+                    <td>{{ report['duration']['time']['working'] }}</td>
+                    <td>Субота</td>
+                    <td>{{ report['duration']['time']['saturdays'] }}</td>
+                    <td>Неділя</td>
+                    <td>{{ report['duration']['time']['sundays'] }}</td>
+                    <td>Разом</td>
+                    <td>{{ report['duration']['time']['total'] }}</td>
+                </tr>
+                <tr>
+                    <td>Овертайм, год.</td>
+                    <td colspan="8">{{ report['overTime'] }}</td>
+                </tr>
+                <tr>
+                    <td>Нараховано бригадиру, грн.</td>
+                    <td colspan="6">{{ report['moneyBrigadier']|number_format(2, '.', ' ') }}</td>
+                    <td>Отримано</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr>
+        <table>
+            <thead>
+            <tr>
+                <th>№</th>
+                <th>П.І.П.</th>
+                <th>Пн-Пт, год.</th>
+                <th>Субота, год.</th>
+                <th>Неділя, год.</th>
+                <th>Разом, год.</th>
+                <th>Нараховано, грн.</th>
+                <th>Отримано</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in report['users'] %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ user['user'].getSurname()~' '~user['user'].getName()~' '~user['user'].getPatronymic() }}</td>
+                    <td>{{ user['working'] }}</td>
+                    <td>{{ user['saturdays'] }}</td>
+                    <td>{{ user['sundays'] }}</td>
+                    <td>{{ user['total'] }}</td>
+                    <td>{{ user['money']|number_format(2, '.', ' ') }}</td>
+                    <td>&nbsp;</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+                <td>&nbsp;</td>
+                <td>РАЗОМ</td>
+                <td>{{ report['duration']['hours']['working'] }}</td>
+                <td>{{ report['duration']['hours']['saturdays'] }}</td>
+                <td>{{ report['duration']['hours']['sundays'] }}</td>
+                <td>{{ report['duration']['hours']['total'] }}</td>
+                <td>{{ report['duration']['hours']['money']|number_format(2, '.', ' ') }}</td>
+                <td>&nbsp;</td>
+            </tr>
+            </tfoot>
+        </table>
+    </body>
+</html>

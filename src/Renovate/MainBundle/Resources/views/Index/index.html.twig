@@ -1,0 +1,612 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}Головна{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+{% endblock %}
+
+{% block content %}
+
+    {#{% for job in jobs %}#}
+        {#<div>#}
+            {#<div class="thumbnail">#}
+                {#<a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">#}
+                    {#{% if job.getLabel() %}#}
+                        {#<img src="{{ asset(job.getLabel().getPath()) }}" alt="{{job.getName()}}">#}
+                    {#{% else %}#}
+                        {#<img src="{{ asset(job.getDocument().getPath()) }}" alt="{{job.getName()}}">#}
+                    {#{% endif %}#}
+                {#</a>#}
+                {#<div class="caption">#}
+                    {#<h4><a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">{{job.getName()}}</a></h4>#}
+                    {#<p>{{job.getDescription() | slice(0, 280) | raw}}</p>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#{% endfor %}#}
+
+    {% for i, job in jobs %}
+
+        <div style="display: none;" ng-init="initJobs('{{ jobs[i].getName() | replace({"'": "\\'"}) }}',
+            '{{ jobs[i].getDescription() | escape | slice(0, 300) | replace({"'": "\\'"}) | raw  }}',
+
+            {% if jobs[i].getLabel() %}
+                '{{ asset(jobs[i].getLabel().getPath()) }}',
+
+            {% else %}
+                '{{ asset(jobs[i].getDocument().getPath()) }}',
+
+            {% endif %}
+            '{{ jobs[i].getNameTranslit() }}')">
+        </div>
+
+    {% endfor %}
+
+    <section ng-init="leftCounter = '{{ jobs | length - 1 }}'; jobLength = '{{ jobs | length - 1 }}'" class="setprosition wow bounceInDown center animated">
+            <span ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item prev">
+
+                <i ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item_bg before hidden-xs"></i>
+
+                <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[filterJobName(modelJob[rightCounter].jobName)]]</span>
+
+                <i ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item_bg after"></i>
+            </span>
+
+            <span ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item next">
+
+                <i ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item_bg before hidden-xs"></i>
+
+                <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[filterJobName(modelJob[leftCounter].jobName)]]</span>
+
+                <i ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item_bg after"></i>
+            </span>
+    </section>
+
+
+    <section class="services">
+        <article class="proposition" id="proposition">
+            <header class="title" style="font-size: 1.5em;">
+                <a href="[[modelJob[centerCounter].jobHref]]">[[modelJob[centerCounter].jobName]]</a>
+            </header>
+            <div style="height: 20px;"></div>
+            <footer class="footer-xs">
+                <p style="text-align: justify; overflow: hidden; height: 64px;" ng-bind-html="modelJob[centerCounter].jobDescription"></p>
+                <a href="[[modelJob[centerCounter].jobHref]]">
+                    <img style="width: 100%; height: 200px;" src="[[modelJob[centerCounter].jobSrc]]" alt=""/>
+                </a>
+            </footer>
+            <i class="proposition-footer-img hidden-xs"></i>
+            {#<div class="proposition__info wow bounceInRight animated">#}
+                {#<a href="[[modelJob[centerCounter].jobHref]]">Детальніше</a>#}
+            {#</div>#}
+        </article>
+
+
+        <div class="bg">
+            <span>/</span>
+        </div>
+
+    </section>
+
+    <div class="clearfix"></div>
+
+    <section class="what-we-do">
+        <div class="container-what-we-do1">
+            <div style="text-align: center; float: left; width: 20%; padding: 60px 0 0; color: #fff;">
+                <div style="font-size: 1.7em; font-weight: bold;">+38 (0312) 444 900</div>
+                <div>(Для стаціонарних телефонів)</div>
+            </div>
+            <div style="float: left; width: 60%; padding: 5px 10px 10px 10px;">
+                <div class="what-we-do-h2">Ми надаємо весь комплекс ремонтно-будівельних послуг</div>
+                <div class="what-we-do-p">Забезпечуємо якісне виконання всіх видів робіт, пов'язаних з ремонтом квартир, будинків, будівель від заміни кранів до спорудження стін. Ми пропонуємо комплексне утримання та обслуговування споруд всіх форм домоволодіння: від приватних будинків до ОСББ та ЖБК.</div>
+            </div>
+            <div style="text-align: center; float: left; width: 20%; padding: 60px 0 0; color: #fff;">
+                <div style="font-size: 1.7em; font-weight: bold;">+38 (095) 3 444 900</div>
+                <div>(Для мобільних телефонів)</div>
+            </div>
+        </div>
+        <div class="container-what-we-do2">
+            <div style="float: left; width: 100%; padding: 10px;">
+                <div class="what-we-do-h2">Ми надаємо весь комплекс послуг</div>
+                <div class="what-we-do-p">Забезпечуємо якісне виконання всіх видів робіт, пов'язаних з ремонтом квартир, будинків, будівель від заміни кранів до спорудження стін. Ми пропонуємо комплексне утримання та обслуговування споруд всіх форм домоволодіння: від приватних будинків до ОСББ та ЖБК.</div>
+            </div>
+            <div style="text-align: center; float: left; width: 50%; padding: 10px; color: #fff;">
+                <div style="font-size: 2em; font-weight: bold;">+38 (0312) 444 900</div>
+                <div>(Для стаціонарних телефонів)</div>
+            </div>
+            <div style="text-align: center; float: left; width: 50%; padding: 10px; color: #fff;">
+                <div style="font-size: 2em; font-weight: bold;">+38 (095) 3 444 900</div>
+                <div>(Для мобільних телефонів)</div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </section>
+
+    <div class="clearfix"></div>
+
+    <section style="padding: 30px 15px" class="visible-xs visible-sm">
+        <h1 class="header2" style="margin-top: 3px;"><a style="color: #010B64;" href="{{ path('renovate_news') }}"> Новини </a></h1>
+
+        <div class="row">
+            <div class="col-xs-12 wow rollIn animated">
+                {% for news in lastNews %}
+                    <article class="news-line">
+                        {% if news.getLabel() %}
+                            <img width="220px" height="135px" src="{{ asset(news.getLabel().getPath()) }}" alt="{{news.getName()}}">
+
+                        {% else %}
+                            <img width="220px" height="135px" src="{{ asset(news.getDocument().getPath()) }}" alt="{{news.getName()}}">
+
+                        {% endif %}
+
+                        <header>
+                            <a href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}"> {{news.getName() | slice(0, 30)}} </a>
+                        </header>
+
+                        <div class="summary">
+                            <p>{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+            <div class="col-xs-12 desc wow bounceInRight animated">
+                {% for news in lastNews1 %}
+                    <article class="news-line">
+                        {% if news.getLabel() %}
+                            <img width="220px" height="135px" src="{{ asset(news.getLabel().getPath()) }}" alt="{{news.getName()}}">
+
+                        {% else %}
+                            <img width="220px" height="135px" src="{{ asset(news.getDocument().getPath()) }}" alt="{{news.getName()}}">
+
+                        {% endif %}
+
+                        <header>
+                            <a href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}"> {{news.getName() | slice(0, 30)}} </a>
+                        </header>
+
+                        <div class="summary">
+                            <p>{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+
+    </section>
+
+    <div class="clearfix"></div>
+
+    <section class="news-desc hidden-xs hidden-sm" style="padding-left: 30px; padding-right: 0;">
+        <h1 class="header2" style="margin-top: 3px"><a style="color: #010B64;" href="{{ path('renovate_news') }}"> Новини </a></h1>
+        <aside class="wow rollIn animated">
+
+            {% for news in lastNews %}
+                <article style="padding-bottom: 70px !important;">
+                    {% if news.getLabel() %}
+                        <img width="220px" height="135px" src="{{ asset(news.getLabel().getPath()) }}" alt="{{news.getName()}}">
+
+                    {% else %}
+                        <img width="220px" height="135px" src="{{ asset(news.getDocument().getPath()) }}" alt="{{news.getName()}}">
+
+                    {% endif %}
+
+                    <header>
+                        <a href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}"> {{news.getName() | slice(0, 30)}} </a>
+                    </header>
+
+                    <div class="summary">
+                        <p>{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>
+                    </div>
+
+                </article>
+            {% endfor %}
+
+        </aside>
+
+        <aside class="desc wow bounceInRight animated">
+
+            {% for news in lastNews1 %}
+                <article style="padding-bottom: 70px !important;">
+                    {% if news.getLabel() %}
+                        <img width="220px" height="135px" src="{{ asset(news.getLabel().getPath()) }}" alt="{{news.getName()}}">
+
+                    {% else %}
+                        <img width="220px" height="135px" src="{{ asset(news.getDocument().getPath()) }}" alt="{{news.getName()}}">
+
+                    {% endif %}
+
+                    <header>
+                        <a href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}"> {{news.getName() | slice(0, 30)}} </a>
+                    </header>
+
+                    <div class="summary">
+                        <p>{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>
+                    </div>
+
+                </article>
+            {% endfor %}
+
+        </aside>
+
+    </section>
+
+    <div class="clearfix"></div>
+    <hr>
+
+    {#{% if shares | length != 0 %}#}
+        {#<section class="portfolio">#}
+            {#<h1 class="h1-portfolio">#}
+                {#<a href="{{ path('renovate_shares') }}" style="color: #010B64">#}
+                    {#Акції#}
+                {#</a>#}
+            {#</h1>#}
+
+            {#{% if shares | length == 1 %}#}
+                {#<div class="wow zoomIn animated" style="width: 370px; margin: 0 auto;">#}
+                    {#<a href="{{ path('renovate_results_show_result', {'result_name_translit': shares[0].nameTranslit}) }}">#}
+                        {#<img class="image-portfolio" src="{{ shares[0].document.path | replace({'web/': ''}) }}">#}
+                    {#</a>#}
+                {#</div>#}
+            {#{% else %}#}
+
+                {#{% for share in shares %}#}
+
+                    {#<div class="portfolio-item wow zoomIn animated">#}
+                        {#<a href="{{ path('renovate_results_show_result', {'result_name_translit': share.nameTranslit}) }}">#}
+                            {#<img class="image-portfolio" src="{{ share.document.path | replace({'web/': ''}) }}">#}
+                        {#</a>#}
+                    {#</div>#}
+
+                {#{% endfor %}#}
+            {#{% endif %}#}
+        {#</section>#}
+
+    {#{% endif %}#}
+
+    {#<div class="clearfix"></div>#}
+    {#<hr>#}
+
+    {% if results | length != 0 %}
+        <section class="portfolio">
+            <h1 class="h1-portfolio">
+                <a href="{{ path('renovate_results') }}" style="color: #010B64">
+                    Наші Роботи
+                </a>
+            </h1>
+
+            {% if results | length == 1 %}
+                <div class="wow zoomIn animated" style="width: 370px; margin: 0 auto;">
+                    <a href="{{ path('renovate_results_show_result', {'result_name_translit': results[0].nameTranslit}) }}">
+                        <img class="image-portfolio" src="{{ results[0].document.path | replace({'web/': ''}) }}">
+                    </a>
+                </div>
+            {% else %}
+
+            {% for result in results %}
+
+                <div class="portfolio-item wow zoomIn animated">
+                    <a href="{{ path('renovate_results_show_result', {'result_name_translit': result.nameTranslit}) }}">
+                        <img class="image-portfolio" src="{{ result.document.path | replace({'web/': ''}) }}">
+                    </a>
+                </div>
+
+            {% endfor %}
+            {% endif %}
+
+            <div class="clearfix"></div>
+        </section>
+    {% endif %}
+
+    <div class="clearfix"></div>
+
+    <section class="subscribe-form">
+        <header>
+            <h1 style="line-height: 1.7;">ЗАЛИШТЕ <span style="color: white;">ЗАЯВКУ</span></h1>
+            <h2 class="sub-header h2-message"><span style="color: white;">просто зараз і</span> Вам зателефонують</h2>
+        </header>
+        <div class="form wow shake animated">
+            <form ng-submit="contactUs()">
+                <input type="text" ng-model="message.pip" placeholder="П.І.П." required>
+
+                <input type="text" ng-model="message.email" placeholder="Ваш номер телефона..." required>
+
+                <select class="form-control" ng-model="message.topic">
+                    <option value="Заявка на реєстрацію">Заявка на реєстрацію</option>
+                    <option value="Подяка">Подяка</option>
+                    <option value="Пропозиція">Пропозиція</option>
+                    <option value="Скарга">Скарга</option>
+                    <option value="Інше">Інше</option>
+                </select>
+
+                <textarea rows="3" ng-model="message.text" placeholder="Текст повідомлення..."></textarea>
+
+                <button class="buttonSubmit" type="submit" ng-class="{disabled: sendButtonDisabled}">Написати</button>
+
+                <div style="margin-top: 20px;">
+                    <alert ng-repeat="alert in alerts" type="[[alert.type]]" close="closeAlert($index)">[[alert.msg]]</alert>
+                </div>
+            </form>
+        </div>
+
+    </section>
+    <div class="clearfix"></div>
+
+
+    <section style="padding: 30px 15px" class="visible-xs visible-sm">
+        <h1 class="header2" style="margin-top: 3px;"><a style="color: #010B64;" href="{{ path('renovate_vacancies') }}"> Вакансії </a></h1>
+
+        <div class="row">
+            <div class="col-xs-12 wow rollIn animated">
+                {% for news in vacancies %}
+                    <article class="news-line">
+                        {% if news.getLabel() %}
+                            <img width="220px" height="135px" src="{{ asset(news.getLabel().getPath()) | replace({'/web': ''}) }}" alt="{{news.getName()}}">
+
+                        {% else %}
+                            <img width="220px" height="135px" src="{{ asset(news.getDocument().getPath()) | replace({'/web': ''}) }}" alt="{{news.getName()}}">
+
+                        {% endif %}
+
+                        <header>
+                            <a href="{{ path('renovate_vacancies_show_vacancy', {vacancy_name_translit:news.getNameTranslit()}) }}"> {{news.getName() | slice(0, 30)}} </a>
+                        </header>
+
+                        <div class="summary">
+                            <p>{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+
+    </section>
+
+    <section class="news-desc hidden-xs hidden-sm" style="padding-left: 30px; padding-right: 0;">
+        <h1 class="header2" style="margin-top: 3px"><a style="color: #010B64;" href="{{ path('renovate_vacancies') }}"> Вакансії </a></h1>
+        <aside class="wow rollIn animated" style="width: 90%;">
+
+            {% for news in vacancies %}
+                <article style="padding-bottom: 70px !important;">
+                    {% if news.getLabel() %}
+                        <img width="220px" height="135px" src="{{ asset(news.getLabel().getPath()) | replace({'/web': ''}) }}" alt="{{news.getName()}}">
+
+                    {% else %}
+                        <img width="220px" height="135px" src="{{ asset(news.getDocument().getPath()) | replace({'/web': ''}) }}" alt="{{news.getName()}}">
+
+                    {% endif %}
+
+                    <header>
+                        <a href="{{ path('renovate_vacancies_show_vacancy', {vacancy_name_translit:news.getNameTranslit()}) }}"> {{news.getName() | slice(0, 30)}} </a>
+                    </header>
+
+                    <div class="summary" style="min-height: 60px;">
+                        <p>{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>
+                    </div>
+
+                </article>
+            {% endfor %}
+
+        </aside>
+
+    </section>
+
+
+
+    {#------------------------------------------------------------#}
+
+
+
+    {#<div class="row less-padding">#}
+        {#<div class="col-md-8">#}
+            {#<div class="results-for">#}
+                {#{% for result in results %}#}
+                    {#<div>#}
+                        {#<a href="{{path('renovate_results_show_result',{result_name_translit:result.getNameTranslit()})}}">#}
+                            {#{% if result.getLabel() %}#}
+                                {#<img src="{{ asset(result.getLabel().getPath()) }}" alt="{{result.getName()}}">#}
+                            {#{% else %}#}
+                                {#<img src="{{ asset(result.getDocument().getPath()) }}" alt="{{result.getName()}}">#}
+                            {#{% endif %}#}
+                        {#</a>#}
+                        {#<div class="description">#}
+                            {#<h3>{{result.getName() | slice(0, 40)}}</h3>#}
+                            {#<p>{{result.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
+                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_results_show_result',{result_name_translit:result.getNameTranslit()})}}">Детальніше</a>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for newsp in news %}#}
+                    {#<div>#}
+                        {#<a href="{{path('renovate_news_show_news',{news_name_translit:newsp.getNameTranslit()})}}">#}
+                            {#{% if newsp.getLabel() %}#}
+                                {#<img src="{{ asset(newsp.getLabel().getPath()) }}" alt="{{newsp.getName()}}">#}
+                            {#{% else %}#}
+                                {#<img src="{{ asset(newsp.getDocument().getPath()) }}" alt="{{newsp.getName()}}">#}
+                            {#{% endif %}#}
+                        {#</a>#}
+                        {#<div class="description">#}
+                            {#<h3>{{newsp.getName() | slice(0, 40)}}</h3>#}
+                            {#<p>{{newsp.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
+                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_news_show_news',{news_name_translit:newsp.getNameTranslit()})}}">Детальніше</a>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for article in articles %}#}
+                    {#<div>#}
+                        {#<a href="{{path('renovate_articles_show_article',{article_name_translit:article.getNameTranslit()})}}">#}
+                            {#{% if article.getLabel() %}#}
+                                {#<img src="{{ asset(article.getLabel().getPath()) }}" alt="{{article.getName()}}">#}
+                            {#{% else %}#}
+                                {#<img src="{{ asset(article.getDocument().getPath()) }}" alt="{{article.getName()}}">#}
+                            {#{% endif %}#}
+                        {#</a>#}
+                        {#<div class="description">#}
+                            {#<h3>{{article.getName() | slice(0, 40)}}</h3>#}
+                            {#<p>{{article.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
+                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_articles_show_article',{article_name_translit:article.getNameTranslit()})}}">Детальніше</a>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for share in shares %}#}
+                    {#<div>#}
+                        {#<a href="{{path('renovate_shares_show_share',{share_name_translit:share.getNameTranslit()})}}">#}
+                            {#{% if share.getLabel() %}#}
+                                {#<img src="{{ asset(share.getLabel().getPath()) }}" alt="{{share.getName()}}">#}
+                            {#{% else %}#}
+                                {#<img src="{{ asset(share.getDocument().getPath()) }}" alt="{{share.getName()}}">#}
+                            {#{% endif %}#}
+                        {#</a>#}
+                        {#<div class="description">#}
+                            {#<h3>{{share.getName() | slice(0, 40)}}</h3>#}
+                            {#<p>{{share.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
+                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_shares_show_share',{share_name_translit:share.getNameTranslit()})}}">Детальніше</a>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for vacancy in vacancies %}#}
+                    {#<div>#}
+                        {#<a href="{{path('renovate_vacancies_show_vacancy',{vacancy_name_translit:vacancy.getNameTranslit()})}}">#}
+                            {#{% if vacancy.getLabel() %}#}
+                                {#<img src="{{ asset(vacancy.getLabel().getPath()) }}" alt="{{vacancy.getName()}}">#}
+                            {#{% else %}#}
+                                {#<img src="{{ asset(vacancy.getDocument().getPath()) }}" alt="{{vacancy.getName()}}">#}
+                            {#{% endif %}#}
+                        {#</a>#}
+                        {#<div class="description">#}
+                            {#<h3>{{vacancy.getName() | slice(0, 40)}}</h3>#}
+                            {#<p>{{vacancy.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
+                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_vacancies_show_vacancy',{vacancy_name_translit:vacancy.getNameTranslit()})}}">Детальніше</a>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#{% endfor %}#}
+            {#</div>#}
+            {#<div class="results-nav">#}
+                {#{% for result in results %}#}
+                    {#<div>#}
+                        {#{% if result.getLabel() %}#}
+                            {#<img src="{{ asset(result.getLabel().getPath()) }}" alt="{{result.getName()}}">#}
+                        {#{% else %}#}
+                            {#<img src="{{ asset(result.getDocument().getPath()) }}" alt="{{result.getName()}}">#}
+                        {#{% endif %}#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for newsp in news %}#}
+                    {#<div>#}
+                        {#{% if newsp.getLabel() %}#}
+                            {#<img src="{{ asset(newsp.getLabel().getPath()) }}" alt="{{newsp.getName()}}">#}
+                        {#{% else %}#}
+                            {#<img src="{{ asset(newsp.getDocument().getPath()) }}" alt="{{newsp.getName()}}">#}
+                        {#{% endif %}#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for article in articles %}#}
+                    {#<div>#}
+                        {#{% if article.getLabel() %}#}
+                            {#<img src="{{ asset(article.getLabel().getPath()) }}" alt="{{article.getName()}}">#}
+                        {#{% else %}#}
+                            {#<img src="{{ asset(article.getDocument().getPath()) }}" alt="{{article.getName()}}">#}
+                        {#{% endif %}#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for share in shares %}#}
+                    {#<div>#}
+                        {#{% if share.getLabel() %}#}
+                            {#<img src="{{ asset(share.getLabel().getPath()) }}" alt="{{share.getName()}}">#}
+                        {#{% else %}#}
+                            {#<img src="{{ asset(share.getDocument().getPath()) }}" alt="{{share.getName()}}">#}
+                        {#{% endif %}#}
+                    {#</div>#}
+                {#{% endfor %}#}
+                {#{% for vacancy in vacancies %}#}
+                    {#<div>#}
+                        {#{% if vacancy.getLabel() %}#}
+                            {#<img src="{{ asset(vacancy.getLabel().getPath()) }}" alt="{{vacancy.getName()}}">#}
+                        {#{% else %}#}
+                            {#<img src="{{ asset(vacancy.getDocument().getPath()) }}" alt="{{vacancy.getName()}}">#}
+                        {#{% endif %}#}
+                    {#</div>#}
+                {#{% endfor %}#}
+            {#</div>#}
+        {#</div>#}
+        {#<div class="col-md-4">#}
+            {#<div id="block-last-news" class="shadowed">#}
+                {#{% for news in lastNews %}#}
+                    {#<div class="media">#}
+                        {#<a class="media-left" href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}">#}
+                            {#{% if news.getLabel() %}#}
+                                {#<img src="{{ asset(news.getLabel().getPath()) }}" alt="{{news.getName()}}">#}
+                            {#{% else %}#}
+                                {#<img src="{{ asset(news.getDocument().getPath()) }}" alt="{{news.getName()}}">#}
+                            {#{% endif %}#}
+                        {#</a>#}
+                        {#<div class="media-body">#}
+                            {#<p class="title"><a href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}">{{news.getName() | slice(0, 30)}}</a></p>#}
+                            {#<p class="description">{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#{% endfor %}#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+
+    {#<div class="row less-padding">#}
+        {#<div class="col-md-8" id="main_video">#}
+            {#{% if page %}#}
+                {#{{ page.content | raw }}#}
+            {#{% endif %}#}
+        {#</div>#}
+        {#<div class="col-md-4">#}
+            {#<div class="fb-like-box" data-href="https://www.facebook.com/renovate.in.ua" data-width="400" data-height="219" data-colorscheme="light" data-show-faces="true" data-header="false" data-stream="false" data-show-border="true"></div>#}
+            {#<div id="vk_groups"></div>#}
+        {#</div>#}
+    {#</div>#}
+    {#<div class="row">#}
+        {#<div class="col-md-12">#}
+            {#<div class="jobs-slider center-block">#}
+                {#{% for job in jobs %}#}
+                    {#<div>#}
+                        {#<div class="thumbnail">#}
+                            {#<a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">#}
+                                {#{% if job.getLabel() %}#}
+                                    {#<img src="{{ asset(job.getLabel().getPath()) }}" alt="{{job.getName()}}">#}
+                                {#{% else %}#}
+                                    {#<img src="{{ asset(job.getDocument().getPath()) }}" alt="{{job.getName()}}">#}
+                                {#{% endif %}#}
+                            {#</a>#}
+                            {#<div class="caption">#}
+                                {#<h4><a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">{{job.getName()}}</a></h4>#}
+                                {#<p>{{job.getDescription() | slice(0, 280) | raw}}</p>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#{% endfor %}#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+{% endblock %}
+
+{% block javascripts %}
+
+    {#<script src="{{ asset('bundles/renovate/js/vkWidget.js') }}"></script>#}
+    {#<script src="{{ asset('bundles/renovate/js/fbSDK.js') }}"></script>#}
+    {#<script src="{{ asset('bundles/renovate/js/slidersInitialization.js') }}"></script>#}
+
+{% endblock %}

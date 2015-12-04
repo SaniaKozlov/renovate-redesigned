@@ -1,0 +1,9 @@
+<div class="partners center-block transparent text-center">
+	{% for partner in partners %}
+  	<div>
+  		<a href="{{partner.getUrl()}}">
+  			<img src="{{ asset(partner.getDocument().getPath()) }}" alt="{{partner.getName()}}">
+  		</a>
+  	</div>
+  	{% endfor %}
+</div>

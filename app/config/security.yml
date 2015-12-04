@@ -1,0 +1,103 @@
+security:
+    encoders:
+        Renovate\MainBundle\Entity\User:
+            algorithm: sha512
+            encode_as_base64: false
+            iterations: 1
+
+    providers:
+        user_db:
+            entity: { class: Renovate\MainBundle\Entity\User }
+
+    firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        secured_area:
+            pattern:    ^/*
+            anonymous: ~
+            form_login:
+                login_path: renovate_main_homepage
+                check_path: renovate_login_check
+                require_previous_session: false
+                
+            logout:
+                path: renovate_logout
+
+    access_control:
+        - { path: ^/ng/users/edit*, roles: ROLE_ADMIN }
+        - { path: ^/ng/users/remove*, roles: ROLE_ADMIN }
+        - { path: ^/ng/users/check/tariff, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/users*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/users*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/documents*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/documents*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/partners*, roles: ROLE_ADMIN }
+        - { path: ^/ng/partners, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/ng/partners*, roles: ROLE_ADMIN }
+        - { path: ^/repairs*, roles: [ROLE_ADMIN, ROLE_WORKER] }
+        - { path: ^/ng/repairs, roles: [ROLE_ADMIN, ROLE_WORKER] }
+        - { path: ^/ng/repairs/count, roles: [ROLE_ADMIN, ROLE_WORKER] }
+        - { path: ^/ng/repairs*, roles: [ROLE_ADMIN] }
+        - { path: ^/ng/articles/add, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/articles/remove*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/articles/edit*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/jobs/add, roles: ROLE_ADMIN }
+        - { path: ^/ng/jobs/remove*, roles: ROLE_ADMIN }
+        - { path: ^/ng/jobs/edit*, roles: ROLE_ADMIN }
+        - { path: ^/ng/news/add, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/news/remove*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/news/edit*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/results/add, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/results/remove*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/results/edit*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/shares/add, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/shares/remove*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/shares/edit*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/services*, roles: ROLE_ADMIN }
+        - { path: ^/ng/services/calculator, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/ng/services*, roles: ROLE_ADMIN }
+        - { path: ^/tariffs/panel*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/tariffs/private/edit*, roles: ROLE_ADMIN }
+        - { path: ^/ng/tariffs/private/activate*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/tariffs/public/add*, roles: ROLE_ADMIN }
+        - { path: ^/ng/tariffs/public/edit*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/tariffs/remove*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/pages*, roles: ROLE_ADMIN }
+        - { path: ^/ng/pages*, roles: ROLE_ADMIN }
+        - { path: ^/ng/vacancies/add, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/vacancies/remove*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/vacancies/edit*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/ng/prices/add, roles: ROLE_ADMIN }
+        - { path: ^/ng/prices/remove*, roles: ROLE_ADMIN }
+        - { path: ^/ng/prices/edit*, roles: ROLE_ADMIN }
+        - { path: ^/tasks*, roles: ROLE_ADMIN }
+        - { path: ^/ng/tasks/add*, roles: ROLE_ADMIN }
+        - { path: ^/ng/tasks/edit*, roles: ROLE_ADMIN }
+        - { path: ^/ng/tasks/remove*, roles: ROLE_ADMIN }
+        - { path: ^/ng/tasks/approve*, roles: ROLE_ADMIN }
+        - { path: ^/ng/tasks/decline*, roles: ROLE_ADMIN }
+        - { path: ^/ng/price-categories/add, roles: ROLE_ADMIN }
+        - { path: ^/ng/price-categories/remove*, roles: ROLE_ADMIN }
+        - { path: ^/ng/price-categories/edit*, roles: ROLE_ADMIN }
+        - { path: ^/aboutme, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/ng/payments/my*, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/ng/payments*, roles: [ROLE_ADMIN, ROLE_EDITOR] }
+        - { path: ^/payments*, roles: [ROLE_ADMIN, ROLE_BOOKKEEPER] }
+        - { path: ^/estimations/show*, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/estimations*, roles: ROLE_ADMIN }
+        - { path: ^/ng/estimations*, roles: ROLE_ADMIN }
+        - { path: ^/ng/cost-categories*, roles: ROLE_ADMIN }
+        - { path: ^/ng/estimation-costs*, roles: ROLE_ADMIN }
+        - { path: ^/ng/costs*, roles: ROLE_ADMIN }
+        - { path: ^/projects/reportfull*, roles: ROLE_ADMIN }
+        - { path: ^/projects/report*, roles: [ROLE_ADMIN, ROLE_BOOKKEEPER] }
+        - { path: ^/projects, roles: [ROLE_ADMIN, ROLE_BOOKKEEPER] }
+        - { path: ^/ng/projects/add*, roles: ROLE_ADMIN }
+        - { path: ^/ng/projects/edit*, roles: ROLE_ADMIN }
+        - { path: ^/ng/projects/remove*, roles: ROLE_ADMIN }
+        - { path: ^/ng/projects, roles: [ROLE_ADMIN, ROLE_BOOKKEEPER] }
+        - { path: ^/ng/projects/count, roles: [ROLE_ADMIN, ROLE_BOOKKEEPER] }
+        - { path: ^/ng/events*, roles: ROLE_ADMIN }
+        - { path: ^/*, roles: IS_AUTHENTICATED_ANONYMOUSLY }

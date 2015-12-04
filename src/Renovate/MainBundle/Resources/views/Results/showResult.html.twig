@@ -1,0 +1,81 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+{% if page and page.title != '' %}{{page.title}}{% else %}{{result.name}}{% endif %}
+{% endblock %}
+
+{% block keywords %}
+	{% if page and page.keywords != '' %}
+		<meta name="keywords" content="{{page.keywords}}">
+	{% endif %}
+{% endblock %}
+
+{% block description %}
+	{% if page and page.description != '' %}
+		<meta name="description" content="{{page.description}}">
+	{% else %}
+		<meta name="description" content="{{result.description | striptags | slice(0, 300)}}">
+	{% endif %}
+{% endblock %}
+
+{% block head %}
+<script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+{% endblock %}
+
+{% block social %}<meta name="og:image" content="{{ result.document.path | replace({'web': ''})}}"/>{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc">
+        <aside style="width: 95%; margin-right: 0 !important;">
+            <h1 class="textshadowblue" style="margin-top: 20px; line-height: 1.5;">{{ result.name }}</h1>
+            <p>{{result.created|date("d.m.Y H:i")}}</p>
+            <hr/>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="data-content">
+                        <div class="col-md-6">
+                            <img src="{{ result.document.path | replace({'wm b': ''})}}" alt="{{result.name}}" class="img-thumbnail">
+                        </div>
+                        <div class="text-justify">{{result.description | raw}}</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </section>
+
+
+	{#<div class="row">#}
+		{#<div class="col-md-2" style="margin-top: 5px;">#}
+			{#<!-- VK -->#}
+			{#<div id="vk_like" class="vk" content-title="{{result.getName()}}"></div>#}
+		{#</div>#}
+		{#<div class="col-md-2" style="margin-top: 5px;">#}
+			{#<!-- FB -->#}
+			{#<div class="fb-share-button" data-href="{{ app.request.uri }}" data-layout="button_count"></div>#}
+		{#</div>#}
+	{#</div>#}
+	{#<div class="row">#}
+		{#<div class="col-md-12">#}
+  				{#<h2>{{result.name}}</h2>#}
+  				{#<p>{{result.created|date("d.m.Y H:i")}}</p>#}
+  				{#<hr>#}
+		{#</div>#}
+	{#</div>#}
+	{#<div class="row">#}
+		{#<div class="col-md-12">#}
+			{#<div class="data-content">#}
+				{#<div class="col-md-4">#}
+					{#<img src="{{asset(result.document.path)}}" alt="{{result.name}}" class="img-thumbnail">#}
+				{#</div>#}
+				{#<div class="text-justify">{{result.description | raw}}</div>#}
+			{#</div>#}
+		{#</div>#}
+	{#</div>#}
+{% endblock %} 
+
+{% block javascripts %}
+<script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
+<script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
+{% endblock %}

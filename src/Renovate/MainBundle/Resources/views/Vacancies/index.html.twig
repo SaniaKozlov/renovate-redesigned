@@ -1,0 +1,385 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}Вакансії{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    <link href="{{ asset('bundles/renovate/css/uploadify.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+    <script src="{{ asset('bundles/renovate/plugins/ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
+{#{% block breadcrumb %}#}
+{#<ol class="breadcrumb">#}
+ 	{#<li><a href="{{path('renovate_main_homepage')}}">Головна</a></li>#}
+ 	{#<li class="active">Вакансії</li>#}
+{#</ol>#}
+{#{% endblock %}#}
+
+{% block content %}
+
+    <section class="news-desc" ng-controller="VacanciesController">
+        <aside style="width: 80%; margin-right: 0 !important;">
+
+            <h1 class="textshadowblue" style="margin-top: 3px; display: inline-block">Вакансії</h1>
+            {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                <button style="margin: 0 0 20px 50px;" ng-click="addVacancy()" type="button" class="btn btn-default">Додати</button>
+            {% endif %}
+            <div class="row">
+                <div class="col-xs-12 col-md-offset-7 col-md-5">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>
+                            <div class="col-sm-3">
+                                <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <article ng-repeat="vacancy in vacancies" ng-cloak style="padding-bottom: 100px; line-height: 2">
+                <a href="[[vacancy.href]]">
+                    <img width="220px" height="150px;" src="{{ asset('[[vacancy.document.url]]') }}" alt=""/>
+                </a>
+                <header>
+                    <a ng-init="setItemDirectHref(vacancy)" href="[[vacancy.href]]">[[vacancy.name]]</a>
+                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<button ng-click="removeVacancy(vacancy)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editVacancy(vacancy)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}
+                </header>
+                <div class="summary">
+                    <p ng-bind-html="vacancy.description | ellipsis:500"></p>
+                </div>
+
+            </article>
+
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                </div>
+            </div>
+
+            <script type="text/ng-template" id="addVacancy.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Додати вакансію...</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" name="vacancyForm">
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine}">
+                            <label for="vacancyName" class="col-sm-2 control-label">Назва</label>
+                            <div class="col-sm-10">
+                                <input ng-model="vacancy.name" type="text" class="form-control" id="vacancyName" name="vacancyName" required>
+                                <p ng-show="vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine" class="help-block">Введіть назву.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine}">
+                            <label for="vacancyDocument" class="col-sm-2 control-label">Обкладинка</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyDocument" ng-model="vacancy.documentid" name="vacancyDocument" required>
+                                </select>
+                                <p ng-show="vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                                <input type="file" name="file_upload" id="file_upload" />
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine}">
+                            <label for="vacancyLabel" class="col-sm-2 control-label">Ярлик</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyLabel" ng-model="vacancy.labelid" name="vacancyLabel">
+                                </select>
+                                <p ng-show="vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine}">
+                            <label for="vacancyDescription" class="col-sm-2 control-label">Опис</label>
+                            <div class="col-sm-10">
+                                <textarea ng-model="vacancy.description" id="vacancyDescription" class="form-control" rows="5" name="vacancyDescription" required></textarea>
+                                <p ng-show="vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine" class="help-block">Введіть опис.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="vacancy.onhomepage" ng-init="vacancy.onhomepage=false"> Показувати на головній
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()" ng-disabled="vacancyForm.$invalid">Зберегти</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                </div>
+            </script>
+            <script type="text/ng-template" id="editVacancy.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Редагування вакансії...</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" name="vacancyForm">
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine}">
+                            <label for="vacancyName" class="col-sm-2 control-label">Назва</label>
+                            <div class="col-sm-10">
+                                <input ng-model="vacancy.name" type="text" class="form-control" id="vacancyName" name="vacancyName" required>
+                                <p ng-show="vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine" class="help-block">Введіть назву.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine}">
+                            <label for="vacancyDocument" class="col-sm-2 control-label">Обкладинка</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyDocument" ng-model="vacancy.documentid" name="vacancyDocument" required>
+                                </select>
+                                <p ng-show="vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                                <input type="file" name="file_upload" id="file_upload" />
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine}">
+                            <label for="vacancyLabel" class="col-sm-2 control-label">Ярлик</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyLabel" ng-model="vacancy.labelid" name="vacancyLabel">
+                                </select>
+                                <p ng-show="vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine}">
+                            <label for="vacancyDescription" class="col-sm-2 control-label">Опис</label>
+                            <div class="col-sm-10">
+                                <textarea ng-model="vacancy.description" id="vacancyDescription" class="form-control" rows="5" name="vacancyDescription" required></textarea>
+                                <p ng-show="vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine" class="help-block">Введіть опис.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="vacancy.onhomepage"> Показувати на головній
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()" ng-disabled="vacancyForm.$invalid">Зберегти</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                </div>
+            </script>
+
+        </aside>
+    </section>
+
+    {#<div ng-controller="VacanciesController">#}
+        {#<div class="row">#}
+            {#<div class="col-md-4">#}
+                {#<form class="form-horizontal">#}
+                    {#<div class="form-group">#}
+                        {#<label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>#}
+                        {#<div class="col-sm-3">#}
+                            {#<select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">#}
+                                {#<option>1</option>#}
+                                {#<option>2</option>#}
+                                {#<option>3</option>#}
+                                {#<option>4</option>#}
+                                {#<option>5</option>#}
+                                {#<option>10</option>#}
+                                {#<option>25</option>#}
+                                {#<option>50</option>#}
+                                {#<option>100</option>#}
+                            {#</select>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</form>#}
+            {#</div>#}
+            {#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}#}
+                {#<div class="col-md-4">#}
+                    {#<button ng-click="addVacancy()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>#}
+                {#</div>#}
+            {#{% endif %}#}
+        {#</div>#}
+        {#<div class="row">#}
+            {#<div class="col-md-12 text-center">#}
+                {#<pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>#}
+            {#</div>#}
+        {#</div>#}
+        {#<div class="row">#}
+            {#<div class="col-md-12">#}
+                {#<div class="splash">#}
+                    {#<div class="image center-block"></div>#}
+                {#</div>#}
+                {#<div class="data-holder" ng-repeat="vacancy in vacancies" ng-cloak>#}
+                    {#<div class="data-header">#}
+                        {#<div class="date">[[ vacancy.created | date:"dd.MM.yyyy HH:mm"]]</div>#}
+                        {#<div class="title"><a href="[[vacancy.href]]">[[vacancy.name]]</a></div>#}
+                    {#</div>#}
+                    {#<div class="data-social">#}
+                        {#<div class="social-content">#}
+                            {#<div class="social-vk">#}
+                                {#<!-- VK -->#}
+                                {#<div id="vk_like-[[vacancy.id]]" class="vk" content-href="{{ app.request.getSchemeAndHttpHost() }}[[vacancy.href]]" content-title="[[vacancy.name]]"></div>#}
+                            {#</div>#}
+                            {#<div class="social-fb" id='foo'>#}
+                                {#<!-- FB -->#}
+                                {#<fb:share-button href="{{ app.request.getSchemeAndHttpHost() }}[[vacancy.href]]" layout="button_count"></fb:share-button>#}
+                            {#</div>#}
+                            {#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<button ng-click="removeVacancy(vacancy)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editVacancy(vacancy)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="data-content">#}
+                        {#<div class="col-md-3">#}
+                            {#<a href="[[vacancy.href]]"><img class="img-thumbnail" src="{{ asset('[[vacancy.label.url || vacancy.document.url]]') }}" alt="[[vacancy.name]]"></a>#}
+                        {#</div>#}
+                        {#<p class="text-justify" ng-bind-html="vacancy.description | ellipsis:1100"></p></div>#}
+                    {#<div class="data-footer">#}
+                        {#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<span ng-show="vacancy.onhomepage" class="label label-success">На головній <span class="glyphicon glyphicon-home"></span></span>{% endif %}#}
+                        {#<a class="btn btn-primary btn-xs" href="[[vacancy.href]]" ng-init="setItemDirectHref(vacancy)">Читати детальніше...</a>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+        {#<div class="row">#}
+            {#<div class="col-md-12 text-center">#}
+                {#<pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>#}
+            {#</div>#}
+        {#</div>#}
+        {#<script type="text/ng-template" id="addVacancy.html">#}
+            {#<div class="modal-header">#}
+                {#<h3 class="modal-title">Додати вакансію...</h3>#}
+            {#</div>#}
+            {#<div class="modal-body">#}
+                {#<form class="form-horizontal" name="vacancyForm">#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine}">#}
+                        {#<label for="vacancyName" class="col-sm-2 control-label">Назва</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<input ng-model="vacancy.name" type="text" class="form-control" id="vacancyName" name="vacancyName" required>#}
+                            {#<p ng-show="vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine" class="help-block">Введіть назву.</p>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine}">#}
+                        {#<label for="vacancyDocument" class="col-sm-2 control-label">Обкладинка</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyDocument" ng-model="vacancy.documentid" name="vacancyDocument" required>#}
+                            {#</select>#}
+                            {#<p ng-show="vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine" class="help-block">Оберіть обкладинку.</p>#}
+                            {#<input type="file" name="file_upload" id="file_upload" />#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine}">#}
+                        {#<label for="vacancyLabel" class="col-sm-2 control-label">Ярлик</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyLabel" ng-model="vacancy.labelid" name="vacancyLabel">#}
+                            {#</select>#}
+                            {#<p ng-show="vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine" class="help-block">Оберіть ярлик.</p>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine}">#}
+                        {#<label for="vacancyDescription" class="col-sm-2 control-label">Опис</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<textarea ng-model="vacancy.description" id="vacancyDescription" class="form-control" rows="5" name="vacancyDescription" required></textarea>#}
+                            {#<p ng-show="vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine" class="help-block">Введіть опис.</p>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group">#}
+                        {#<div class="col-sm-offset-2 col-sm-10">#}
+                            {#<div class="checkbox">#}
+                                {#<label>#}
+                                    {#<input type="checkbox" ng-model="vacancy.onhomepage" ng-init="vacancy.onhomepage=false"> Показувати на головній#}
+                                {#</label>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</form>#}
+            {#</div>#}
+            {#<div class="modal-footer">#}
+                {#<button class="btn btn-primary" ng-click="ok()" ng-disabled="vacancyForm.$invalid">Зберегти</button>#}
+                {#<button class="btn btn-warning" ng-click="cancel()">Відміна</button>#}
+            {#</div>#}
+        {#</script>#}
+        {#<script type="text/ng-template" id="editVacancy.html">#}
+            {#<div class="modal-header">#}
+                {#<h3 class="modal-title">Редагування вакансії...</h3>#}
+            {#</div>#}
+            {#<div class="modal-body">#}
+                {#<form class="form-horizontal" name="vacancyForm">#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine}">#}
+                        {#<label for="vacancyName" class="col-sm-2 control-label">Назва</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<input ng-model="vacancy.name" type="text" class="form-control" id="vacancyName" name="vacancyName" required>#}
+                            {#<p ng-show="vacancyForm.vacancyName.$invalid && !vacancyForm.vacancyName.$pristine" class="help-block">Введіть назву.</p>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine}">#}
+                        {#<label for="vacancyDocument" class="col-sm-2 control-label">Обкладинка</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyDocument" ng-model="vacancy.documentid" name="vacancyDocument" required>#}
+                            {#</select>#}
+                            {#<p ng-show="vacancyForm.vacancyDocument.$invalid && !vacancyForm.vacancyDocument.$pristine" class="help-block">Оберіть обкладинку.</p>#}
+                            {#<input type="file" name="file_upload" id="file_upload" />#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine}">#}
+                        {#<label for="vacancyLabel" class="col-sm-2 control-label">Ярлик</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<select ng-options="document.id as document.name for document in documents" class="form-control" id="vacancyLabel" ng-model="vacancy.labelid" name="vacancyLabel">#}
+                            {#</select>#}
+                            {#<p ng-show="vacancyForm.vacancyLabel.$invalid && !vacancyForm.vacancyLabel.$pristine" class="help-block">Оберіть ярлик.</p>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group" ng-class="{'has-error': vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine}">#}
+                        {#<label for="vacancyDescription" class="col-sm-2 control-label">Опис</label>#}
+                        {#<div class="col-sm-10">#}
+                            {#<textarea ng-model="vacancy.description" id="vacancyDescription" class="form-control" rows="5" name="vacancyDescription" required></textarea>#}
+                            {#<p ng-show="vacancyForm.vacancyDescription.$invalid && !vacancyForm.vacancyDescription.$pristine" class="help-block">Введіть опис.</p>#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="form-group">#}
+                        {#<div class="col-sm-offset-2 col-sm-10">#}
+                            {#<div class="checkbox">#}
+                                {#<label>#}
+                                    {#<input type="checkbox" ng-model="vacancy.onhomepage"> Показувати на головній#}
+                                {#</label>#}
+                            {#</div>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</form>#}
+            {#</div>#}
+            {#<div class="modal-footer">#}
+                {#<button class="btn btn-primary" ng-click="ok()" ng-disabled="vacancyForm.$invalid">Зберегти</button>#}
+                {#<button class="btn btn-warning" ng-click="cancel()">Відміна</button>#}
+            {#</div>#}
+        {#</script>#}
+    {#</div>#}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/jquery.uploadify.min.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/angularVacanciesController.js') }}"></script>
+    <script>
+        var TIMESTAMP = '{{ timestamp }}';
+        var TOKEN = '{{ token }}';
+    </script>
+    <script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
+{% endblock %}

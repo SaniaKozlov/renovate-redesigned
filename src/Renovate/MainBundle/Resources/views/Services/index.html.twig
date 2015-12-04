@@ -1,0 +1,254 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Послуги компанії{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+    <section class="news-desc" style="margin: 60px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div ng-controller="ServicesController">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="itemsPerPage">На сторінці</label>
+                                <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                    <option>500</option>
+                                    <option>1000</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="categories">Категорія</label>
+                                <select id="categories" ng-options="serviceCategory.id as serviceCategory.name for serviceCategory in serviceCategories" class="form-control" ng-model="filter.category">
+                                    <option value="">усі</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                Тип
+                                <label class="radio-inline">
+                                    <input ng-model="filter.logical" type="radio" name="inlineRadioOptions" id="inlineRadio1"> усі
+                                </label>
+                                <label class="radio-inline">
+                                    <input ng-model="filter.logical" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1"> логічний(чекбокс)
+                                </label>
+                                <label class="radio-inline">
+                                    <input ng-model="filter.logical" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0"> вибір(радіобатн)
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-12" style="margin-top: 20px;">
+                        <button ng-click="addService()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-hover table-mobile">
+                            <thead>
+                            <tr>
+                                <th style="background-color: #fff;">#</th>
+                                <th style="background-color: #fff;">Назва</th>
+                                <th style="background-color: #fff;">Категорія</th>
+                                <th style="background-color: #fff;">Тип</th>
+                                <th style="background-color: #fff;">Створено</th>
+                                <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="splash" ng-cloak>
+                                <td colspan="7">
+                                    <div class="image center-block"></div>
+                                </td>
+                            </tr>
+                            <tr ng-repeat="service in services" ng-cloak>
+                                <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                <td>[[service.name]]</td>
+                                <td>[[service.category.name]]</td>
+                                <td><span ng-show="service.logical == true" class="label label-default">Логічний(чекбокс)</span><span ng-show="service.logical == false" class="label label-success">Вибір(радіобатн)</span></td>
+                                <td>[[service.created | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                <td><button ng-click="removeService(service)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editService(service)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <script type="text/ng-template" id="addService.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Додати вид послуг...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="serviceForm">
+                            <div class="form-group" ng-class="{'has-error': serviceForm.serviceName.$invalid && !serviceForm.serviceName.$pristine}">
+                                <label for="serviceName" class="col-sm-2 control-label">Назва</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="service.name" type="text" class="form-control" id="serviceName" name="serviceName" ng-change="checkFormInvalid()" required>
+                                    <p ng-show="serviceForm.serviceName.$invalid && !serviceForm.serviceName.$pristine" class="help-block">Введіть назву.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': serviceForm.serviceCategory.$invalid && !serviceForm.serviceCategory.$pristine}">
+                                <label for="serviceCategory" class="col-sm-2 control-label">Категорія</label>
+                                <div class="col-sm-10">
+                                    <select ng-options="category.id as category.name for category in serviceCategories" class="form-control" id="serviceCategory" ng-model="service.categoryid" name="serviceCategory" ng-change="checkFormInvalid()" required>
+                                    </select>
+                                    <p ng-show="serviceForm.serviceCategory.$invalid && !serviceForm.serviceCategory.$pristine" class="help-block">Оберіть категорію.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Тип</label>
+                                <div class="col-sm-10">
+                                    <label class="radio-inline">
+                                        <input ng-model="service.logical" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1" ng-init="service.logical='1'" ng-change="checkFormInvalid()"> логічний(чекбокс)
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input ng-model="service.logical" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="0" ng-change="checkFormInvalid()"> вибір(радіобатн)
+                                    </label>
+                                </div>
+                            </div>
+                            <tabset ng-show="service.logical==0">
+                                <tab heading="Опції">
+                                    <div class="form-group" ng-repeat="option in options" ng-class="{'has-error': options[$index].error }" style="margin-top: 10px;">
+                                        <label class="col-sm-2 control-label"><input type="radio" checked></label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" placeholder="Введіть значення" ng-model="options[$index].name" ng-change="checkFormInvalid()">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"></label>
+                                        <div class="col-sm-10">
+                                            <button ng-click="addOption()" type="button" style="margin-right: 5px;" class="btn btn-success btn-xs">Додати</button><button ng-show="options.length > 2" ng-click="removeOption()" type="button" class="btn btn-danger btn-xs">Видалити</button>
+                                        </div>
+                                    </div>
+                                </tab>
+                            </tabset>
+                            <tabset ng-show="service.logical==1">
+                                <tab heading="Ціна">
+                                    <div class="form-group" ng-repeat="role in clientRoles" ng-class="{'has-error': prices[$index].error }" style="margin-top: 10px;">
+                                        <label class="col-sm-6 control-label">[[role.name]]</label>
+                                        <div class="col-sm-6">
+                                            <input ng-model="prices[$index].value" type="number" min="0.000001" step="0.000001" class="form-control" ng-change="checkFormInvalid()">
+                                        </div>
+                                    </div>
+                                </tab>
+                            </tabset>
+                            <tabset ng-show="service.logical==0">
+                                <tab ng-repeat="(optionIndex, option) in options" heading="Ціна: [[options[$index].name]]">
+                                    <div class="form-group" ng-repeat="role in clientRoles" ng-class="{'has-error': optionsPrices[optionIndex][$index].error }" style="margin-top: 10px;">
+                                        <label class="col-sm-6 control-label">[[role.name]]</label>
+                                        <div class="col-sm-6">
+                                            <input ng-model="optionsPrices[optionIndex][$index].value" type="number" min="0.000001" step="0.000001" class="form-control" ng-change="checkFormInvalid()">
+                                        </div>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="serviceForm.$invalid || formInvalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+                <script type="text/ng-template" id="editService.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Редагування виду послуг...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="serviceForm">
+                            <div class="form-group" ng-class="{'has-error': serviceForm.serviceName.$invalid && !serviceForm.serviceName.$pristine}">
+                                <label for="serviceName" class="col-sm-2 control-label">Назва</label>
+                                <div class="col-sm-10">
+                                    <input ng-model="service.name" type="text" class="form-control" id="serviceName" name="serviceName" ng-change="checkFormInvalid()" required>
+                                    <p ng-show="serviceForm.serviceName.$invalid && !serviceForm.serviceName.$pristine" class="help-block">Введіть назву.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': serviceForm.serviceCategory.$invalid && !serviceForm.serviceCategory.$pristine}">
+                                <label for="serviceCategory" class="col-sm-2 control-label">Категорія</label>
+                                <div class="col-sm-10">
+                                    <select ng-options="category.id as category.name for category in serviceCategories" class="form-control" id="serviceCategory" ng-model="service.categoryid" name="serviceCategory" ng-change="checkFormInvalid()" required>
+                                    </select>
+                                    <p ng-show="serviceForm.serviceCategory.$invalid && !serviceForm.serviceCategory.$pristine" class="help-block">Оберіть категорію.</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Тип</label>
+                                <div class="col-sm-10">
+                                    <label class="radio-inline">
+                                        <input ng-model="service.logical" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1" ng-change="checkFormInvalid()"> логічний(чекбокс)
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input ng-model="service.logical" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="0" ng-change="checkFormInvalid()"> вибір(радіобатн)
+                                    </label>
+                                </div>
+                            </div>
+                            <tabset ng-show="service.logical==0">
+                                <tab heading="Опції">
+                                    <div class="form-group" ng-repeat="option in options" ng-class="{'has-error': options[$index].error }" style="margin-top: 10px;">
+                                        <label class="col-sm-2 control-label"><input type="radio" checked></label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" placeholder="Введіть значення" ng-model="options[$index].name" ng-change="checkFormInvalid()">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label"></label>
+                                        <div class="col-sm-10">
+                                            <button ng-click="addOption()" type="button" style="margin-right: 5px;" class="btn btn-success btn-xs">Додати</button><button ng-show="options.length > 2" ng-click="removeOption()" type="button" class="btn btn-danger btn-xs">Видалити</button>
+                                        </div>
+                                    </div>
+                                </tab>
+                            </tabset>
+                            <tabset ng-show="service.logical==1">
+                                <tab heading="Ціна">
+                                    <div class="form-group" ng-repeat="role in clientRoles" ng-class="{'has-error': prices[$index].error }" style="margin-top: 10px;">
+                                        <label class="col-sm-6 control-label">[[role.name]]</label>
+                                        <div class="col-sm-6">
+                                            <input ng-model="prices[$index].value" type="number" min="0.000001" step="0.000001" class="form-control" ng-change="checkFormInvalid()">
+                                        </div>
+                                    </div>
+                                </tab>
+                            </tabset>
+                            <tabset ng-show="service.logical==0">
+                                <tab ng-repeat="(optionIndex, option) in options" heading="Ціна: [[options[$index].name]]">
+                                    <div class="form-group" ng-repeat="role in clientRoles" ng-class="{'has-error': optionsPrices[optionIndex][$index].error }" style="margin-top: 10px;">
+                                        <label class="col-sm-6 control-label">[[role.name]]</label>
+                                        <div class="col-sm-6">
+                                            <input ng-model="optionsPrices[optionIndex][$index].value" type="number" min="0.000001" step="0.000001" class="form-control" ng-change="checkFormInvalid()">
+                                        </div>
+                                    </div>
+                                </tab>
+                            </tabset>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="serviceForm.$invalid || formInvalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+            </div>
+        </aside>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/angularServicesController.js') }}"></script>
+{% endblock %}

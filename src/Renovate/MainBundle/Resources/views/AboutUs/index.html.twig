@@ -1,0 +1,48 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}Про нас{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+
+    <section class="news-desc">
+        <aside style="width: 90%; margin-right: 0% !important;">
+
+            <h1 class="textshadowblue" style="margin-top: 3px">Про нас</h1>
+
+            <div class="row">
+                <div class="col-md-12">
+                    {% if page %}
+                        {{ page.content | raw }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <iframe style="margin-top: 15px; margin-left: 340px;" width="560" height="315" src="https://www.youtube.com/embed/tF-6SHkYIqo" frameborder="0" allowfullscreen></iframe>
+
+        </aside>
+
+
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}

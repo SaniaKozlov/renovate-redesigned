@@ -1,0 +1,277 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+{% if page and page.title != '' %}{{page.title}}{% else %}Новини{% endif %}
+{% endblock %}
+
+{% block keywords %}
+	{% if page and page.keywords != '' %}
+		<meta name="keywords" content="{{page.keywords}}">
+	{% endif %}
+{% endblock %}
+
+{% block description %}
+	{% if page and page.description != '' %}
+		<meta name="description" content="{{page.description}}">
+	{% endif %}
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+    <script src="{{ asset('bundles/renovate/plugins/ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" ng-controller="NewsController">
+        <aside style="width: 80%; margin-right: 0% !important;">
+
+            <h1 class="textshadowblue" style="margin-top: 3px; display: inline-block">Новини</h1>
+            {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                <button style="margin: 0 0 20px 50px;" ng-click="addNews()" type="button" class="btn btn-default">Додати</button>
+            {% endif %}
+            <div class="row">
+                <div class="col-xs-12 col-md-offset-7 col-md-5">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>
+                            <div class="col-sm-3">
+                                <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <article ng-repeat="newsp in news" ng-cloak style="padding-bottom: 60px; line-height: 2">
+                <a href="[[newsp.href]]">
+                    <img width="220px" height="150px;" src="{{ asset('[[newsp.label.url || newsp.document.url]]') }}" alt=""/>
+                </a>
+                <header>
+                    <a ng-init="setItemDirectHref(newsp)" href="[[newsp.href]]">[[newsp.name]]</a>
+                    {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<button ng-click="removeNews(newsp)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editNews(newsp)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}
+                </header>
+                <div class="summary">
+                    <p ng-bind-html="newsp.description | ellipsis:500"></p>
+                </div>
+
+            </article>
+
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                </div>
+            </div>
+
+            <script type="text/ng-template" id="addNews.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Додати новину...</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" name="newsForm">
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsName.$invalid && !newsForm.newsName.$pristine}">
+                            <label for="newsName" class="col-sm-2 control-label">Назва</label>
+                            <div class="col-sm-10">
+                                <input ng-model="news.name" type="text" class="form-control" id="newsName" name="newsName" required>
+                                <p ng-show="newsForm.newsName.$invalid && !newsForm.newsName.$pristine" class="help-block">Введіть назву.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsDocument.$invalid && !newsForm.newsDocument.$pristine}">
+                            <label for="newsDocument" class="col-sm-2 control-label">Обкладинка</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="newsDocument" ng-model="news.documentid" name="newsDocument" required>
+                                </select>
+                                <p ng-show="newsForm.newsDocument.$invalid && !newsForm.newsDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                                <input type="file" name="file_upload" id="file_upload" />
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsLabel.$invalid && !newsForm.newsLabel.$pristine}">
+                            <label for="newsLabel" class="col-sm-2 control-label">Ярлик</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="newsLabel" ng-model="news.labelid" name="newsLabel">
+                                </select>
+                                <p ng-show="newsForm.newsLabel.$invalid && !newsForm.newsLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsDescription.$invalid && !newsForm.newsDescription.$pristine}">
+                            <label for="newsDescription" class="col-sm-2 control-label">Опис</label>
+                            <div class="col-sm-10">
+                                <textarea ng-model="news.description" id="newsDescription" class="form-control" rows="5" name="newsDescription" required></textarea>
+                                <p ng-show="newsForm.newsDescription.$invalid && !newsForm.newsDescription.$pristine" class="help-block">Введіть опис.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="news.onhomepage" ng-init="news.onhomepage=false"> Показувати на головній
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()" ng-disabled="newsForm.$invalid">Зберегти</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                </div>
+            </script>
+            <script type="text/ng-template" id="editNews.html">
+                <div class="modal-header">
+                    <h3 class="modal-title">Редагування новини...</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" name="newsForm">
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsName.$invalid && !newsForm.newsName.$pristine}">
+                            <label for="newsName" class="col-sm-2 control-label">Назва</label>
+                            <div class="col-sm-10">
+                                <input ng-model="news.name" type="text" class="form-control" id="newsName" name="newsName" required>
+                                <p ng-show="newsForm.newsName.$invalid && !newsForm.newsName.$pristine" class="help-block">Введіть назву.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsDocument.$invalid && !newsForm.newsDocument.$pristine}">
+                            <label for="newsDocument" class="col-sm-2 control-label">Обкладинка</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="newsDocument" ng-model="news.documentid" name="newsDocument" required>
+                                </select>
+                                <p ng-show="newsForm.newsDocument.$invalid && !newsForm.newsDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                                <input type="file" name="file_upload" id="file_upload" />
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsLabel.$invalid && !newsForm.newsLabel.$pristine}">
+                            <label for="newsLabel" class="col-sm-2 control-label">Ярлик</label>
+                            <div class="col-sm-10">
+                                <select ng-options="document.id as document.name for document in documents" class="form-control" id="newsLabel" ng-model="news.labelid" name="newsLabel">
+                                </select>
+                                <p ng-show="newsForm.newsLabel.$invalid && !newsForm.newsLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error': newsForm.newsDescription.$invalid && !newsForm.newsDescription.$pristine}">
+                            <label for="newsDescription" class="col-sm-2 control-label">Опис</label>
+                            <div class="col-sm-10">
+                                <textarea ng-model="news.description" id="newsDescription" class="form-control" rows="5" name="newsDescription" required></textarea>
+                                <p ng-show="newsForm.newsDescription.$invalid && !newsForm.newsDescription.$pristine" class="help-block">Введіть опис.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="news.onhomepage"> Показувати на головній
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-click="ok()" ng-disabled="newsForm.$invalid">Зберегти</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                </div>
+            </script>
+
+        </aside>
+    </section>
+
+
+{#<div ng-controller="NewsController">#}
+	{#<div class="row">#}
+		{#<div class="col-md-4">#}
+			{#<form class="form-horizontal">#}
+			  {#<div class="form-group">#}
+			    {#<label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>#}
+			    {#<div class="col-sm-3">#}
+			      	{#<select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">#}
+					  {#<option>1</option>#}
+					  {#<option>2</option>#}
+					  {#<option>3</option>#}
+					  {#<option>4</option>#}
+					  {#<option>5</option>#}
+					  {#<option>10</option>#}
+					  {#<option>25</option>#}
+					  {#<option>50</option>#}
+					  {#<option>100</option>#}
+					{#</select>#}
+			    {#</div>#}
+			  {#</div>#}
+			{#</form>#}
+		{#</div>#}
+		{#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}#}
+		{#<div class="col-md-4">#}
+			{#<button ng-click="addNews()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>#}
+		{#</div>#}
+		{#{% endif %}#}
+	{#</div>#}
+
+	{#<div class="row">#}
+		{#<div class="col-md-12 text-center">#}
+			{#<pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>#}
+		{#</div>#}
+	{#</div>#}
+
+	{#<div class="row">#}
+		{#<div class="col-md-12">#}
+			{#<div class="splash" ng-cloak>#}
+				{#<div class="image center-block"></div>#}
+			{#</div>#}
+			{#<div class="data-holder" ng-repeat="newsp in news" ng-cloak>#}
+				{#<div class="data-header">#}
+					{#<div class="date">[[ newsp.created | date:"dd.MM.yyyy HH:mm"]]</div>#}
+					{#<div class="title"><a href="[[newsp.href]]">[[newsp.name]]</a></div>#}
+				{#</div>#}
+				{#<div class="data-social">#}
+					{#<div class="social-content">#}
+						{#<div class="social-vk">#}
+							{#<!-- VK -->#}
+							{#<div id="vk_like-[[newsp.id]]" class="vk" content-href="{{ app.request.getSchemeAndHttpHost() }}[[newsp.href]]" content-title="[[newsp.name]]"></div>#}
+						{#</div>#}
+						{#<div class="social-fb">#}
+							{#<!-- FB -->#}
+							{#<fb:share-button href="{{ app.request.getSchemeAndHttpHost() }}[[newsp.href]]" layout="button_count"></fb:share-button>#}
+						{#</div>#}
+						{#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<button ng-click="removeNews(newsp)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editNews(newsp)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}#}
+					{#</div>#}
+				{#</div>#}
+				{#<div class="data-content">#}
+					{#<div class="col-md-3">#}
+						{#<a href="[[newsp.href]]"><img class="img-thumbnail" src="{{ asset('[[newsp.label.url || newsp.document.url]]') }}" alt="[[newsp.name]]"></a>#}
+					{#</div>#}
+					{#<p class="text-justify" ng-bind-html="newsp.description | ellipsis:1100"></p></div>#}
+				{#<div class="data-footer">#}
+					{#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<span ng-show="newsp.onhomepage" class="label label-success">На головній <span class="glyphicon glyphicon-home"></span></span>{% endif %}#}
+					{#<a class="btn btn-primary btn-xs" href="[[newsp.href]]" ng-init="setItemDirectHref(newsp)">Читати детальніше...</a>#}
+				{#</div>#}
+			{#</div>#}
+		{#</div>#}
+	{#</div>#}
+
+	{#<div class="row">#}
+		{#<div class="col-md-12 text-center">#}
+			{#<pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>#}
+		{#</div>#}
+	{#</div>#}
+
+{#</div>#}
+{% endblock %} 
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/jquery.uploadify.min.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/angularNewsController.js') }}"></script>
+    <script>
+    var TIMESTAMP = '{{ timestamp }}';
+    var TOKEN = '{{ token }}';
+    </script>
+    <script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
+{% endblock %}

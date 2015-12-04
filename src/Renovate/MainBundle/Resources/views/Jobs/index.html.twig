@@ -1,0 +1,305 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}
+    {% if page and page.title != '' %}{{page.title}}{% else %}Послуги{% endif %}
+{% endblock %}
+
+{% block keywords %}
+    {% if page and page.keywords != '' %}
+        <meta name="keywords" content="{{page.keywords}}">
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if page and page.description != '' %}
+        <meta name="description" content="{{page.description}}">
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+    <script src="{{ asset('bundles/renovate/plugins/ckeditor/ckeditor.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" ng-controller="JobsController">
+
+        <aside style="width: 100%; margin-right: 0% !important;">
+            <h1 class="textshadowblue" style="margin-top: 3px; display: inline-block">Послуги</h1>
+            {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                <button style="margin: 0 0 20px 30px;" ng-click="addJob()" type="button" class="btn btn-default">Додати</button>
+            {% endif %}
+            <div class="row">
+                <div class="col-xs-12 col-md-offset-7 col-md-5">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>
+                            <div class="col-sm-3">
+                                <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                    <option>4</option>
+                                    <option>8</option>
+                                    <option>12</option>
+                                    <option>16</option>
+                                    <option>20</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {#<article ng-repeat="job in jobs" ng-cloak style="padding-bottom: 60px; line-height: 2">#}
+                {#<img width="220px" src="{{ asset('[[job.document.url]]') }}">#}
+                {#<header>#}
+                    {#<a ng-init="setItemDirectHref(job)" href="[[job.href]]">[[job.name]]</a>#}
+                    {#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<button ng-click="removeJob(job)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editJob(job)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}#}
+                {#</header>#}
+                {#<div class="summary">#}
+                    {#<p ng-bind-html="job.description | ellipsis:500"></p>#}
+                {#</div>#}
+
+            {#</article>#}
+
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-3" ng-repeat="job in jobs" ng-init="setItemDirectHref(job)">
+
+                    <div style="position: relative; margin-bottom: 25px;">
+                        <div>
+                            <a href="[[job.href]]">
+                                <div style="float: left; width: 85%; white-space: nowrap; overflow: hidden; padding: 5px; font-size: 1.25em !important; font-family: Tahoma; color: #010B64;">[[job.name]]</div>
+                            </a>
+                            {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+                                <div style="float: left; width: 15%;">
+                                    <button ng-click="removeJob(job)" type="button" class="close">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </button>
+                                    <button ng-click="editJob(job)" type="button" class="close">
+                                        <i class="glyphicon glyphicon-pencil"></i>
+                                    </button>
+                                </div>
+                            {% endif %}
+                            <div class="clearfix"></div>
+                            <a href="[[job.href]]">
+                                <img width="100%" height="200px" src="{{ asset('[[job.document.url]]') }}" style="border-radius: 10px;">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+            </div>
+        </div>
+
+        <script type="text/ng-template" id="addJob.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Додати вид робіт...</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="jobForm">
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobName.$invalid && !jobForm.jobName.$pristine}">
+                        <label for="jobName" class="col-sm-2 control-label">Назва</label>
+                        <div class="col-sm-10">
+                            <input ng-model="job.name" type="text" class="form-control" id="jobName" name="jobName" required>
+                            <p ng-show="jobForm.jobName.$invalid && !jobForm.jobName.$pristine" class="help-block">Введіть назву.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobDocument.$invalid && !jobForm.jobDocument.$pristine}">
+                        <label for="jobDocument" class="col-sm-2 control-label">Обкладинка</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="jobDocument" ng-model="job.documentid" name="jobDocument" required>
+                            </select>
+                            <p ng-show="jobForm.jobDocument.$invalid && !jobForm.jobDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                            <input type="file" name="file_upload" id="file_upload" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobLabel.$invalid && !jobForm.jobLabel.$pristine}">
+                        <label for="jobLabel" class="col-sm-2 control-label">Ярлик</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="jobLabel" ng-model="job.labelid" name="jobLabel">
+                            </select>
+                            <p ng-show="jobForm.joLabel.$invalid && !jobForm.jobLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobDescription.$invalid && !jobForm.jobDescription.$pristine}">
+                        <label for="jobDescription" class="col-sm-2 control-label">Опис</label>
+                        <div class="col-sm-10">
+                            <textarea ng-model="job.description" id="jobDescription" class="form-control" rows="5" name="jobDescription" required></textarea>
+                            <p ng-show="jobForm.jobDescription.$invalid && !jobForm.jobDescription.$pristine" class="help-block">Введіть опис.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="job.onhomepage" ng-init="job.onhomepage=false"> Показувати на головній
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="ok()" ng-disabled="jobForm.$invalid">Зберегти</button>
+                <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+            </div>
+        </script>
+        <script type="text/ng-template" id="editJob.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Редагування виду робіт...</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="jobForm">
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobName.$invalid && !jobForm.jobName.$pristine}">
+                        <label for="jobName" class="col-sm-2 control-label">Назва</label>
+                        <div class="col-sm-10">
+                            <input ng-model="job.name" type="text" class="form-control" id="jobName" name="jobName" required>
+                            <p ng-show="jobForm.jobName.$invalid && !jobForm.jobName.$pristine" class="help-block">Введіть назву.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobDocument.$invalid && !jobForm.jobDocument.$pristine}">
+                        <label for="jobDocument" class="col-sm-2 control-label">Обкладинка</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="jobDocument" ng-model="job.documentid" name="jobDocument" required>
+                            </select>
+                            <p ng-show="jobForm.jobDocument.$invalid && !jobForm.jobDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                            <input type="file" name="file_upload" id="file_upload" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobLabel.$invalid && !jobForm.jobLabel.$pristine}">
+                        <label for="jobLabel" class="col-sm-2 control-label">Ярлик</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="jobLabel" ng-model="job.labelid" name="jobLabel">
+                            </select>
+                            <p ng-show="jobForm.joLabel.$invalid && !jobForm.jobLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobDescription.$invalid && !jobForm.jobDescription.$pristine}">
+                        <label for="jobDescription" class="col-sm-2 control-label">Опис</label>
+                        <div class="col-sm-10">
+                            <textarea ng-model="job.description" id="jobDescription" class="form-control" rows="5" name="jobDescription" required></textarea>
+                            <p ng-show="jobForm.jobDescription.$invalid && !jobForm.jobDescription.$pristine" class="help-block">Введіть опис.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="job.onhomepage"> Показувати на головній
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="ok()" ng-disabled="jobForm.$invalid">Зберегти</button>
+                <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+            </div>
+        </script>
+
+    </section>
+
+
+
+
+
+
+
+
+
+
+    {#<div ng-controller="JobsController">#}
+        {#<div class="row">#}
+            {#<div class="col-md-4">#}
+                {#<form class="form-horizontal">#}
+                    {#<div class="form-group">#}
+                        {#<label for="itemsPerPage" class="col-sm-8 control-label">Показувати на сторінці</label>#}
+                        {#<div class="col-sm-3">#}
+                            {#<select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">#}
+                                {#<option>1</option>#}
+                                {#<option>2</option>#}
+                                {#<option>3</option>#}
+                                {#<option>4</option>#}
+                                {#<option>5</option>#}
+                                {#<option>10</option>#}
+                                {#<option>25</option>#}
+                                {#<option>50</option>#}
+                                {#<option>100</option>#}
+                            {#</select>#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</form>#}
+            {#</div>#}
+            {#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}#}
+                {#<div class="col-md-4">#}
+                    {#<button ng-click="addJob()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>#}
+                {#</div>#}
+            {#{% endif %}#}
+        {#</div>#}
+
+
+        {#<div class="row">#}
+            {#<div class="col-md-12 text-center">#}
+                {#<pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>#}
+            {#</div>#}
+        {#</div>#}
+
+        {#<div class="row">#}
+            {#<div class="col-md-12">#}
+                {#<div class="splash" ng-cloak>#}
+                    {#<div class="image center-block"></div>#}
+                {#</div>#}
+                {#<div class="data-holder" ng-repeat="job in jobs" ng-cloak>#}
+                    {#<div class="data-header">#}
+                        {#<div class="date">[[ job.created | date:"dd.MM.yyyy"]]</div>#}
+                        {#<div class="title"><a href="[[job.href]]">[[job.name]]</a></div>#}
+                    {#</div>#}
+                    {#<div class="data-social">#}
+                        {#<div class="social-content">#}
+                            {#<div class="social-vk">#}
+                                {#<!-- VK -->#}
+                                {#<div id="vk_like-[[job.id]]" class="vk" content-href="{{ app.request.getSchemeAndHttpHost() }}[[job.href]]" content-title="[[job.name]]"></div>#}
+                            {#</div>#}
+                            {#<div class="social-fb">#}
+                                {#<!-- FB -->#}
+                                {#<fb:share-button href="{{ app.request.getSchemeAndHttpHost() }}[[job.href]]" layout="button_count"></fb:share-button>#}
+                            {#</div>#}
+                            {#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<button ng-click="removeJob(job)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editJob(job)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}#}
+                        {#</div>#}
+                    {#</div>#}
+                    {#<div class="data-content">#}
+                        {#<div class="col-md-3">#}
+                            {#<a href="[[job.href]]"><img class="img-thumbnail" src="{{ asset('[[job.document.url]]') }}" alt="[[job.name]]"></a>#}
+                        {#</div>#}
+                        {#<p class="text-justify" ng-bind-html="job.description | ellipsis:1100"></p></div>#}
+                    {#<div class="data-footer">#}
+                        {#{% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<span ng-show="job.onhomepage" class="label label-success">На головній <span class="glyphicon glyphicon-home"></span></span>{% endif %}#}
+                        {#<a class="btn btn-primary btn-xs" href="[[job.href]]" ng-init="setItemDirectHref(job)">Читати детальніше...</a>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+
+
+
+
+    {#</div>#}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/jquery.uploadify.min.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/angularJobsController.js') }}"></script>
+    <script>
+        var TIMESTAMP = '{{ timestamp }}';
+        var TOKEN = '{{ token }}';
+    </script>
+    <script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
+{% endblock %}

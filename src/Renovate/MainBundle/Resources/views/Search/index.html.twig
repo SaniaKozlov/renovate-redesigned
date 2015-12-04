@@ -1,0 +1,194 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Результати пошуку{% endblock %}
+
+{% block content %}
+
+    {% if search is not defined %}
+
+        <section class="news-desc">
+            <aside style="width: 80%; margin-right: 0% !important;":>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>Введіть будь-ласка критерій пошуку...</h1>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+    {% else %}
+        <section class="news-desc">
+            <aside style="width: 80%; margin-right: 0% !important;":>
+                <div class="row">
+                    <div class="col-md-12" ng-controller="SearchController">
+                        <h3>За Вашим запитом "{{search}}" знайдено:</h3>
+                        {% if articles|length > 0 %}
+                            <button class="btn btn-primary" type="button" ng-click="isCollapsedArticles = !isCollapsedArticles">
+                                Статті <span class="badge">{{articles|length}}</span>
+                            </button>
+                            <hr>
+                            <div collapse="isCollapsedArticles">
+                                {% for article in articles %}
+                                    <div class="row">
+                                        <div class="media search">
+                                            <div class="col-md-3">
+                                                <a class="media-left" href="{{ path('renovate_articles_show_article', {article_name_translit: article.getNameTranslit()}) }}">
+                                                    {% if article.label %}<img src="{{ asset(article.label.path) }}" alt="{{article.name}}">
+                                                    {% elseif article.document %}<img src="{{ asset(article.document.path) }}" alt="{{article.name}}">{%endif%}
+                                                </a>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="media-body">
+                                                    <p class="title"><a href="{{ path('renovate_articles_show_article', {article_name_translit: article.getNameTranslit()}) }}">{{article.name}}</a></p>
+                                                    <p class="description">{{article.description | slice(0, 370) | raw}}{% if article.description | length > 370%}...{% endif %}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <hr>
+                            </div>
+                        {% endif %}
+                        {% if jobs|length > 0 %}
+                            <button class="btn btn-primary" type="button" ng-click="isCollapsedJobs = !isCollapsedJobs">
+                                Види робіт <span class="badge">{{jobs|length}}</span>
+                            </button>
+                            <hr>
+                            <div collapse="isCollapsedJobs">
+                                {% for job in jobs %}
+                                    <div class="row">
+                                        <div class="media search">
+                                            <div class="col-md-3">
+                                                <a class="media-left" href="{{ path('renovate_jobs_show_job', {job_name_translit: job.getNameTranslit()}) }}">
+                                                    {% if job.label %}<img src="{{ asset(job.label.path) }}" alt="{{job.name}}">
+                                                    {% elseif job.document %}<img src="{{ asset(job.document.path) }}" alt="{{job.name}}">{%endif%}
+                                                </a>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="media-body">
+                                                    <p class="title"><a href="{{ path('renovate_jobs_show_job', {job_name_translit: job.getNameTranslit()}) }}">{{job.name}}</a></p>
+                                                    <p class="description">{{job.description | slice(0, 370) | raw}}{% if job.description | length > 370%}...{% endif %}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <hr>
+                            </div>
+                        {% endif %}
+                        {% if news|length > 0 %}
+                            <button class="btn btn-primary" type="button" ng-click="isCollapsedNews = !isCollapsedNews">
+                                Новини <span class="badge">{{news|length}}</span>
+                            </button>
+                            <hr>
+                            <div collapse="isCollapsedNews">
+                                {% for newsp in news %}
+                                    <div class="row">
+                                        <div class="media search">
+                                            <div class="col-md-3">
+                                                <a class="media-left" href="{{ path('renovate_news_show_news', {news_name_translit: newsp.getNameTranslit()}) }}">
+                                                    {% if newsp.label %}<img src="{{ asset(newsp.label.path) }}" alt="{{newsp.name}}">
+                                                    {% elseif newsp.document %}<img src="{{ asset(newsp.document.path) }}" alt="{{newsp.name}}">{%endif%}
+                                                </a>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="media-body">
+                                                    <p class="title"><a href="{{ path('renovate_news_show_news', {news_name_translit: newsp.getNameTranslit()}) }}">{{newsp.name}}</a></p>
+                                                    <p class="description">{{newsp.description | slice(0, 370) | raw}}{% if newsp.description | length > 370%}...{% endif %}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <hr>
+                            </div>
+                        {% endif %}
+                        {% if results|length > 0 %}
+                            <button class="btn btn-primary" type="button" ng-click="isCollapsedResults = !isCollapsedResults">
+                                Розультати роботи <span class="badge">{{results|length}}</span>
+                            </button>
+                            <hr>
+                            <div collapse="isCollapsedResults">
+                                {% for result in results %}
+                                    <div class="row">
+                                        <div class="media search">
+                                            <div class="col-md-3">
+                                                <a class="media-left" href="{{ path('renovate_results_show_result', {result_name_translit: result.getNameTranslit()}) }}">
+                                                    {% if result.label %}<img src="{{ asset(result.label.path) }}" alt="{{result.name}}">
+                                                    {% elseif result.document %}<img src="{{ asset(result.document.path) }}" alt="{{result.name}}">{%endif%}
+                                                </a>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="media-body">
+                                                    <p class="title"><a href="{{ path('renovate_results_show_result', {result_name_translit: result.getNameTranslit()}) }}">{{result.name}}</a></p>
+                                                    <p class="description">{{result.description | slice(0, 370) | raw}}{% if result.description | length > 370%}...{% endif %}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <hr>
+                            </div>
+                        {% endif %}
+                        {% if shares|length > 0 %}
+                            <button class="btn btn-primary" type="button" ng-click="isCollapsedShares = !isCollapsedShares">
+                                Акції <span class="badge">{{shares|length}}</span>
+                            </button>
+                            <hr>
+                            <div collapse="isCollapsedShares">
+                                {% for share in shares %}
+                                    <div class="row">
+                                        <div class="media search">
+                                            <div class="col-md-3">
+                                                <a class="media-left" href="{{ path('renovate_shares_show_share', {share_name_translit: share.getNameTranslit()}) }}">
+                                                    {% if share.label %}<img src="{{ asset(share.label.path) }}" alt="{{share.name}}">
+                                                    {% elseif share.document %}<img src="{{ asset(share.document.path) }}" alt="{{share.name}}">{%endif%}
+                                                </a>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="media-body">
+                                                    <p class="title"><a href="{{ path('renovate_shares_show_share', {share_name_translit: share.getNameTranslit()}) }}">{{share.name}}</a></p>
+                                                    <p class="description">{{share.description | slice(0, 370) | raw}}{% if share.description | length > 370%}...{% endif %}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <hr>
+                            </div>
+                        {% endif %}
+                        {% if vacancies|length > 0 %}
+                            <button class="btn btn-primary" type="button" ng-click="isCollapsedVacancies = !isCollapsedVacancies">
+                                Вакансії <span class="badge">{{vacancies|length}}</span>
+                            </button>
+                            <hr>
+                            <div collapse="isCollapsedVacancies">
+                                {% for vacancy in vacancies %}
+                                    <div class="row">
+                                        <div class="media search">
+                                            <div class="col-md-3">
+                                                <a class="media-left" href="{{ path('renovate_vacancies_show_vacancy', {vacancy_name_translit: vacancy.getNameTranslit()}) }}">
+                                                    {% if vacancy.label %}<img src="{{ asset(vacancy.label.path) }}" alt="{{vacancy.name}}">
+                                                    {% elseif vacancy.document %}<img src="{{ asset(vacancy.document.path) }}" alt="{{vacancy.name}}">{%endif%}
+                                                </a>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="media-body">
+                                                    <p class="title"><a href="{{ path('renovate_vacancies_show_vacancy', {vacancy_name_translit: vacancy.getNameTranslit()}) }}">{{vacancy.name}}</a></p>
+                                                    <p class="description">{{vacancy.description | slice(0, 370) | raw}}{% if vacancy.description | length > 370%}...{% endif %}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <hr>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+    {% endif %}
+
+{% endblock %}

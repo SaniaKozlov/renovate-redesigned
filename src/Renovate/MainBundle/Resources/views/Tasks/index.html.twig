@@ -1,0 +1,171 @@
+{% extends "RenovateMainBundle::layout.html.twig" %}
+
+{% block title %}Завдання{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="news-desc" style="margin: 65px 0 30px;">
+        <aside style="width: 95%; margin-right: 0% !important;">
+            <div ng-controller="TasksController">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <label for="itemsPerPage">На сторінці</label>
+                                <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>100</option>
+                                    <option>500</option>
+                                    <option>1000</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="workers">Виконавці</label>
+                                <select id="workers" ng-options="user.id as (user.surname+' '+user.name+' '+user.patronymic+'('+user.username+')') for user in users" class="form-control" ng-model="filter.userid">
+                                    <option value="">усі</option>
+                                </select>
+                            </div>
+                            <div class="form-group datepicker">
+                                <div class="input-group">
+                                    <input placeholder="Від" id="from" ng-click="openFrom($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.from" is-open="openedFrom" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні" />
+                                    <div class="input-group-addon" ng-click="openFrom($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                </div>
+                            </div>
+                            <div class="form-group datepicker">
+                                <div class="input-group">
+                                    <input placeholder="До" id="to" ng-click="openTo($event)" type="text" class="form-control" datepicker-popup="dd.MM.yyyy" ng-model="filter.to" is-open="openedTo" close-text="Закрити" clear-text="Очистити" current-text="Сьогодні"/>
+                                    <div class="input-group-addon" ng-click="openTo($event)"><i class="glyphicon glyphicon-calendar"></i></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input ng-model="statuses.ready" type="checkbox"> До виконання
+                                </label>
+                                <label>
+                                    <input ng-model="statuses.finished" type="checkbox"> Виконані
+                                </label>
+                                <label>
+                                    <input ng-model="statuses.approved" type="checkbox"> Підтверджені
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4" style="margin-top: 20px;">
+                        <button ng-click="addTask()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-hover table-mobile">
+                            <thead>
+                            <tr>
+                                <th style="background-color: #fff;">#</th>
+                                <th style="background-color: #fff;">Виконавець</th>
+                                <th style="background-color: #fff;">Опис</th>
+                                <th style="background-color: #fff;">Створено</th>
+                                <th style="background-color: #fff;">Виконано</th>
+                                <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="splash" ng-cloak>
+                                <td colspan="8">
+                                    <div class="image center-block"></div>
+                                </td>
+                            </tr>
+                            <tr ng-repeat="task in tasks" ng-class="{blue: task.status == 'ready', green: task.status == 'finished', gray: task.status == 'approved'}" ng-cloak>
+                                <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                <td><cite title="[[task.user.name + ' ' + task.user.surname]]">[[task.user.username]]</cite></td>
+                                <td style="white-space: pre-wrap;">[[task.description]]</td>
+                                <td>[[task.created | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                <td>[[task.finished | date:"dd.MM.yyyy HH:mm:ss"]]</td>
+                                <td><button ng-click="removeTask(task)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-show="task.status == 'ready'" ng-click="editTask(task)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button><button ng-show="task.status == 'finished'" ng-click="declineTask(task)" type="button" class="close"><span class="glyphicon glyphicon-share"></span></button><button ng-show="task.status == 'finished'" ng-click="approveTask(task)" type="button" class="close"><span class="glyphicon glyphicon-check"></span></button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                    </div>
+                </div>
+                <script type="text/ng-template" id="addTask.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Додати завдання...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="taskForm">
+                            <div class="form-group" ng-class="{ 'has-error' : taskForm.taskDescription.$invalid && !taskForm.taskDescription.$pristine }">
+                                <label for="taskDescription" class="col-sm-2 control-label">Опис</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" ng-model="task.description" id="taskDescription" name="taskDescription" required></textarea>
+                                    <p ng-show="taskForm.taskDescription.$invalid && !taskForm.taskDescription.$pristine" class="help-block">Введіть опис.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': taskForm.taskUser.$invalid && !taskForm.taskUser.$pristine}">
+                                <label for="taskUser" class="col-sm-2 control-label">Виконавець</label>
+                                <div class="col-sm-10">
+                                    <select ng-options="user.id as (user.surname+' '+user.name+' '+user.patronymic+'('+user.username+')') for user in users" class="form-control" id="taskUser" ng-model="task.userid" name="taskUser" required>
+                                    </select>
+                                    <p ng-show="taskForm.taskUser.$invalid && !taskForm.taskUser.$pristine" class="help-block">Оберіть виконавця.</p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="taskForm.$invalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+                <script type="text/ng-template" id="editTask.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Редагувати завдання...</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal" name="taskForm">
+                            <div class="form-group" ng-class="{ 'has-error' : taskForm.taskDescription.$invalid && !taskForm.taskDescription.$pristine }">
+                                <label for="taskDescription" class="col-sm-2 control-label">Опис</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" ng-model="task.description" id="taskDescription" name="taskDescription" required></textarea>
+                                    <p ng-show="taskForm.taskDescription.$invalid && !taskForm.taskDescription.$pristine" class="help-block">Введіть опис.</p>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': taskForm.taskUser.$invalid && !taskForm.taskUser.$pristine}">
+                                <label for="taskUser" class="col-sm-2 control-label">Виконавець</label>
+                                <div class="col-sm-10">
+                                    <select ng-options="user.id as (user.surname+' '+user.name+' '+user.patronymic+'('+user.username+')') for user in users" class="form-control" id="taskUser" ng-model="task.userid" name="taskUser" required>
+                                    </select>
+                                    <p ng-show="taskForm.taskUser.$invalid && !taskForm.taskUser.$pristine" class="help-block">Оберіть виконавця.</p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" ng-click="ok()" ng-disabled="taskForm.$invalid">Зберегти</button>
+                        <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+                    </div>
+                </script>
+            </div>
+        </aside>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
