@@ -42,17 +42,27 @@
 
     {% for i, job in jobs %}
 
-        <div style="display: none;" ng-init="initJobs('{{ jobs[i].getName() | replace({"'": "\\'"}) }}',
-            '{{ jobs[i].getDescription() | escape | slice(0, 300) | replace({"'": "\\'"}) | raw  }}',
+        <div style="display: none;" ng-init="initJobs('
+        {% if jobs[i].getShortName() != '' %}
+            {{ jobs[i].getShortName() }}
+        {% else %}
+            {{ jobs[i].getName() | replace({"'": "\\'"}) }}
+        {% endif %}',
 
-            {% if jobs[i].getLabel() %}
-                '{{ asset(jobs[i].getLabel().getPath()) }}',
+        '{% if jobs[i].getShortDescription() != '' %}
+            {{ jobs[i].getShortDescription() }}
+        {% else %}
+            {{ jobs[i].getDescription() | escape | slice(0, 300) | replace({"'": "\\'"}) | raw  }} }}
+        {% endif %}',
 
-            {% else %}
-                '{{ asset(jobs[i].getDocument().getPath()) }}',
+        {% if jobs[i].getLabel() %}
+            '{{ asset(jobs[i].getLabel().getPath()) }}',
 
-            {% endif %}
-            '{{ jobs[i].getNameTranslit() }}')">
+        {% else %}
+            '{{ asset(jobs[i].getDocument().getPath()) }}',
+
+        {% endif %}
+        '{{ jobs[i].getNameTranslit() }}')">
         </div>
 
     {% endfor %}
@@ -62,7 +72,7 @@
 
                 <i ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item_bg before hidden-xs"></i>
 
-                <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[filterJobName(modelJob[rightCounter].jobName)]]</span>
+                <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[modelJob[rightCounter].jobName]]</span>
 
                 <i ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item_bg after"></i>
             </span>
@@ -71,7 +81,7 @@
 
                 <i ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item_bg before hidden-xs"></i>
 
-                <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[filterJobName(modelJob[leftCounter].jobName)]]</span>
+                <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[modelJob[leftCounter].jobName]]</span>
 
                 <i ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item_bg after"></i>
             </span>
@@ -85,7 +95,7 @@
             </header>
             <div style="height: 20px;"></div>
             <footer class="footer-xs">
-                <p style="text-align: justify; overflow: hidden; height: 64px;" ng-bind-html="modelJob[centerCounter].jobDescription"></p>
+                <p style="font-style: italic;text-align: justify; overflow: hidden; height: 64px;" ng-bind-html="modelJob[centerCounter].jobDescription"></p>
                 <a href="[[modelJob[centerCounter].jobHref]]">
                     <img style="width: 100%; height: 200px;" src="[[modelJob[centerCounter].jobSrc]]" alt=""/>
                 </a>

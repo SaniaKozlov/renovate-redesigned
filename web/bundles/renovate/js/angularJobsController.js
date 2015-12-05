@@ -12,12 +12,10 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 	$scope.urlsJobsRemoveNg = URLS.jobsRemoveNg;
 
 	$scope.$watch('itemsPerPage', function(){
-		console.log("itemsPerPage => ", $scope.itemsPerPage);
 		getJobsCount();
 	});
 
 	$scope.$watch('currentPage', function(){
-		console.log("currentPage => ", $scope.currentPage);
 		getJobs();
 	});
 
@@ -31,7 +29,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 			params: {offset: offset, limit: limit}
 		})
 			.success(function(response){
-				console.log("jobs => ", response);
 				if (response.result)
 				{
 					$scope.jobs = response.result;
@@ -51,7 +48,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 			url: $scope.urlsJobsCountNg
 		})
 			.success(function(response){
-				console.log(response);
 				if (response.result)
 				{
 					$scope.totalItems = parseInt(response.result);
@@ -105,7 +101,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 			url: url
 		})
 			.success(function(response){
-				console.log(response);
 				if (response.result)
 				{
 					getJobsCount();
@@ -131,7 +126,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 				url: $scope.urlsDocumentsGetNg
 			})
 				.success(function(response){
-					console.log("documents => ",response);
 					if (response.result)
 					{
 						$scope.documents = response.result;
@@ -156,7 +150,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 				'swf'      : URLS.uploadifySWF,
 				'uploader' : URLS.documentsUpload,
 				'onUploadSuccess' : function(file, data, response) {
-					console.log('The file ' + file.name + ' was successfully uploaded with a response: ' + response + ' : ' + data);
 					getDocuments();
 				}
 			});
@@ -205,7 +198,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 				url: $scope.urlsDocumentsGetNg
 			})
 				.success(function(response){
-					console.log("documents => ",response);
 					if (response.result)
 					{
 						$scope.documents = response.result;
@@ -230,7 +222,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 				'swf'      : URLS.uploadifySWF,
 				'uploader' : URLS.documentsUpload,
 				'onUploadSuccess' : function(file, data, response) {
-					console.log('The file ' + file.name + ' was successfully uploaded with a response: ' + response + ' : ' + data);
 					getDocuments();
 				}
 			});
@@ -251,7 +242,6 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 				data: $scope.job
 			})
 				.success(function(response){
-					console.log("edited job => ", response);
 					if (response.result)
 					{
 						$modalInstance.close(response.result);

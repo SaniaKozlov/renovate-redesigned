@@ -163,6 +163,13 @@
                             <p ng-show="jobForm.jobName.$invalid && !jobForm.jobName.$pristine" class="help-block">Введіть назву.</p>
                         </div>
                     </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.jobShortName.$invalid && !jobForm.jobShortName.$pristine}">
+                        <label for="jobShortName" class="col-sm-2 control-label">Короткий заголовок</label>
+                        <div class="col-sm-10">
+                            <input ng-model="job.shortName" type="text" class="form-control" id="jobShortName" name="jobShortName">
+                            <p ng-show="jobForm.jobShortName.$invalid && !jobForm.jobShortName.$pristine" class="help-block">Введіть назву.</p>
+                        </div>
+                    </div>
                     <div class="form-group" ng-class="{'has-error': jobForm.jobDocument.$invalid && !jobForm.jobDocument.$pristine}">
                         <label for="jobDocument" class="col-sm-2 control-label">Обкладинка</label>
                         <div class="col-sm-10">
@@ -185,6 +192,13 @@
                         <div class="col-sm-10">
                             <textarea ng-model="job.description" id="jobDescription" class="form-control" rows="5" name="jobDescription" required></textarea>
                             <p ng-show="jobForm.jobDescription.$invalid && !jobForm.jobDescription.$pristine" class="help-block">Введіть опис.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': jobForm.shortDescription.$invalid && !jobForm.shortDescription.$pristine}">
+                        <label for="jobSortDescription" class="col-sm-2 control-label">Короткий опис</label>
+                        <div class="col-sm-10">
+                            <textarea ng-model="job.shortDescription" id="jobSortDescription" class="form-control" rows="5" name="jobSortDescription"></textarea>
+                            <p ng-show="jobForm.shortDescription.$invalid && !jobForm.shortDescription.$pristine" class="help-block">Введіть короткий опис.</p>
                         </div>
                     </div>
                     <div class="form-group">

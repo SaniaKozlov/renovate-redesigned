@@ -456,7 +456,8 @@ class Job
 		$job->setNameTranslit($transliterater->transliterate($parameters->name));
 		$job->setDescription($parameters->description);
 		$job->setOnhomepage($parameters->onhomepage);
-
+		$job->setShortName($parameters->shortName);
+		$job->setShortDescription($parameters->shortDescription);
 		$em->persist($job);
 		$em->flush();
 
