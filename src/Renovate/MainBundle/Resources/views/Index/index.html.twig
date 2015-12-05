@@ -68,22 +68,22 @@
     {% endfor %}
 
     <section ng-init="leftCounter = '{{ jobs | length - 1 }}'; jobLength = '{{ jobs | length - 1 }}'" class="setprosition wow bounceInDown center animated">
-            <span ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item prev">
+            <span ng-click="clickLeftBlock();" class="control_item prev">
 
-                <i ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item_bg before hidden-xs"></i>
+                <i ng-click="clickLeftBlock();" class="control_item_bg before hidden-xs"></i>
 
                 <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[modelJob[rightCounter].jobName]]</span>
 
-                <i ng-click="clickLeftBlock(); initSlaiderHeight()" class="control_item_bg after"></i>
+                <i ng-click="clickLeftBlock();" class="control_item_bg after"></i>
             </span>
 
-            <span ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item next">
+            <span ng-click="clickRightBlock();" class="control_item next">
 
-                <i ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item_bg before hidden-xs"></i>
+                <i ng-click="clickRightBlock();" class="control_item_bg before hidden-xs"></i>
 
                 <span style="line-height: 2.7" class="name pseudo_link hidden-xs">[[modelJob[leftCounter].jobName]]</span>
 
-                <i ng-click="clickRightBlock(); initSlaiderHeight()" class="control_item_bg after"></i>
+                <i ng-click="clickRightBlock();" class="control_item_bg after"></i>
             </span>
     </section>
 
