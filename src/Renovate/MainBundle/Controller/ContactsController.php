@@ -24,7 +24,7 @@ class ContactsController extends Controller
     	$message = \Swift_Message::newInstance()
 		    	->setSubject($parameters->topic)
 		    	->setFrom('renovate.office@gmail.com')
-		    	->setTo('support@renovate.in.ua')
+		    	->setTo('renovate.office@gmail.com')
 		    	->setBody(
     			"П.І.П.: ".$parameters->pip."\n".
     			"Email: ".$parameters->email."\n\n".
