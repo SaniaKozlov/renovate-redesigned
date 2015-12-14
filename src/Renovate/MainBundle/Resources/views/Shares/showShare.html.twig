@@ -19,46 +19,118 @@
 {% endblock %}
 
 {% block head %}
+    <link href="{{ asset('bundles/renovate/css/uploadify.css') }}" rel="stylesheet">
     <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+    <script src="{{ asset('bundles/renovate/plugins/ckeditor/ckeditor.js') }}"></script>
 {% endblock %}
 
 {% block social %}<meta name="og:image" content="{{asset(share.document.path)}}"/>{% endblock %}
 
 {% block content %}
 
+    <div ng-controller="SharesController">
 
-    <section class="news-desc hidden-xs hidden-sm">
-        <aside style="width: 80%; margin-right: 0% !important;">
+        <div ng-init="getSingleNews('{{ share.id }}')"></div>
 
-            <h1 class="textshadowblue" style="margin-top: 20px; width: 580px; line-height: 1.5;">{{ share.name }}</h1>
+        {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+            <section class="news-desc hidden-xs hidden-sm">
+                <aside style="width: 95%; margin-right: 0% !important;">
+                    {#<button ng-click="removeArticle(singleArticle)" type="button" class="close">#}
+                    {#<span class="glyphicon glyphicon-remove"></span>#}
+                    {#</button>#}
+                    <button ng-click="editShare(singleShare)" type="button" class="close">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button>
+                </aside>
+            </section>
+        {% endif %}
 
-            <article style="padding-bottom: 60px; background: none;">
+        <section class="news-desc hidden-xs hidden-sm">
+            <aside style="width: 80%; margin-right: 0% !important;">
 
-                <div style="padding-top: 0; position: absolute;">
-                    <img width="220px" src="{{asset(share.document.path)}}" alt="{{share.name}}"/>
+                <h1 class="textshadowblue" style="margin-top: 20px; width: 580px; line-height: 1.5;">[[ singleShare.name ]]</h1>
+
+                <article style="padding-bottom: 60px; background: none;">
+
+                    <div style="padding-top: 0; position: absolute;">
+                        <img width="220px" ng-src="[[ '/' + singleShare.document.url ]]" alt="[[ singleShare.name ]]"/>
+                    </div>
+
+                    <div class="summary" ng-bind-html="singleShare.description"></div>
+
+                </article>
+
+            </aside>
+        </section>
+
+        <div style="margin-left: 2%;" class="visible-xs visible-sm">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1 class="textshadowblue" style="margin-top: 20px;">[[ singleShare.name ]]</h1>
                 </div>
-
-                <div class="summary">
-                    {{share.description | raw}}
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <img width="220px" ng-src="[[ '/' + singleShare.document.url ]]" alt="[[ singleShare.name ]]"/>
                 </div>
-
-            </article>
-
-        </aside>
-    </section>
-
-    <div style="margin-left: 2%;" class="visible-xs visible-sm">
-        <div class="row">
-            <div class="col-xs-12">
-                <h1 class="textshadowblue" style="margin-top: 20px;">{{ share.name }}</h1>
+                <div class="col-xs-12" ng-bind-html="singleShare.description"></div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <img width="220px" src="{{asset(share.document.path)}}" alt="{{share.name}}"/>
+
+        <script type="text/ng-template" id="editShare.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Редагування акції...</h3>
             </div>
-            <div class="col-xs-12">{{share.description | raw}}</div>
-        </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="shareForm">
+                    <div class="form-group" ng-class="{'has-error': shareForm.shareName.$invalid && !shareForm.shareName.$pristine}">
+                        <label for="shareName" class="col-sm-2 control-label">Назва</label>
+                        <div class="col-sm-10">
+                            <input ng-model="share.name" type="text" class="form-control" id="shareName" name="shareName" required>
+                            <p ng-show="shareForm.shareName.$invalid && !shareForm.shareName.$pristine" class="help-block">Введіть назву.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': shareForm.shareDocument.$invalid && !shareForm.shareDocument.$pristine}">
+                        <label for="shareDocument" class="col-sm-2 control-label">Обкладинка</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="shareDocument" ng-model="share.documentid" name="shareDocument" required>
+                            </select>
+                            <p ng-show="shareForm.shareDocument.$invalid && !shareForm.shareDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                            <input type="file" name="file_upload" id="file_upload" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': shareForm.shareLabel.$invalid && !shareForm.shareLabel.$pristine}">
+                        <label for="shareLabel" class="col-sm-2 control-label">Ярлик</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="shareLabel" ng-model="share.labelid" name="shareLabel">
+                            </select>
+                            <p ng-show="shareForm.shareLabel.$invalid && !shareForm.shareLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': shareForm.shareDescription.$invalid && !shareForm.shareDescription.$pristine}">
+                        <label for="shareDescription" class="col-sm-2 control-label">Опис</label>
+                        <div class="col-sm-10">
+                            <textarea ng-model="share.description" id="shareDescription" class="form-control" rows="5" name="shareDescription" required></textarea>
+                            <p ng-show="shareForm.shareDescription.$invalid && !shareForm.shareDescription.$pristine" class="help-block">Введіть опис.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="share.onhomepage"> Показувати на головній
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="ok()" ng-disabled="shareForm.$invalid">Зберегти</button>
+                <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+            </div>
+        </script>
+
     </div>
 
     {#<div class="row">#}
@@ -91,6 +163,12 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script src="{{ asset('bundles/renovate/js/jquery.uploadify.min.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/angularSharesController.js') }}"></script>
+    <script>
+        var TIMESTAMP = '{{ timestamp }}';
+        var TOKEN = '{{ token }}';
+    </script>
     <script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
     <script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
 {% endblock %}

@@ -6,10 +6,24 @@ Renovate.controller('JobsController', function($scope,$http,$modal){
 	$scope.currentPage = 1;
 	$scope.itemsPerPage = 12;
 
+    $scope.urlsGetSingleJob = URLS.getSingleJob;
 	$scope.urlsJobsGetNg = URLS.jobsGetNg;
 	$scope.urlsJobsShowJob = URLS.jobsShowJob;
 	$scope.urlsJobsCountNg = URLS.jobsCountNg;
 	$scope.urlsJobsRemoveNg = URLS.jobsRemoveNg;
+
+    $scope.singleJob = null;
+
+    $scope.getSingleJob = function (job_id) {
+        $http({
+            method: "POST",
+            url: $scope.urlsGetSingleJob,
+            params: { job_id: job_id }
+        })
+            .success(function (response) {
+                $scope.singleJob = response;
+            });
+    };
 
 	$scope.$watch('itemsPerPage', function(){
 		getJobsCount();

@@ -248,6 +248,22 @@ renovate_get_single_articles:
     path: /get-single-article
     defaults: { _controller: RenovateMainBundle:Articles:getSingleArticle }
 
+renovate_get_single_news:
+    path: /get-single-news
+    defaults: { _controller: RenovateMainBundle:News:getSingleNews }
+
+renovate_get_single_share:
+    path: /get-single-share
+    defaults: { _controller: RenovateMainBundle:Shares:getSingleShare }
+
+renovate_get_single_job:
+    path: /get-single-job
+    defaults: { _controller: RenovateMainBundle:Jobs:getSingleJob }
+
+renovate_get_single_vacancy:
+    path: /get-single-vacancy
+    defaults: { _controller: RenovateMainBundle:Vacancies:getSingleVacancy }
+
 renovate_ng_articles:
     path: /ng/articles
     defaults: { _controller: RenovateMainBundle:Articles:getArticlesNg}

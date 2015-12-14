@@ -5,11 +5,25 @@ Renovate.controller('NewsController', function($scope,$http,$modal){
 	$scope.totalItems = 0;
 	$scope.currentPage = 1;
 	$scope.itemsPerPage = 5;
-	
+
+    $scope.urlsGetSingleNews = URLS.getSingleNews;
 	$scope.urlsNewsGetNg = URLS.newsGetNg;
 	$scope.urlsNewsShowNews = URLS.newsShowNews;
 	$scope.urlsNewsCountNg = URLS.newsCountNg;
 	$scope.urlsNewsRemoveNg = URLS.newsRemoveNg;
+
+    $scope.singleNews = null;
+
+    $scope.getSingleNews = function (news_id) {
+        $http({
+            method: "POST",
+            url: $scope.urlsGetSingleNews,
+            params: { news_id: news_id }
+        })
+            .success(function (response) {
+                $scope.singleNews = response;
+            });
+    };
 	
 	$scope.$watch('itemsPerPage', function(){
 		console.log("itemsPerPage => ", $scope.itemsPerPage);

@@ -5,11 +5,25 @@ Renovate.controller('VacanciesController', function($scope,$http,$modal){
 	$scope.totalItems = 0;
 	$scope.currentPage = 1;
 	$scope.itemsPerPage = 5;
-	
+
+    $scope.urlsGetSingleVacancy = URLS.getSingleVacancy;
 	$scope.urlsVacanciesGetNg = URLS.vacanciesGetNg;
 	$scope.urlsVacanciesShowVacancy = URLS.vacanciesShowVacancy;
 	$scope.urlsVacanciesCountNg = URLS.vacanciesCountNg;
 	$scope.urlsVacanciesRemoveNg = URLS.vacanciesRemoveNg;
+
+    $scope.singleVacancy = null;
+
+    $scope.getSingleVacancy = function (vacancy_id) {
+        $http({
+            method: "POST",
+            url: $scope.urlsGetSingleVacancy,
+            params: { vacancy_id: vacancy_id }
+        })
+            .success(function (response) {
+                $scope.singleVacancy = response;
+            });
+    };
 	
 	$scope.$watch('itemsPerPage', function(){
 		console.log("itemsPerPage => ", $scope.itemsPerPage);

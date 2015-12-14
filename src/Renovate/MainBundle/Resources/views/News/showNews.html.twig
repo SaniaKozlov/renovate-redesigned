@@ -19,45 +19,114 @@
 {% endblock %}
 
 {% block head %}
+    <link href="{{ asset('bundles/renovate/css/uploadify.css') }}" rel="stylesheet">
     <script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+    <script src="{{ asset('bundles/renovate/plugins/ckeditor/ckeditor.js') }}"></script>
 {% endblock %}
 
 {% block social %}<meta name="og:image" content="{{asset(news.document.path)}}"/>{% endblock %}
 
 {% block content %}
 
+    <div ng-controller="NewsController">
+        <div ng-init="getSingleNews('{{ news.id }}')"></div>
 
-    <section class="news-desc hidden-xs hidden-sm">
-        <aside style="width: 95%; margin-right: 0% !important;">
+        {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
+            <section class="news-desc hidden-xs hidden-sm">
+                <aside style="width: 95%; margin-right: 0% !important;">
+                    {#<button ng-click="removeArticle(singleArticle)" type="button" class="close">#}
+                    {#<span class="glyphicon glyphicon-remove"></span>#}
+                    {#</button>#}
+                    <button ng-click="editNews(singleNews)" type="button" class="close">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button>
+                </aside>
+            </section>
+        {% endif %}
 
-            <h1 class="textshadowblue" style="margin-top: 20px; line-height: 1.5;">{{ news.name }}</h1>
+        <section class="news-desc hidden-xs hidden-sm">
+            <aside style="width: 95%; margin-right: 0% !important;">
 
-            <div style="float: left; margin: 0 25px 1px 0;">
-                <img width="400px" height="300px" src="{{asset(news.document.path)}}" alt="{{news.name}}" style="box-shadow: 0 5px 20px rgba(65,65,88,0.4); border-radius: 10px;">
+                <h1 class="textshadowblue" style="margin-top: 20px; line-height: 1.5;">[[ singleNews.name ]]</h1>
+
+                <div style="float: left; margin: 0 25px 1px 0;">
+                    <img width="400px" height="300px" ng-src="[[ '/' + singleNews.document.url ]]" alt="[[ singleNews.name ]]" style="box-shadow: 0 5px 20px rgba(65,65,88,0.4); border-radius: 10px;">
+                </div>
+
+                <div class="summary" style="padding: 0 !important;" ng-bind-html="singleNews.description"></div>
+
+            </aside>
+        </section>
+
+        <div style="margin-left: 2%;" class="visible-xs visible-sm">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1 class="textshadowblue" style="margin-top: 20px;">[[ singleNews.name ]]</h1>
+                </div>
             </div>
-
-            <div class="summary" style="padding: 0 !important;">
-                {{news.description | raw}}
-            </div>
-
-        </aside>
-    </section>
-
-    <div style="margin-left: 2%;" class="visible-xs visible-sm">
-        <div class="row">
-            <div class="col-xs-12">
-                <h1 class="textshadowblue" style="margin-top: 20px;">{{ news.name }}</h1>
+            <div class="row">
+                <div class="col-xs-12">
+                    <img width="220px" ng-src="[[ '/' + singleNews.document.url ]]" alt="[[ singleNews.name ]]"/>
+                </div>
+                <div class="col-xs-12" ng-bind-html="singleNews.description"></div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <img width="220px" src="{{asset(news.document.path)}}" alt="{{news.name}}"/>
+
+        <script type="text/ng-template" id="editNews.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Редагування новини...</h3>
             </div>
-            <div class="col-xs-12">{{news.description | raw}}</div>
-        </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="newsForm">
+                    <div class="form-group" ng-class="{'has-error': newsForm.newsName.$invalid && !newsForm.newsName.$pristine}">
+                        <label for="newsName" class="col-sm-2 control-label">Назва</label>
+                        <div class="col-sm-10">
+                            <input ng-model="news.name" type="text" class="form-control" id="newsName" name="newsName" required>
+                            <p ng-show="newsForm.newsName.$invalid && !newsForm.newsName.$pristine" class="help-block">Введіть назву.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': newsForm.newsDocument.$invalid && !newsForm.newsDocument.$pristine}">
+                        <label for="newsDocument" class="col-sm-2 control-label">Обкладинка</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="newsDocument" ng-model="news.documentid" name="newsDocument" required>
+                            </select>
+                            <p ng-show="newsForm.newsDocument.$invalid && !newsForm.newsDocument.$pristine" class="help-block">Оберіть обкладинку.</p>
+                            <input type="file" name="file_upload" id="file_upload" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': newsForm.newsLabel.$invalid && !newsForm.newsLabel.$pristine}">
+                        <label for="newsLabel" class="col-sm-2 control-label">Ярлик</label>
+                        <div class="col-sm-10">
+                            <select ng-options="document.id as document.name for document in documents" class="form-control" id="newsLabel" ng-model="news.labelid" name="newsLabel">
+                            </select>
+                            <p ng-show="newsForm.newsLabel.$invalid && !newsForm.newsLabel.$pristine" class="help-block">Оберіть ярлик.</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': newsForm.newsDescription.$invalid && !newsForm.newsDescription.$pristine}">
+                        <label for="newsDescription" class="col-sm-2 control-label">Опис</label>
+                        <div class="col-sm-10">
+                            <textarea ng-model="news.description" id="newsDescription" class="form-control" rows="5" name="newsDescription" required></textarea>
+                            <p ng-show="newsForm.newsDescription.$invalid && !newsForm.newsDescription.$pristine" class="help-block">Введіть опис.</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="news.onhomepage"> Показувати на головній
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" ng-click="ok()" ng-disabled="newsForm.$invalid">Зберегти</button>
+                <button class="btn btn-warning" ng-click="cancel()">Відміна</button>
+            </div>
+        </script>
+
     </div>
-
-
 
 	{#<div class="row">#}
 		{#<div class="col-md-2" style="margin-top: 5px;">#}
@@ -91,6 +160,12 @@
 {% endblock %} 
 
 {% block javascripts %}
-<script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
-<script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/jquery.uploadify.min.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/angularNewsController.js') }}"></script>
+    <script>
+        var TIMESTAMP = '{{ timestamp }}';
+        var TOKEN = '{{ token }}';
+    </script>
+    <script src="{{ asset('bundles/renovate/js/vkButton.js') }}"></script>
+    <script src="{{ asset('bundles/renovate/js/fbButton.js') }}"></script>
 {% endblock %}

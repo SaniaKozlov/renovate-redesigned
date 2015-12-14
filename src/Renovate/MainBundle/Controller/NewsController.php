@@ -3,6 +3,7 @@
 namespace Renovate\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Renovate\MainBundle\Entity\News;
@@ -27,16 +28,33 @@ class NewsController extends Controller
     
     public function showNewsAction($news_name_translit)
     {
+        $timestamp = time();
+        $token = Document::getToken($timestamp);
+
     	$em = $this->getDoctrine()->getManager();
     	$news = $em->getRepository("RenovateMainBundle:News")->findOneByNameTranslit($news_name_translit);
     	
     	if ($news == NULL) return $this->redirect($this->generateUrl('renovate_main_homepage'));
     	
-    	$parameters = array("news" => $news);
+    	$parameters = array(
+            'news' => $news,
+            'timestamp' => $timestamp,
+            'token' => $token
+        );
     	
     	$parameters['page'] = $this->get('renovate.pages')->getPageForUrl($this->getRequest()->getUri());
     	
     	return $this->render('RenovateMainBundle:News:showNews.html.twig', $parameters);
+    }
+
+    public function getSingleNewsAction(Request $request)
+    {
+        $params = $request->query->all();
+
+        /** @var News $news */
+        $news = $this->getDoctrine()->getRepository('RenovateMainBundle:News')->find($params['news_id']);
+
+        return new JsonResponse($news->getInArray());
     }
     
     public function getNewsNgAction(Request $request)

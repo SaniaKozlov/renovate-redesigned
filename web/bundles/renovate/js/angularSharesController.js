@@ -5,11 +5,25 @@ Renovate.controller('SharesController', function($scope,$http,$modal){
 	$scope.totalItems = 0;
 	$scope.currentPage = 1;
 	$scope.itemsPerPage = 3;
-	
+
+    $scope.urlsGetSingleShare = URLS.getSingleShare;
 	$scope.urlsSharesGetNg = URLS.sharesGetNg;
 	$scope.urlsSharesShowShare = URLS.sharesShowShare;
 	$scope.urlsSharesCountNg = URLS.sharesCountNg;
 	$scope.urlsSharesRemoveNg = URLS.sharesRemoveNg;
+
+    $scope.singleShare = null;
+
+    $scope.getSingleNews = function (share_id) {
+        $http({
+            method: "POST",
+            url: $scope.urlsGetSingleShare,
+            params: { share_id: share_id }
+        })
+            .success(function (response) {
+                $scope.singleShare = response;
+            });
+    };
 	
 	$scope.$watch('itemsPerPage', function(){
 		console.log("itemsPerPage => ", $scope.itemsPerPage);

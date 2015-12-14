@@ -3,6 +3,7 @@
 namespace Renovate\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Renovate\MainBundle\Entity\Vacancy;
@@ -27,16 +28,33 @@ class VacanciesController extends Controller
     
     public function showVacancyAction($vacancy_name_translit)
     {
+        $timestamp = time();
+        $token = Document::getToken($timestamp);
+
     	$em = $this->getDoctrine()->getManager();
     	$vacancy = $em->getRepository("RenovateMainBundle:Vacancy")->findOneByNameTranslit($vacancy_name_translit);
     	 
     	if ($vacancy == NULL) return $this->redirect($this->generateUrl('renovate_main_homepage'));
 
-    	$parameters = array("vacancy" => $vacancy);
+    	$parameters = array(
+            'vacancy' => $vacancy,
+            'timestamp' => $timestamp,
+            'token' => $token
+        );
     	 
     	$parameters['page'] = $this->get('renovate.pages')->getPageForUrl($this->getRequest()->getUri());
     	
     	return $this->render('RenovateMainBundle:Vacancies:showVacancy.html.twig', $parameters);
+    }
+
+    public function getSingleVacancyAction(Request $request)
+    {
+        $params = $request->query->all();
+
+        /** @var Vacancy $vacancy */
+        $vacancy = $this->getDoctrine()->getRepository('RenovateMainBundle:Vacancy')->find($params['vacancy_id']);
+
+        return new JsonResponse($vacancy->getInArray());
     }
     
     public function getVacanciesNgAction(Request $request)

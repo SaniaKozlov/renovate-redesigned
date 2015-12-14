@@ -3,6 +3,7 @@
 namespace Renovate\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Renovate\MainBundle\Entity\Job;
@@ -27,16 +28,33 @@ class JobsController extends Controller
     
     public function showJobAction($job_name_translit)
     {
+        $timestamp = time();
+        $token = Document::getToken($timestamp);
+
     	$em = $this->getDoctrine()->getManager();
     	$job = $em->getRepository("RenovateMainBundle:Job")->findOneByNameTranslit($job_name_translit);
     	
     	if ($job == NULL) return $this->redirect($this->generateUrl('renovate_main_homepage'));
     	
-    	$parameters = array("job" => $job);
+    	$parameters = array(
+            'job' => $job,
+            'timestamp' => $timestamp,
+            'token' => $token
+        );
     	
     	$parameters['page'] = $this->get('renovate.pages')->getPageForUrl($this->getRequest()->getUri());
     	 
     	return $this->render('RenovateMainBundle:Jobs:showJob.html.twig', $parameters);
+    }
+
+    public function getSingleJobAction(Request $request)
+    {
+        $params = $request->query->all();
+
+        /** @var Job $job */
+        $job = $this->getDoctrine()->getRepository('RenovateMainBundle:Job')->find($params['job_id']);
+
+        return new JsonResponse($job->getInArray());
     }
     
     public function getJobsNgAction(Request $request)
