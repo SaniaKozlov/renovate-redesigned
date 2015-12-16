@@ -44,15 +44,15 @@
 
         <div style="display: none;" ng-init="initJobs('
         {% if jobs[i].getShortName() != '' %}
-            {{ jobs[i].getShortName() }}
+            {{ jobs[i].getShortName() | replace({"'": "\\'"}) }}
         {% else %}
             {{ jobs[i].getName() | replace({"'": "\\'"}) }}
         {% endif %}',
 
         '{% if jobs[i].getShortDescription() != '' %}
-            {{ jobs[i].getShortDescription() }}
+            {{ jobs[i].getShortDescription() | replace({"'": "\\'"}) }}
         {% else %}
-            {{ jobs[i].getDescription() | escape | slice(0, 300) | replace({"'": "\\'"}) | raw  }} }}
+            {{ jobs[i].getDescription() | escape | slice(0, 300) | replace({"'": "\\'"}) | raw  }}
         {% endif %}',
 
         {% if jobs[i].getLabel() %}
