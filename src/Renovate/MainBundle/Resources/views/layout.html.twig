@@ -254,24 +254,24 @@
             <ins class="wave wave_3"></ins>
             <div class="col-xs-12 col-sm-5">
                 <h4 style="font-weight: bold;"><a href="{{ path('renovate_jobs') }}">Послуги</a></h4>
-		<div class="row">
-			<div class="col-xs-6">
-				<ul class="list-unstyled">
-				<li><a href="http://renovate.in.ua/jobs/Uteplennya_budinkiv">Утеплення будинків</a></li>
-				<li><a href="http://renovate.in.ua/jobs/Pokriveljni_roboti">Покрівельні роботи</a></li>
-				<li><a href="http://renovate.in.ua/jobs/Poslugi_santekhnika">Послуги сантехніка</a></li>
-				<li><a href="http://renovate.in.ua/jobs/Poslugi_elektrika">Послуги електрика</a></li>
-				</ul>
-			</div>
-			<div class="col-xs-6">
-				<ul class="list-unstyled">
-				<li><a href="http://renovate.in.ua/jobs/Remont_pomeshkanj">Ремонт помешкань</a></li>
-				<li><a href="http://renovate.in.ua/jobs/Obslugovuvannya_budinkiv">Обслуговування будинків</a></li>
-				<li><a href="http://renovate.in.ua/jobs/Oblashtuvannya_gazoniv">Облаштування газонів</a></li>
-				<li><a href="http://renovate.in.ua/jobs/Pidrizannya_derev">Підрізання дерев</a></li>
-				</ul>
-			</div>
-		</div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <ul class="list-unstyled">
+                            <li><a href="http://renovate.in.ua/jobs/Uteplennya_budinkiv">Утеплення будинків</a></li>
+                            <li><a href="http://renovate.in.ua/jobs/Pokriveljni_roboti">Покрівельні роботи</a></li>
+                            <li><a href="http://renovate.in.ua/jobs/Poslugi_santekhnika">Послуги сантехніка</a></li>
+                            <li><a href="http://renovate.in.ua/jobs/Poslugi_elektrika">Послуги електрика</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-6">
+                        <ul class="list-unstyled">
+                            <li><a href="http://renovate.in.ua/jobs/Remont_pomeshkanj">Ремонт помешкань</a></li>
+                            <li><a href="http://renovate.in.ua/jobs/Obslugovuvannya_budinkiv">Обслуговування будинків</a></li>
+                            <li><a href="http://renovate.in.ua/jobs/Oblashtuvannya_gazoniv">Облаштування газонів</a></li>
+                            <li><a href="http://renovate.in.ua/jobs/Pidrizannya_derev">Підрізання дерев</a></li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="row hidden-xs">
                     <div class="col-xs-12" style="margin-top: 10%; font-size: 1.1em;">
                         <span>© 2015 Renovate</span><br>
@@ -285,7 +285,7 @@
                 <div style="border: 1px solid #fff; margin: 5px;"></div>
             </div>
 
-            <div class="col-xs-12 col-sm-3">
+            <div class="col-xs-12 col-sm-2">
                 <ul class="list-unstyled">
                     <li><span><a href="{{ path('renovate_main_homepage') }}">Головна</a></span></li>
                     <li><span><a href="{{ path('renovate_jobs') }}">Послуги</a></span></li>
@@ -293,6 +293,11 @@
                     <li><span><a href="{{ path('renovate_tariffs') }}">Калькулятор тарифів</a></span></li>
                     <li><span><a href="{{ path('renovate_results') }}">Наші роботи</a></span></li>
                     <li><span><a href="{{ path('renovate_shares') }}">Акції</a></span></li>
+                </ul>
+            </div>
+
+            <div class="col-xs-12 col-sm-2">
+                <ul class="list-unstyled">
                     <li><span><a href="{{ path('renovate_articles') }}">Статті</a></span></li>
                     <li><span><a href="{{ path('renovate_news') }}">Новини</a></span></li>
                     <li><span><a href="{{ path('renovate_aboutus') }}">Про нас</a></span></li>
@@ -306,7 +311,7 @@
                 <div style="border: 1px solid #fff; margin: 5px;"></div>
             </div>
 
-            <div class="col-xs-12 col-sm-4">
+            <div class="col-xs-12 col-sm-3">
                 <form action="{{ path('renovate_search') }}" method="post">
                     <input name="search" type="text" placeholder="Пошук"/>
                     <input type="submit" class="hidden"/>
