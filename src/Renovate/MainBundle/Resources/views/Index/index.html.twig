@@ -22,24 +22,6 @@
 
 {% block content %}
 
-    {#{% for job in jobs %}#}
-        {#<div>#}
-            {#<div class="thumbnail">#}
-                {#<a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">#}
-                    {#{% if job.getLabel() %}#}
-                        {#<img src="{{ asset(job.getLabel().getPath()) }}" alt="{{job.getName()}}">#}
-                    {#{% else %}#}
-                        {#<img src="{{ asset(job.getDocument().getPath()) }}" alt="{{job.getName()}}">#}
-                    {#{% endif %}#}
-                {#</a>#}
-                {#<div class="caption">#}
-                    {#<h4><a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">{{job.getName()}}</a></h4>#}
-                    {#<p>{{job.getDescription() | slice(0, 280) | raw}}</p>#}
-                {#</div>#}
-            {#</div>#}
-        {#</div>#}
-    {#{% endfor %}#}
-
     {% for i, job in jobs %}
 
         <div style="display: none;" ng-init="initJobs('
@@ -89,7 +71,7 @@
 
 
     <section class="services">
-        <article class="proposition" id="proposition">
+        <article class="proposition wow bounceInRight animated" id="proposition">
             <header class="title" style="font-size: 1.5em;">
                 <a href="[[modelJob[centerCounter].jobHref]]">[[modelJob[centerCounter].jobName]]</a>
             </header>
@@ -333,7 +315,7 @@
         </header>
         <div class="form wow shake animated">
             <form ng-submit="contactUs()">
-                <input type="text" ng-model="message.pip" placeholder="П.І.П." required>
+                <input type="text" ng-model="message.pip" placeholder="П.І.Б." required>
 
                 <input type="text" ng-model="message.email" placeholder="Ваш номер телефона..." required>
 
@@ -413,213 +395,13 @@
 
                 </article>
             {% endfor %}
-
         </aside>
-
     </section>
 
-
-
-    {#------------------------------------------------------------#}
-
-
-
-    {#<div class="row less-padding">#}
-        {#<div class="col-md-8">#}
-            {#<div class="results-for">#}
-                {#{% for result in results %}#}
-                    {#<div>#}
-                        {#<a href="{{path('renovate_results_show_result',{result_name_translit:result.getNameTranslit()})}}">#}
-                            {#{% if result.getLabel() %}#}
-                                {#<img src="{{ asset(result.getLabel().getPath()) }}" alt="{{result.getName()}}">#}
-                            {#{% else %}#}
-                                {#<img src="{{ asset(result.getDocument().getPath()) }}" alt="{{result.getName()}}">#}
-                            {#{% endif %}#}
-                        {#</a>#}
-                        {#<div class="description">#}
-                            {#<h3>{{result.getName() | slice(0, 40)}}</h3>#}
-                            {#<p>{{result.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
-                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_results_show_result',{result_name_translit:result.getNameTranslit()})}}">Детальніше</a>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for newsp in news %}#}
-                    {#<div>#}
-                        {#<a href="{{path('renovate_news_show_news',{news_name_translit:newsp.getNameTranslit()})}}">#}
-                            {#{% if newsp.getLabel() %}#}
-                                {#<img src="{{ asset(newsp.getLabel().getPath()) }}" alt="{{newsp.getName()}}">#}
-                            {#{% else %}#}
-                                {#<img src="{{ asset(newsp.getDocument().getPath()) }}" alt="{{newsp.getName()}}">#}
-                            {#{% endif %}#}
-                        {#</a>#}
-                        {#<div class="description">#}
-                            {#<h3>{{newsp.getName() | slice(0, 40)}}</h3>#}
-                            {#<p>{{newsp.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
-                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_news_show_news',{news_name_translit:newsp.getNameTranslit()})}}">Детальніше</a>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for article in articles %}#}
-                    {#<div>#}
-                        {#<a href="{{path('renovate_articles_show_article',{article_name_translit:article.getNameTranslit()})}}">#}
-                            {#{% if article.getLabel() %}#}
-                                {#<img src="{{ asset(article.getLabel().getPath()) }}" alt="{{article.getName()}}">#}
-                            {#{% else %}#}
-                                {#<img src="{{ asset(article.getDocument().getPath()) }}" alt="{{article.getName()}}">#}
-                            {#{% endif %}#}
-                        {#</a>#}
-                        {#<div class="description">#}
-                            {#<h3>{{article.getName() | slice(0, 40)}}</h3>#}
-                            {#<p>{{article.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
-                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_articles_show_article',{article_name_translit:article.getNameTranslit()})}}">Детальніше</a>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for share in shares %}#}
-                    {#<div>#}
-                        {#<a href="{{path('renovate_shares_show_share',{share_name_translit:share.getNameTranslit()})}}">#}
-                            {#{% if share.getLabel() %}#}
-                                {#<img src="{{ asset(share.getLabel().getPath()) }}" alt="{{share.getName()}}">#}
-                            {#{% else %}#}
-                                {#<img src="{{ asset(share.getDocument().getPath()) }}" alt="{{share.getName()}}">#}
-                            {#{% endif %}#}
-                        {#</a>#}
-                        {#<div class="description">#}
-                            {#<h3>{{share.getName() | slice(0, 40)}}</h3>#}
-                            {#<p>{{share.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
-                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_shares_show_share',{share_name_translit:share.getNameTranslit()})}}">Детальніше</a>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for vacancy in vacancies %}#}
-                    {#<div>#}
-                        {#<a href="{{path('renovate_vacancies_show_vacancy',{vacancy_name_translit:vacancy.getNameTranslit()})}}">#}
-                            {#{% if vacancy.getLabel() %}#}
-                                {#<img src="{{ asset(vacancy.getLabel().getPath()) }}" alt="{{vacancy.getName()}}">#}
-                            {#{% else %}#}
-                                {#<img src="{{ asset(vacancy.getDocument().getPath()) }}" alt="{{vacancy.getName()}}">#}
-                            {#{% endif %}#}
-                        {#</a>#}
-                        {#<div class="description">#}
-                            {#<h3>{{vacancy.getName() | slice(0, 40)}}</h3>#}
-                            {#<p>{{vacancy.getDescription() | striptags | slice(0, 400) | raw}}</p>#}
-                            {#<a class="btn btn-gray btn-xs" href="{{path('renovate_vacancies_show_vacancy',{vacancy_name_translit:vacancy.getNameTranslit()})}}">Детальніше</a>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-            {#</div>#}
-            {#<div class="results-nav">#}
-                {#{% for result in results %}#}
-                    {#<div>#}
-                        {#{% if result.getLabel() %}#}
-                            {#<img src="{{ asset(result.getLabel().getPath()) }}" alt="{{result.getName()}}">#}
-                        {#{% else %}#}
-                            {#<img src="{{ asset(result.getDocument().getPath()) }}" alt="{{result.getName()}}">#}
-                        {#{% endif %}#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for newsp in news %}#}
-                    {#<div>#}
-                        {#{% if newsp.getLabel() %}#}
-                            {#<img src="{{ asset(newsp.getLabel().getPath()) }}" alt="{{newsp.getName()}}">#}
-                        {#{% else %}#}
-                            {#<img src="{{ asset(newsp.getDocument().getPath()) }}" alt="{{newsp.getName()}}">#}
-                        {#{% endif %}#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for article in articles %}#}
-                    {#<div>#}
-                        {#{% if article.getLabel() %}#}
-                            {#<img src="{{ asset(article.getLabel().getPath()) }}" alt="{{article.getName()}}">#}
-                        {#{% else %}#}
-                            {#<img src="{{ asset(article.getDocument().getPath()) }}" alt="{{article.getName()}}">#}
-                        {#{% endif %}#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for share in shares %}#}
-                    {#<div>#}
-                        {#{% if share.getLabel() %}#}
-                            {#<img src="{{ asset(share.getLabel().getPath()) }}" alt="{{share.getName()}}">#}
-                        {#{% else %}#}
-                            {#<img src="{{ asset(share.getDocument().getPath()) }}" alt="{{share.getName()}}">#}
-                        {#{% endif %}#}
-                    {#</div>#}
-                {#{% endfor %}#}
-                {#{% for vacancy in vacancies %}#}
-                    {#<div>#}
-                        {#{% if vacancy.getLabel() %}#}
-                            {#<img src="{{ asset(vacancy.getLabel().getPath()) }}" alt="{{vacancy.getName()}}">#}
-                        {#{% else %}#}
-                            {#<img src="{{ asset(vacancy.getDocument().getPath()) }}" alt="{{vacancy.getName()}}">#}
-                        {#{% endif %}#}
-                    {#</div>#}
-                {#{% endfor %}#}
-            {#</div>#}
-        {#</div>#}
-        {#<div class="col-md-4">#}
-            {#<div id="block-last-news" class="shadowed">#}
-                {#{% for news in lastNews %}#}
-                    {#<div class="media">#}
-                        {#<a class="media-left" href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}">#}
-                            {#{% if news.getLabel() %}#}
-                                {#<img src="{{ asset(news.getLabel().getPath()) }}" alt="{{news.getName()}}">#}
-                            {#{% else %}#}
-                                {#<img src="{{ asset(news.getDocument().getPath()) }}" alt="{{news.getName()}}">#}
-                            {#{% endif %}#}
-                        {#</a>#}
-                        {#<div class="media-body">#}
-                            {#<p class="title"><a href="{{ path('renovate_news_show_news', {news_name_translit:news.getNameTranslit()}) }}">{{news.getName() | slice(0, 30)}}</a></p>#}
-                            {#<p class="description">{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
-
-    {#<div class="row less-padding">#}
-        {#<div class="col-md-8" id="main_video">#}
-            {#{% if page %}#}
-                {#{{ page.content | raw }}#}
-            {#{% endif %}#}
-        {#</div>#}
-        {#<div class="col-md-4">#}
-            {#<div class="fb-like-box" data-href="https://www.facebook.com/renovate.in.ua" data-width="400" data-height="219" data-colorscheme="light" data-show-faces="true" data-header="false" data-stream="false" data-show-border="true"></div>#}
-            {#<div id="vk_groups"></div>#}
-        {#</div>#}
-    {#</div>#}
-    {#<div class="row">#}
-        {#<div class="col-md-12">#}
-            {#<div class="jobs-slider center-block">#}
-                {#{% for job in jobs %}#}
-                    {#<div>#}
-                        {#<div class="thumbnail">#}
-                            {#<a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">#}
-                                {#{% if job.getLabel() %}#}
-                                    {#<img src="{{ asset(job.getLabel().getPath()) }}" alt="{{job.getName()}}">#}
-                                {#{% else %}#}
-                                    {#<img src="{{ asset(job.getDocument().getPath()) }}" alt="{{job.getName()}}">#}
-                                {#{% endif %}#}
-                            {#</a>#}
-                            {#<div class="caption">#}
-                                {#<h4><a href="{{path('renovate_jobs_show_job',{job_name_translit:job.getNameTranslit()})}}">{{job.getName()}}</a></h4>#}
-                                {#<p>{{job.getDescription() | slice(0, 280) | raw}}</p>#}
-                            {#</div>#}
-                        {#</div>#}
-                    {#</div>#}
-                {#{% endfor %}#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
 {% endblock %}
 
 {% block javascripts %}
-
-    {#<script src="{{ asset('bundles/renovate/js/vkWidget.js') }}"></script>#}
-    {#<script src="{{ asset('bundles/renovate/js/fbSDK.js') }}"></script>#}
-    {#<script src="{{ asset('bundles/renovate/js/slidersInitialization.js') }}"></script>#}
     <script>
-//        $('.ng_phareahraph').child('p').css('width','98%');
         $('.ng_phareahraph').children('p').css('width','97%');
     </script>
 {% endblock %}
