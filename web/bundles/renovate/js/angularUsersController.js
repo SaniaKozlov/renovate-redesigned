@@ -4,12 +4,15 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 	$scope.users = [];
 	$scope.roles = [];
 	$scope.totalItems = 0;
+	$scope.modelType = 'client';
 	$scope.currentPage = 1;
 	$scope.itemsPerPage = 10;
 	$scope.isAdmin = false;
 	
 	$scope.urlsUsersGetNg = URLS.usersGetNg;
+	$scope.clientsGetNg = URLS.clientsGetNg;
 	$scope.urlsUsersCountNg = URLS.usersCountNg;
+	$scope.coworkersGetNg = URLS.coworkersGetNg;
 	$scope.urlsUsersRemoveNg = URLS.usersRemoveNg;
 	$scope.urlsUsersShowUser = URLS.usersShowUser;
 	$scope.urlsRolesGetClientRolesNg = URLS.rolesGetClientRolesNg;
@@ -18,20 +21,30 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 	$scope.searchHandler = null;
 	
 	$scope.$watch('itemsPerPage', function(){
-		console.log("itemsPerPage => ", $scope.itemsPerPage);
-		getUsersCount();
+		if($scope.modelType == 'client'){
+			$scope.getClients();
+		} else {
+			$scope.getCoworkers();
+		}
 	});
 	
 	$scope.$watch('currentPage', function(){
-		console.log("currentPage => ", $scope.currentPage);
-		getUsers();
+		if($scope.modelType == 'client'){
+			$scope.getClients();
+		} else {
+			$scope.getCoworkers();
+		}
 	});
 	
 	$scope.$watch('search', function(){
 		clearTimeout($scope.searchHandler);
 		$scope.searchHandler = setTimeout(function(){
-			console.log("search => ", $scope.search);
-			getUsersCount();
+			// console.log("search => ", $scope.search);
+			if($scope.modelType == 'client'){
+				$scope.getClients();
+			} else {
+				$scope.getCoworkers();
+			}
 		}, 500);
 	});
 	
@@ -42,14 +55,13 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 			url: $scope.urlsRolesGetClientRolesNg
 			  })
 		.success(function(response){
-			console.log(" client roles => ",response);
-			if (response.result)
-			{
+			// console.log(" client roles => ",response);
+			if (response.result){
 				$scope.clientRoles = response.result;
 				$scope.roles = $scope.roles.concat(response.result);
 			}
 		})
-	};
+	}
 	
 	function getSimpleRoles()
 	{
@@ -58,13 +70,12 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 			url: $scope.urlsRolesGetSimpleRolesNg
 			  })
 		.success(function(response){
-			console.log(" simple roles => ",response);
-			if (response.result)
-			{
+			// console.log(" simple roles => ",response);
+			if (response.result){
 				$scope.roles = $scope.roles.concat(response.result);
 			}
 		})
-	};
+	}
 	
 	function getPrivilegesRoles()
 	{
@@ -73,66 +84,59 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 			url: $scope.urlsRolesGetPrivilegesRolesNg
 			  })
 		.success(function(response){
-			console.log(" privileges roles => ",response);
-			if (response.result)
-			{
+			// console.log(" privileges roles => ",response);
+			if (response.result){
 				$scope.roles = $scope.roles.concat(response.result);
 			}
 		})
-	};
+	}
 	
 	(function getRoles(){
 		var user = JSON.parse(USER);
-		
 		_.each(user.roles, function(role){
-			if (role.role == "ROLE_ADMIN")
-			{
+			if (role.role == "ROLE_ADMIN"){
 				$scope.isAdmin = true;
 			}
 		});
-		
 		if ($scope.isAdmin)
 			getPrivilegesRoles();
-		
 		getSimpleRoles();
 		getClientRoles();
 	})();
 	
-	function getUsers()
-	{
-		var offset = $scope.itemsPerPage*($scope.currentPage - 1);
-		var limit = $scope.itemsPerPage;
-		$http({
-			method: "GET", 
-			url: $scope.urlsUsersGetNg,
-			params: {offset: offset, limit: limit, search: $scope.search}
-			  })
-		.success(function(response){
-			console.log("users => ",response);
-			if (response.result)
-			{
-				$scope.users = response.result;
-			}
-		})
-	}
+	// function getUsers()
+	// {
+	// 	var offset = $scope.itemsPerPage*($scope.currentPage - 1);
+	// 	var limit = $scope.itemsPerPage;
+	// 	$http({
+	// 		method: "GET", 
+	// 		url: $scope.urlsUsersGetNg,
+	// 		params: {offset: offset, limit: limit, search: $scope.search}
+	// 		  })
+	// 	.success(function(response){
+	// 		console.log("users => ",response);
+	// 		if (response.result){
+	// 			$scope.users = response.result;
+	// 		}
+	// 	})
+	// }
 	
-	function getUsersCount()
-	{
-		$http({
-			method: "GET", 
-			url: $scope.urlsUsersCountNg,
-			params: {search: $scope.search}
-			  })
-		.success(function(response){
-			console.log(response);
-			if (response.result)
-			{
-				$scope.totalItems = parseInt(response.result);
-				getUsers();
-			}
-		})
-	}
-	getUsersCount();
+	// function getUsersCount()
+	// {
+	// 	$http({
+	// 		method: "GET", 
+	// 		url: $scope.urlsUsersCountNg,
+	// 		params: {search: $scope.search}
+	// 		  })
+	// 	.success(function(response){
+	// 		console.log(response);
+	// 		if (response.result){
+	// 			$scope.totalItems = parseInt(response.result);
+	// 			getUsers();
+	// 		}
+	// 	})
+	// }
+	// getUsersCount();
 	
 	$scope.addUser = function(){
 		var modalInstance = $modal.open({
@@ -149,7 +153,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 		    }, function () {
 		      //bad
 		});
-	}
+	};
 	
 	$scope.editUser = function(user){
 		var modalInstance = $modal.open({
@@ -167,7 +171,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 		    }, function () {
 		      //bad
 		});
-	}
+	};
 	
 	$scope.removeUser = function(user){
 		var remove = confirm("Дійсно бажаєте видалити: " + user.username + " ?");
@@ -180,18 +184,63 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 			url: url
 			  })
 		.success(function(response){
-			console.log(response);
-			if (response.result)
-			{
-				getUsersCount();
+			// console.log(response);
+			if (response.result){
+				if($scope.modelType == 'client'){
+					$scope.getClients();
+				} else {
+					$scope.getCoworkers();
+				}
 			}
 		});
-	}
+	};
 	
 	$scope.setItemDirectHref = function(user){
 		var href = $scope.urlsUsersShowUser.replace('0', user.id);
 		user.href = href;
-	}
+	};
+
+	$scope.getClients = function(){
+		$scope.modelType = 'client';
+		var offset = $scope.itemsPerPage*($scope.currentPage - 1);
+		var limit = $scope.itemsPerPage;
+		var params = {
+			offset: offset,
+			limit: limit,
+			search: $scope.search
+		};
+			var promise = $http.post($scope.clientsGetNg, params);
+			promise.success(function successCallback(response) {
+				if (response.result){
+					$scope.totalItems = response.total;
+					$scope.users = [];
+					$scope.users = response.result;
+				}
+			});
+			promise.error(function errorCallback(response) { });
+	};
+
+	$scope.getClients();
+
+	$scope.getCoworkers = function(){
+		$scope.modelType = 'coworker';
+		var offset = $scope.itemsPerPage*($scope.currentPage - 1);
+		var limit = $scope.itemsPerPage;
+		var params = {
+			offset: offset,
+			limit: limit,
+			search: $scope.search
+		};
+		var promise = $http.post($scope.coworkersGetNg, params);
+		promise.success(function successCallback(response) {
+			if (response.result){
+				$scope.totalItems = response.total;
+				$scope.users = [];
+				$scope.users = response.result;
+			}
+		});
+		promise.error(function errorCallback(response) { });
+	};
 })
 .controller('AddUserController', function($scope,$http,$modalInstance, roles){
 	console.log('AddUserController loaded!');
@@ -217,7 +266,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 				})
 			}, 500);
 		}
-	}
+	};
 	
 	$scope.checkUserEmail = function(){
 		clearTimeout($scope.checkEmailHandler);
@@ -233,7 +282,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 				})
 			}, 500);
 		}
-	}
+	};
 	
 	function addUser(){
 		$http({
@@ -242,7 +291,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 			data: $scope.user
 			  })
 		.success(function(response){
-			console.log("added user => ", response);
+			// console.log("added user => ", response);
 			if (response.result)
 			{
 				$modalInstance.close(response.result);
@@ -292,7 +341,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 				})
 			}, 500);
 		}
-	}
+	};
 	
 	$scope.checkUserEmail = function(){
 		clearTimeout($scope.checkEmailHandler);
@@ -308,7 +357,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 				})
 			}, 500);
 		}
-	}
+	};
 	
 	$scope.checkPassword = function () {
 		if (($scope.user.password !== undefined)&&($scope.user.password.trim() == ""))
@@ -333,7 +382,7 @@ Renovate.controller('UsersController', function($scope,$http,$modal){
 			data: $scope.user
 			  })
 		.success(function(response){
-			console.log("edited user => ", response);
+			// console.log("edited user => ", response);
 			if (response.result)
 			{
 				$modalInstance.close(response.result);

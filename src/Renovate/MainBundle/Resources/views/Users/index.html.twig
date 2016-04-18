@@ -16,10 +16,6 @@
                             <div class="form-group">
                                 <label for="itemsPerPage">Показувати на сторінці</label>
                                 <select id="itemsPerPage" class="form-control" ng-model="itemsPerPage">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
                                     <option>5</option>
                                     <option>10</option>
                                     <option>25</option>
@@ -38,55 +34,123 @@
                         <button ng-click="addUser()" type="button" class="btn btn-success">Додати&nbsp;<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                <div>
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active">
+                            <a href="#clients" ng-click="getClients()" aria-controls="home" role="tab" data-toggle="tab">Клієнти</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#coworkers" ng-click="getCoworkers()" aria-controls="settings" role="tab" data-toggle="tab">Робітники</a>
+                        </li>
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="home">
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover table-mobile">
+                                        <thead>
+                                        <tr>
+                                            <th style="background-color: #fff;">#</th>
+                                            <th style="background-color: #fff;">Логін</th>
+                                            <th style="background-color: #fff;">Прізвище</th>
+                                            <th style="background-color: #fff;">Ім’я</th>
+                                            <th style="background-color: #fff;">По батькові</th>
+                                            <th style="background-color: #fff;">Адміністративна одиниця</th>
+                                            <th style="background-color: #fff;">Керівний орган</th>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                            {% endif %}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr class="splash" ng-cloak>
+                                            <td colspan="8">
+                                                <div class="image center-block"></div>
+                                            </td>
+                                        </tr>
+                                        <tr ng-repeat="user in users" ng-cloak>
+                                            <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                            <td><a href="[[user.href]]" ng-init="setItemDirectHref(user)">[[user.username]]</a></td>
+                                            <td>[[user.surname]]</td>
+                                            <td>[[user.name]]</td>
+                                            <td>[[user.patronymic]]</td>
+                                            <td>[[user.adminUnit]]</td>
+                                            <td>[[user.owner]]</td>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <td><button ng-click="removeUser(user)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editUser(user)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                            {% endif %}
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="profile">
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover table-mobile">
+                                        <thead>
+                                        <tr>
+                                            <th style="background-color: #fff;">#</th>
+                                            <th style="background-color: #fff;">Логін</th>
+                                            <th style="background-color: #fff;">Прізвище</th>
+                                            <th style="background-color: #fff;">Ім’я</th>
+                                            <th style="background-color: #fff;">По батькові</th>
+                                            <th style="background-color: #fff;">Адміністративна одиниця</th>
+                                            <th style="background-color: #fff;">Керівний орган</th>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
+                                            {% endif %}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr class="splash" ng-cloak>
+                                            <td colspan="8">
+                                                <div class="image center-block"></div>
+                                            </td>
+                                        </tr>
+                                        <tr ng-repeat="user in users" ng-cloak>
+                                            <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
+                                            <td><a href="[[user.href]]" ng-init="setItemDirectHref(user)">[[user.username]]</a></td>
+                                            <td>[[user.surname]]</td>
+                                            <td>[[user.name]]</td>
+                                            <td>[[user.patronymic]]</td>
+                                            <td>[[user.adminUnit]]</td>
+                                            <td>[[user.owner]]</td>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <td><button ng-click="removeUser(user)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editUser(user)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
+                                            {% endif %}
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-hover table-mobile">
-                            <thead>
-                            <tr>
-                                <th style="background-color: #fff;">#</th>
-                                <th style="background-color: #fff;">Логін</th>
-                                <th style="background-color: #fff;">Прізвище</th>
-                                <th style="background-color: #fff;">Ім’я</th>
-                                <th style="background-color: #fff;">По батькові</th>
-                                <th style="background-color: #fff;">Адміністративна одиниця</th>
-                                <th style="background-color: #fff;">Керівний орган</th>
-                                {% if is_granted('ROLE_ADMIN') %}
-                                    <th style="background-color: #fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></th>
-                                {% endif %}
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr class="splash" ng-cloak>
-                                <td colspan="8">
-                                    <div class="image center-block"></div>
-                                </td>
-                            </tr>
-                            <tr ng-repeat="user in users" ng-cloak>
-                                <th style="background-color: #fff;" scope="row">[[(currentPage-1)*itemsPerPage+$index+1]]</th>
-                                <td><a href="[[user.href]]" ng-init="setItemDirectHref(user)">[[user.username]]</a></td>
-                                <td>[[user.surname]]</td>
-                                <td>[[user.name]]</td>
-                                <td>[[user.patronymic]]</td>
-                                <td>[[user.adminUnit]]</td>
-                                <td>[[user.owner]]</td>
-                                {% if is_granted('ROLE_ADMIN') %}
-                                    <td><button ng-click="removeUser(user)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editUser(user)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button></td>
-                                {% endif %}
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <pagination boundary-links="true" total-items="totalItems" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" items-per-page="itemsPerPage" max-size="5"></pagination>
-                    </div>
-                </div>
+
                 <script type="text/ng-template" id="addUser.html">
                     <div class="modal-header">
                         <h3 class="modal-title">Додати користувача...</h3>

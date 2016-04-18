@@ -35,38 +35,37 @@ class UsersController extends Controller
     public function getUsersNgAction(Request $request)
     {
     	$em = $this->getDoctrine()->getManager();
-    	
-    	$response = new Response(json_encode(array("result" => User::getUsers($em, $request->query->all(), true))));
+
+    	$response = new Response(json_encode(User::getUsers($em, $request->query->all(), true)));
     	$response->headers->set('Content-Type', 'application/json');
     	 
     	return $response;
     }
     
-    public function getWorkersNgAction()
+    public function getWorkersNgAction(Request $request)
     {
     	$em = $this->getDoctrine()->getManager();
-    	
-    	$response = new Response(json_encode(array("result" => User::getWorkers($em, true))));
+
+    	$response = new Response(json_encode(User::getWorkers($em, $request->query->all(), true)));
     	$response->headers->set('Content-Type', 'application/json');
     
     	return $response;
     }
     
-    public function getClientsNgAction()
+    public function getClientsNgAction(Request $request)
     {
     	$em = $this->getDoctrine()->getManager();
-    	 
-    	$response = new Response(json_encode(array("result" => User::getClients($em, true))));
+    	$response = new Response(json_encode(User::getClients($em, json_decode($request->getContent(), 1), true)));
     	$response->headers->set('Content-Type', 'application/json');
     
     	return $response;
     }
     
-    public function getWorkforceNgAction()
+    public function getWorkforceNgAction(Request $request)
     {
     	$em = $this->getDoctrine()->getManager();
     
-    	$response = new Response(json_encode(array("result" => User::getWorkforce($em, true))));
+    	$response = new Response(json_encode(User::getWorkforce($em, json_decode($request->getContent(), 1), true)));
     	$response->headers->set('Content-Type', 'application/json');
     
     	return $response;

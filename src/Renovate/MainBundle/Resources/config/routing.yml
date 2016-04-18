@@ -60,10 +60,18 @@ renovate_users_show_user:
     path: /users/{user_id}
     defaults: { _controller: RenovateMainBundle:Users:showUser}
     
+renovate_ng_clients:
+    path: /ng/clients
+    defaults: { _controller: RenovateMainBundle:Users:getClientsNg}
+
+renovate_ng_coworkers:
+    path: /ng/coworker
+    defaults: { _controller: RenovateMainBundle:Users:getWorkforceNg}
+
 renovate_ng_users:
     path: /ng/users
     defaults: { _controller: RenovateMainBundle:Users:getUsersNg}
-    
+
 renovate_ng_users_check_tariff:
     path: /ng/users/check/tariff
     defaults: { _controller: RenovateMainBundle:Users:checkUserTariffNg}

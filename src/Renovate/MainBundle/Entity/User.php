@@ -3,6 +3,7 @@
 namespace Renovate\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Expr\Join;
@@ -686,7 +687,7 @@ class User implements UserInterface,\Serializable
     			'mobilephone' => $this->getMobilephone(),
     			'address' => $this->getAddress(),
     			'adminUnit' => $this->getAdminUnit(),
-    			'owner' => $this->getOwner(),
+    			'owner' => str_replace('"', "", $this->getOwner()),
     			'comments' => $this->getComments(),
     			'registered' => $this->getRegistered()->getTimestamp()*1000,
     			'roles' => array_map(function($role){return $role->getInArray();}, $this->getRoles())
@@ -822,54 +823,90 @@ class User implements UserInterface,\Serializable
     	}else return $result;
     }
     
-    public static function getClients($em, $inArray = false)
+    public static function getClients($em, $parameters, $inArray = false)
     {
     	$clientRoles = Role::getClientRoles($em);
-    	$clientRolesIds = array_map(function($role){return $role->getId();}, $clientRoles); 
-    	
-    	$qb = $em->getRepository("RenovateMainBundle:User")
-    	->createQueryBuilder('u');
-    
-    	$qb->select('u')
-    	->join("u.roles", "r")
-    	->where($qb->expr()->in('r.id', $clientRolesIds))
-    	->addOrderBy('u.surname')
-    	->addOrderBy('u.name')
-    	->addOrderBy('u.patronymic');
-    
-    	$result = $qb->getQuery()->getResult();
-    
-    	if ($inArray)
-    	{
-    		return array_map(function($user){
-    			return $user->getInArray();
-    		}, $result);
-    	}else return $result;
+    	$clientRolesIds = array_map(function($role){return $role->getId();}, $clientRoles);
+
+        $qb = $em->getRepository("RenovateMainBundle:User")
+            ->createQueryBuilder('u');
+        $qb->select('u')
+            ->join("u.roles", "r")
+            ->where($qb->expr()->in('r.id', $clientRolesIds))
+            ->addOrderBy('u.registered', 'DESC');
+        if (isset($parameters['offset']) && isset($parameters['limit'])){
+            $qb->setFirstResult($parameters['offset'])
+                ->setMaxResults($parameters['limit']);
+        }
+        if (isset($parameters['search'])){
+            $qb->where($qb->expr()->orX(
+                $qb->expr()->like('u.username', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.name', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.surname', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.patronymic', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.email', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.mobilephone', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.address', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.adminUnit', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.owner', $qb->expr()->literal('%'.$parameters['search'].'%'))
+            ));
+        }
+
+    	$result['result'] = $qb->getQuery()->getResult();
+        $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
+        $c = count($paginator);
+
+        $result['total'] = $c;
+        $result['result'] = [];
+        if ($inArray){
+            foreach ($paginator as $item) {
+                $result['result'][] = $item->getInArray();
+            }
+        }
+        return $result;
     }
     
-    public static function getWorkforce($em, $inArray = false)
+    public static function getWorkforce($em, $parameters, $inArray = false)
     {
     	$workforceRoles = Role::getWorkforceRoles($em);
     	$workforceRolesIds = array_map(function($role){return $role->getId();}, $workforceRoles);
     	 
     	$qb = $em->getRepository("RenovateMainBundle:User")
-    	->createQueryBuilder('u');
-    
+    	    ->createQueryBuilder('u');
     	$qb->select('u')
-    	->join("u.roles", "r")
-    	->where($qb->expr()->in('r.id', $workforceRolesIds))
-    	->addOrderBy('u.surname')
-    	->addOrderBy('u.name')
-    	->addOrderBy('u.patronymic');
-    
-    	$result = $qb->getQuery()->getResult();
-    
-    	if ($inArray)
-    	{
-    		return array_map(function($user){
-    			return $user->getInArray();
-    		}, $result);
-    	}else return $result;
+    	    ->join("u.roles", "r")
+    	    ->where($qb->expr()->in('r.id', $workforceRolesIds))
+            ->addOrderBy('u.registered', 'DESC');
+        if (isset($parameters['offset']) && isset($parameters['limit'])){
+            $qb->setFirstResult($parameters['offset'])
+                ->setMaxResults($parameters['limit']);
+        }
+        if (isset($parameters['search'])){
+            $qb->where($qb->expr()->orX(
+                $qb->expr()->like('u.username', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.name', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.surname', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.patronymic', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.email', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.mobilephone', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.address', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.adminUnit', $qb->expr()->literal('%'.$parameters['search'].'%')),
+                $qb->expr()->like('u.owner', $qb->expr()->literal('%'.$parameters['search'].'%'))
+            ));
+        }
+
+        $paginator = new Paginator($qb->getQuery(), $fetchJoinCollection = true);
+
+        $c = count($paginator);
+
+        $result['total'] = $c;
+        $result['result'] = [];
+        if ($inArray){
+            foreach ($paginator as $item) {
+                $result['result'][] = $item->getInArray();
+            }
+        }
+        return $result;
     }
     
     public static function getUsersCount($em, $parameters)

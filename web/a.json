@@ -1,0 +1,20 @@
+{
+  "id":76,
+  "username":"Alla",
+  "name":"Алла",
+  "surname":"Берец",
+  "patronymic":"Сергіївна",
+  "email":"renovate.in.ua@gmail.com",
+  "mobilephone":"+380959103303",
+  "address":"Не відомо",
+  "adminUnit":"Менеджер по рекламі",
+  "owner":"ТОВ 'Реновейт'",
+  "comments":null,
+  "registered":1457516210000,
+  "roles":[
+    {"id":1,"name":"Адміністратор","role":"ROLE_ADMIN","description":null},
+    {"id":3,"name":"Модератор","role":"ROLE_EDITOR","description":null},
+    {"id":4,"name":"Робітник","role":"ROLE_WORKER","description":null},
+    {"id":2,"name":"Звичайний користувач","role":"ROLE_USER","description":null}
+  ]
+}
