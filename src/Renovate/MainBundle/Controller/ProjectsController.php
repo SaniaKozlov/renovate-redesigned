@@ -89,6 +89,9 @@ class ProjectsController extends Controller
     public function reportAction($project_id)
     {
         $em = $this->getDoctrine()->getManager();
+        /**
+         * @var project Project
+         */
         $project = $em->getRepository("RenovateMainBundle:Project")->find($project_id);
         $report = $project->generateReport();
 

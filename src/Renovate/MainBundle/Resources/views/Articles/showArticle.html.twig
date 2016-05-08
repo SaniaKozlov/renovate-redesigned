@@ -55,7 +55,7 @@
                     <img width="400px" ng-src="[[ '/' + singleArticle.document.url ]]" alt="[[ singleArticle.name ]]" style="box-shadow: 0 5px 20px rgba(65,65,88,0.4); border-radius: 10px;">
                 </div>
 
-                <div class="summary" style="padding: 0 !important;" ng-bind-html="singleArticle.description"></div>
+                <div class="summary" style="padding: 0 !important;" bind-html-unsafe="singleArticle.description"></div>
 
             </aside>
         </section>

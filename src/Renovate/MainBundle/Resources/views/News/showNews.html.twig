@@ -68,7 +68,7 @@
                 <div class="col-xs-12">
                     <img width="220px" ng-src="[[ '/' + singleNews.document.url ]]" alt="[[ singleNews.name ]]"/>
                 </div>
-                <div class="col-xs-12" ng-bind-html="singleNews.description"></div>
+                <div class="col-xs-12" ng-bind-html-unsafe="singleNews.description"></div>
             </div>
         </div>
 

@@ -1,4 +1,4 @@
-Renovate.controller('NewsController', function($scope,$http,$modal){
+Renovate.controller('NewsController', function($scope,$http,$modal, $sce){
 	console.log('NewsController loaded!');
 	
 	$scope.news = [];
@@ -21,7 +21,8 @@ Renovate.controller('NewsController', function($scope,$http,$modal){
             params: { news_id: news_id }
         })
             .success(function (response) {
-                $scope.singleNews = response;
+				$scope.singleNews = response;
+				$scope.singleNews.description = $sce.trustAsHtml(response.description);
             });
     };
 	
@@ -85,7 +86,7 @@ Renovate.controller('NewsController', function($scope,$http,$modal){
 		    }, function () {
 		      //bad
 		});
-	}
+	};
 	
 	$scope.editNews = function(newsp){
 		var modalInstance = $modal.open({
@@ -103,7 +104,7 @@ Renovate.controller('NewsController', function($scope,$http,$modal){
 		    }, function () {
 		      //bad
 		});
-	}
+	};
 	
 	$scope.removeNews = function(newsp){
 		var remove = confirm("Дійсно бажаєте видалити: " + newsp.name + " ?");
@@ -122,7 +123,7 @@ Renovate.controller('NewsController', function($scope,$http,$modal){
 				getNewsCount();
 			}
 		});
-	}
+	};
 	
 	$scope.setItemDirectHref = function(newsp){
 		var href = $scope.urlsNewsShowNews.replace('0', newsp.nameTranslit);

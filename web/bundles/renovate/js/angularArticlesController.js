@@ -1,4 +1,4 @@
-Renovate.controller('ArticlesController', function($scope,$http,$modal){
+Renovate.controller('ArticlesController', function($scope,$http,$modal, $sce){
 	console.log('ArticlesController loaded!');
 
 	$scope.articles = [];
@@ -22,6 +22,7 @@ Renovate.controller('ArticlesController', function($scope,$http,$modal){
         })
             .success(function (response) {
                 $scope.singleArticle = response;
+                $scope.description = $sce.trustAsHtml(response.description);
             });
     };
 	

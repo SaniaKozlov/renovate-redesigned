@@ -25,7 +25,7 @@
 {% block content %}
 
     <section class="news-desc" ng-controller="SharesController">
-        <aside style="width: 80%; margin-right: 0% !important;">
+        <aside style="width: 100%; margin-right: 0% !important;">
 
             <h1 class="textshadowblue" style="margin-top: 3px; display: inline-block">Акції</h1>
             {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}
@@ -52,7 +52,9 @@
             </div>
 
             <article ng-repeat="share in shares" ng-cloak style="padding-bottom: 60px; line-height: 2">
-                <img width="220px" src="{{ asset('[[share.label.url || share.document.url]]') }}" alt=""/>
+                <a href="[[share.href]]">
+                    <img width="220px" src="{{ asset('[[share.label.url || share.document.url]]') }}" alt=""/>
+                </a>
                 <header>
                     <a ng-init="setItemDirectHref(share)" href="[[share.href]]">[[share.name]]</a>
                     {% if (is_granted('ROLE_ADMIN') or is_granted('ROLE_EDITOR')) %}<button ng-click="removeShare(share)" type="button" class="close"><span class="glyphicon glyphicon-remove"></span></button><button ng-click="editShare(share)" type="button" class="close"><span class="glyphicon glyphicon-pencil"></span></button>{% endif %}

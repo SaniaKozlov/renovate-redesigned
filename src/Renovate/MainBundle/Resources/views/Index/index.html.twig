@@ -242,38 +242,38 @@
     <div class="clearfix"></div>
     <hr>
 
-    {#{% if shares | length != 0 %}#}
-        {#<section class="portfolio">#}
-            {#<h1 class="h1-portfolio">#}
-                {#<a href="{{ path('renovate_shares') }}" style="color: #010B64">#}
-                    {#Акції#}
-                {#</a>#}
-            {#</h1>#}
+    {% if shares | length != 0 %}
+        <section class="portfolio">
+            <h1 class="h1-portfolio">
+                <a href="{{ path('renovate_shares') }}" style="color: #010B64">
+                    Акції
+                </a>
+            </h1>
 
-            {#{% if shares | length == 1 %}#}
-                {#<div class="wow zoomIn animated" style="width: 370px; margin: 0 auto;">#}
-                    {#<a href="{{ path('renovate_results_show_result', {'result_name_translit': shares[0].nameTranslit}) }}">#}
-                        {#<img class="image-portfolio" src="{{ shares[0].document.path | replace({'web/': ''}) }}">#}
-                    {#</a>#}
-                {#</div>#}
-            {#{% else %}#}
+            {% if shares | length == 1 %}
+                <div class="wow zoomIn animated" style="width: 370px; margin: 0 auto;">
+                    <a href="{{ path('renovate_results_show_result', {'result_name_translit': shares[0].nameTranslit}) }}">
+                        <img class="image-portfolio" src="{{ shares[0].document.path | replace({'web/': ''}) }}">
+                    </a>
+                </div>
+            {% else %}
 
-                {#{% for share in shares %}#}
+                {% for share in shares %}
 
-                    {#<div class="portfolio-item wow zoomIn animated">#}
-                        {#<a href="{{ path('renovate_results_show_result', {'result_name_translit': share.nameTranslit}) }}">#}
-                            {#<img class="image-portfolio" src="{{ share.document.path | replace({'web/': ''}) }}">#}
-                        {#</a>#}
-                    {#</div>#}
+                    <div class="portfolio-item wow zoomIn animated">
+                        <a href="{{ path('renovate_results_show_result', {'result_name_translit': share.nameTranslit}) }}">
+                            <img class="image-portfolio" src="{{ share.document.path | replace({'web/': ''}) }}">
+                        </a>
+                    </div>
 
-                {#{% endfor %}#}
-            {#{% endif %}#}
-        {#</section>#}
+                {% endfor %}
+            {% endif %}
+        </section>
 
-    {#{% endif %}#}
+    {% endif %}
 
-    {#<div class="clearfix"></div>#}
-    {#<hr>#}
+    <div class="clearfix"></div>
+    <hr>
 
     {% if results | length != 0 %}
         <section class="portfolio">
@@ -390,7 +390,7 @@
                     </header>
 
                     <div class="summary" style="min-height: 60px;">
-                        <p>{{news.getDescription() | striptags | slice(0, 100) | raw }}</p>
+                        <p>{{news.getDescription() | striptags  | raw }}</p>
                     </div>
 
                 </article>
@@ -402,6 +402,8 @@
 
 {% block javascripts %}
     <script>
+        $('img').css('box-shadow', '0 5px 20px rgba(65,65,88,0.4)');
+        $('img').css(' border-radius','10px');
         $('.ng_phareahraph').children('p').css('width','97%');
     </script>
 {% endblock %}
