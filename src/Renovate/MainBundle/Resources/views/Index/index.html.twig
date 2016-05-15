@@ -71,13 +71,12 @@
 
 
     <section class="services">
-        <article class="proposition wow bounceInRight animated" id="proposition">
+        <article class="proposition wow bounceInLeft animated" id="proposition">
             <header class="title" style="font-size: 1.5em;">
                 <a href="[[modelJob[centerCounter].jobHref]]">[[modelJob[centerCounter].jobName]]</a>
             </header>
-            <div style="height: 20px;"></div>
             <footer class="footer-xs">
-                <p class="ng_phareahraph" style="font-style: italic;text-align: justify; overflow: hidden; height: 64px; width: 98%" ng-bind-html="modelJob[centerCounter].jobDescription"></p>
+                <p class="ng_phareahraph" style="font-style: italic;text-align: justify; overflow: hidden; height: 78px; width: 98%" ng-bind-html="modelJob[centerCounter].jobDescription"></p>
                 <a href="[[modelJob[centerCounter].jobHref]]">
                     <img style="width: 100%; height: 200px;" src="[[modelJob[centerCounter].jobSrc]]" alt=""/>
                 </a>
@@ -135,7 +134,7 @@
         <h1 class="header2" style="margin-top: 3px;"><a style="color: #010B64;" href="{{ path('renovate_news') }}"> Новини </a></h1>
 
         <div class="row">
-            <div class="col-xs-12 wow rollIn animated">
+            <div class="col-xs-12 wow bounceInLeft animated">
                 {% for news in lastNews %}
                     <article class="news-line">
                         {% if news.getLabel() %}
@@ -187,7 +186,7 @@
 
     <section class="news-desc hidden-xs hidden-sm" style="padding-left: 30px; padding-right: 0;">
         <h1 class="header2" style="margin-top: 3px"><a style="color: #010B64;" href="{{ path('renovate_news') }}"> Новини </a></h1>
-        <aside class="wow rollIn animated">
+        <aside class="wow bounceInLeft animated">
 
             {% for news in lastNews %}
                 <article style="padding-bottom: 70px !important;">
@@ -212,7 +211,7 @@
 
         </aside>
 
-        <aside class="desc wow bounceInRight animated">
+        <aside class="desc wow bounceInLeft animated">
 
             {% for news in lastNews1 %}
                 <article style="padding-bottom: 70px !important;">
@@ -313,7 +312,7 @@
             <h1 style="line-height: 1.7;">ЗАЛИШТЕ <span style="color: white;">ЗАЯВКУ</span></h1>
             <h2 class="sub-header h2-message"><span style="color: white;">просто зараз і</span> Вам зателефонують</h2>
         </header>
-        <div class="form wow shake animated">
+        <div class="form wow bounceInLeft animated">
             <form ng-submit="contactUs()">
                 <input type="text" ng-model="message.pip" placeholder="П.І.Б." required>
 
@@ -345,7 +344,7 @@
         <h1 class="header2" style="margin-top: 3px;"><a style="color: #010B64;" href="{{ path('renovate_vacancies') }}"> Вакансії </a></h1>
 
         <div class="row">
-            <div class="col-xs-12 wow rollIn animated">
+            <div class="col-xs-12 wow bounceInLeft animated">
                 {% for news in vacancies %}
                     <article class="news-line">
                         {% if news.getLabel() %}
@@ -373,7 +372,7 @@
 
     <section class="news-desc hidden-xs hidden-sm" style="padding-left: 30px; padding-right: 0;">
         <h1 class="header2" style="margin-top: 3px"><a style="color: #010B64;" href="{{ path('renovate_vacancies') }}"> Вакансії </a></h1>
-        <aside class="wow rollIn animated" style="width: 90%;">
+        <aside class="wow bounceInLeft animated" style="width: 90%;">
 
             {% for news in vacancies %}
                 <article style="padding-bottom: 70px !important;">
@@ -402,7 +401,7 @@
 
 {% block javascripts %}
     <script>
-        $('img').css('box-shadow', '0 5px 20px rgba(65,65,88,0.4)');
+        $('img:not(.img-js)').css('box-shadow', '0 5px 20px rgba(65,65,88,0.4)');
         $('img').css(' border-radius','10px');
         $('.ng_phareahraph').children('p').css('width','97%');
     </script>

@@ -43,7 +43,12 @@ class IndexController extends Controller
     	$em = $this->getDoctrine()->getManager();
     	$parameters['lastNews'] = News::getNews($em, array('offset' => 0,'limit' => 3));
 		$parameters['lastNews1'] = News::getNews($em, array('offset' => 3,'limit' => 3));
-    	$parameters['jobs'] = Job::getJobs($em, array('onhomepage' => 1));
+		$jobs = Job::getJobs($em, array('onhomepage' => 1));
+		foreach ($jobs as $job){
+			$job->setDescription(strip_tags($job->getDescription()));;
+			$job->setShortDescription(strip_tags($job->getShortDescription()));
+		}
+    	$parameters['jobs'] = $jobs;
     	$parameters['results'] = Result::getResults($em, array('onhomepage' => 1));
     	$parameters['news'] = News::getNews($em, array('onhomepage' => 1));
     	$parameters['articles'] = Article::getArticles($em, array('onhomepage' => 1));
