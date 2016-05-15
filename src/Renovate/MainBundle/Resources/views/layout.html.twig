@@ -178,7 +178,8 @@
                     <li><a href="{{ path('renovate_main_homepage') }}"> Головна </a></li>
                     <li><a href="{{ path('renovate_jobs') }}"> Послуги </a></li>
                     <li><a href="{{ path('renovate_prices') }}"> Прайс лист </a></li>
-                    <li><a href="{{ path('renovate_tariffs') }}">Калькулятор тарифів</a></li>
+                    {#<li><a href="{{ path('renovate_tariffs') }}">Калькулятор тарифів</a></li>#}
+                    <li><a href="{{ path('renovate_results') }}">Наші роботи</a></li>
                     <li><a href="{{ path('renovate_shares') }}">Акції</a></li>
                     <li class="logo">
                         <a href="{{ path('renovate_main_homepage') }}">
@@ -186,11 +187,17 @@
                         </a>
                     </li>
                     <div class="pull-right">
-                        <li><a href="{{ path('renovate_results') }}">Наші роботи</a></li>
+
                         <li><a href="{{ path('renovate_articles') }}">Статті</a></li>
                         <li><a href="{{ path('renovate_news') }}"> Новини </a></li>
                         <li><a href="{{ path('renovate_aboutus') }}"> Про нас </a></li>
                         <li><a href="{{ path('renovate_contacts') }}"> Контакти </a></li>
+                        <li>
+                            <form action="{{ path('renovate_search') }}" method="post">
+                                <input class="search-input" name="search" type="text" placeholder="Пошук"/>
+                                <input type="submit" class="hidden"/>
+                            </form>
+                        </li>
                     </div>
                 </ul>
                 <div class="clearfix"></div>
@@ -312,10 +319,7 @@
             </div>
 
             <div class="col-xs-12 col-sm-3">
-                <form action="{{ path('renovate_search') }}" method="post">
-                    <input name="search" type="text" placeholder="Пошук"/>
-                    <input type="submit" class="hidden"/>
-                </form>
+
                 <div style="font-size: 1.2em;">
                     <nobr class="phone">+38 (095) 3 444 900</nobr>
                     <br/>
